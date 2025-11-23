@@ -31,8 +31,9 @@ def clean_subject_prefixes(subject):
 
 def get_deterministic_id(subject):
     if not subject: subject = "sans_titre"
-    hash_object = hashlib.md5(subject.encode('utf-8', errors='ignore'))
-    return hash_object.hexdigest()[:10]
+    # Utilisation de SHA256 au lieu de MD5 pour plus de sécurité et moins de collisions
+    hash_object = hashlib.sha256(subject.encode('utf-8', errors='ignore'))
+    return hash_object.hexdigest()[:12]
 
 def get_email_date(msg):
     try:
@@ -42,6 +43,7 @@ def get_email_date(msg):
             return dt.strftime('%Y-%m-%d')
     except Exception:
         pass
+    # Fallback : Date du jour si échec
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
 def get_clean_sender(msg):
@@ -66,7 +68,8 @@ def get_page_metadata(filepath):
     sender = "Expéditeur Inconnu"
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f, 'html.parser')
+            # Utilisation de lxml pour la lecture rapide des métadonnées
+            soup = BeautifulSoup(f, 'lxml')
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
             meta_date = soup.find("meta", attrs={"name": "creation_date"})
@@ -78,25 +81,12 @@ def get_page_metadata(filepath):
     except Exception:
         pass
     if not date_str:
-        timestamp = os.path.getmtime(filepath)
-        date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
+        try:
+            timestamp = os.path.getmtime(filepath)
+            date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
+        except:
+            date_str = datetime.datetime.now().strftime('%Y-%m-%d')
     return title, date_str, sender
-
-def clean_output_folder():
-    if os.path.exists(OUTPUT_FOLDER):
-        for item in os.listdir(OUTPUT_FOLDER):
-            item_path = os.path.join(OUTPUT_FOLDER, item)
-            if item.startswith('.') or item == "CNAME":
-                continue
-            try:
-                if os.path.isdir(item_path):
-                    shutil.rmtree(item_path)
-                else:
-                    os.remove(item_path)
-            except Exception as e:
-                print(f"Warning nettoyage: {e}")
-    else:
-        os.makedirs(OUTPUT_FOLDER)
 
 def generate_index():
     print("Génération du sommaire...")
@@ -262,7 +252,9 @@ def get_decoded_email_subject(msg):
 
 def process_emails():
     try:
-        clean_output_folder()
+        if not os.path.exists(OUTPUT_FOLDER):
+            os.makedirs(OUTPUT_FOLDER)
+
         print("Connexion au serveur Gmail...")
         mail = imaplib.IMAP4_SSL("imap.gmail.com")
         mail.login(GMAIL_USER, GMAIL_PASSWORD)
@@ -279,6 +271,7 @@ def process_emails():
 
             for num in email_ids:
                 try:
+                    # 1. Récupération légère des en-têtes uniquement
                     status, msg_data = mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE FROM)])')
                     msg_header = email.message_from_bytes(msg_data[0][1])
                     
@@ -289,8 +282,15 @@ def process_emails():
                     
                     folder_id = get_deterministic_id(subject)
                     newsletter_path = os.path.join(OUTPUT_FOLDER, folder_id)
+                    
+                    # 2. Vérification incrémentale : Si le dossier existe, on passe
+                    if os.path.exists(os.path.join(newsletter_path, "index.html")):
+                        print(f"Ignoré (déjà présent) : {subject[:30]}...")
+                        continue
+
                     print(f"Traitement : {subject[:30]}... ({sender_name})")
                     
+                    # 3. Téléchargement complet uniquement si nécessaire
                     status, msg_data = mail.fetch(num, "(RFC822)")
                     msg = email.message_from_bytes(msg_data[0][1])
                     os.makedirs(newsletter_path, exist_ok=True)
@@ -308,10 +308,11 @@ def process_emails():
                         html_content = payload.decode(charset, errors="ignore")
                     if not html_content: continue
 
-                    soup = BeautifulSoup(html_content, "html.parser")
+                    # Utilisation de lxml pour le parsing (plus robuste)
+                    soup = BeautifulSoup(html_content, "lxml")
                     for s in soup(["script", "iframe", "object"]): s.extract()
 
-                    # Nettoyage des transferts
+                    # Nettoyage des transferts (inchangé)
                     split_keywords = ["Forwarded message", "Message transféré"]
                     found_split = False
                     for div in soup.find_all("div"):
@@ -337,14 +338,16 @@ def process_emails():
                         new_body.extend(soup.contents)
                         soup.append(new_body)
 
-                    # --- INJECTION UI PREVIEW (HEADER FIXE & LAYOUT) ---
+                    # --- INJECTION UI PREVIEW ---
                     
                     style_tag = soup.new_tag("style")
+                    # Correction BUG : Ajout de !important sur body.dark-active et visibility:hidden sur img cassées
                     style_tag.string = """
                         /* Reset */
                         body { margin: 0; padding: 0; background-color: #eef2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+                        img:not([src]) { visibility: hidden; }
                         
-                        /* HEADER PANEL (FIXE & ALIGNÉ) */
+                        /* HEADER PANEL */
                         .preview-header {
                             position: sticky; top: 0; left: 0; right: 0;
                             background-color: #ffffff;
@@ -396,13 +399,11 @@ def process_emails():
                             max-width: 800px;
                             background: #ffffff;
                             box-shadow: 0 5px 30px rgba(0,0,0,0.08);
-                            /* CENTRAGE DU CONTENU INTERNE */
                             display: flex; 
                             flex-direction: column; 
                             align-items: center;
                         }
                         
-                        /* Force les éléments internes à être centrés et ne pas dépasser */
                         #email-content > * {
                             margin-left: auto !important;
                             margin-right: auto !important;
@@ -426,7 +427,7 @@ def process_emails():
                         }
 
                         /* --- DARK MODE (SMART INVERT) --- */
-                        body.dark-active { background-color: #121212; }
+                        body.dark-active { background-color: #121212 !important; }
                         
                         body.dark-active .preview-header { 
                             background-color: #1e1e1e; border-bottom-color: #333; 
@@ -453,7 +454,6 @@ def process_emails():
                         new_head.append(style_tag)
                         soup.insert(0, new_head)
 
-                    # 2. JS
                     script_tag = soup.new_tag("script")
                     script_tag.string = """
                         function toggleMobile() {
@@ -467,7 +467,6 @@ def process_emails():
                     """
                     soup.body.append(script_tag)
 
-                    # 3. Header
                     header_html = BeautifulSoup(f"""
                     <header class="preview-header">
                         <div class="header-inner">
@@ -486,7 +485,6 @@ def process_emails():
                     </header>
                     """, 'html.parser')
 
-                    # 4. Wrappings
                     wrapper_div = soup.new_tag("div", id="email-wrapper")
                     content_div = soup.new_tag("div", id="email-content")
                     
@@ -505,7 +503,6 @@ def process_emails():
                     soup.body.append(wrapper_div)
                     soup.body.append(script_tag)
 
-                    # Méta-données
                     meta_date = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
                     meta_sender = soup.new_tag("meta", attrs={"name": "sender", "content": sender_name})
                     if soup.head: 
@@ -518,16 +515,19 @@ def process_emails():
                         new_title.string = subject
                         if soup.head: soup.head.append(new_title)
 
-                    # Images (Lazy Loading)
+                    # Images (Sécurisation + Timeout réduit)
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
                         if not src or src.startswith("data:") or src.startswith("cid:"): continue
                         try:
                             if src.startswith("//"): src = "https:" + src
-                            response = requests.get(src, headers=HEADERS, timeout=10)
+                            # Timeout réduit à 5s et validation
+                            response = requests.get(src, headers=HEADERS, timeout=5)
                             if response.status_code == 200:
-                                content_type = response.headers.get('content-type')
+                                content_type = response.headers.get('content-type', '')
+                                if 'image' not in content_type: continue
+
                                 ext = mimetypes.guess_extension(content_type) or ".jpg"
                                 img_name = f"img_{img_counter}{ext}"
                                 img_path = os.path.join(newsletter_path, img_name)
