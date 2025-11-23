@@ -4,24 +4,22 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-orange)](https://pages.github.com/)
 
-An automated DevOps solution that captures incoming newsletters from Gmail, processes them, and archives them as a static website hosted on GitHub Pages.
+An automated DevOps solution that captures incoming newsletters from Gmail, sanitizes them (removing forward history), and archives them as a static website hosted on GitHub Pages.
 
-Designed to preserve content fidelity, download remote images locally, and provide a persistent, searchable archive accessible via a web browser.
+**🔗 [Accéder à l'archive en ligne / Access Online Archive](https://benoit-prentout.github.io/archive-news/)**
 
 ---
 
 ## 🚀 Features
 
-* **Automated Ingestion:** Connects to Gmail via IMAP to fetch specific unread emails (filtered by label).
-* **Content Processing:**
-    * Parses HTML content using `BeautifulSoup`.
-    * Sanitizes dangerous scripts (XSS protection).
-    * **Local Image Caching:** Automatically downloads remote images to ensure archives remain viewable even if the original source deletes them.
-* **Static Site Generation:**
-    * Generates individual HTML pages for each newsletter.
-    * Auto-generates a clean, responsive `index.html` (Table of Contents) with dates and titles.
-* **CI/CD Pipeline:** Fully automated via **GitHub Actions** (runs on a schedule).
-* **Free Hosting:** Deploys automatically to **GitHub Pages**.
+* **Smart Ingestion:** Fetches emails from Gmail via IMAP (Label: `Github/archive-newsletters`).
+* **Advanced Processing:**
+    * **Sanitization:** Automatically removes "Forward" headers (`Fwd:`, `Tr:`) and history blocks (quotes) to keep only the original content.
+    * **Structure:** Organizes each newsletter in its own dedicated folder to prevent asset conflicts.
+    * **Metadata:** Extracts the original email date (not the archiving date) for accurate sorting.
+* **Asset Management:** Downloads remote images locally to ensure long-term preservation.
+* **Static Site Generation:** Auto-generates a responsive `index.html` with a clean footer and legal notices.
+* **CI/CD Pipeline:** Runs automatically every 30 minutes via GitHub Actions.
 
 ---
 
@@ -35,13 +33,13 @@ Designed to preserve content fidelity, download remote images locally, and provi
 * **Automation:** GitHub Actions (CRON scheduler).
 * **Hosting:** GitHub Pages.
 
----
-
-## ⚙️ Architecture
+## 🛠️ Architecture
 
 ```mermaid
 graph LR
-    A["Gmail (Label: Netlify-News)"] -- "IMAP" --> B("Python Script via GitHub Actions")
-    B -- "Extract HTML & Download Images" --> C["Process & Sanitize"]
-    C -- "Commit changes" --> D["GitHub Repository (/docs)"]
-    D -- "Auto Deploy" --> E["GitHub Pages Website"]
+A[Gmail (Alias + Filter)] -- IMAP --> B(Python Script via GitHub Actions)
+B -- Extract HTML & Clean History --> C[Sanitize & Download Images]
+C -- Commit changes --> D[GitHub Repository (/docs)]
+D -- Auto Deploy --> E[GitHub Pages Website]
+
+
