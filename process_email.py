@@ -7,34 +7,45 @@ import re
 import mimetypes
 import requests
 import datetime
+import uuid
 
 # --- CONFIGURATION ---
 GMAIL_USER = os.environ["GMAIL_USER"]
 GMAIL_PASSWORD = os.environ["GMAIL_PASSWORD"]
 TARGET_LABEL = "Netlify-News"
-# Dossier 'docs' pour la compatibilité GitHub Pages
 OUTPUT_FOLDER = "docs"
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
 
-def clean_filename(text):
-    s = re.sub(r'[\\/*?:"<>|]', "", text)
-    return s.replace(" ", "_")[:50]
+def get_page_title(filepath):
+    """Ouvre un fichier HTML et récupère son titre complet"""
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            soup = BeautifulSoup(f, 'html.parser')
+            if soup.title and soup.title.string:
+                return soup.title.string.strip()
+    except Exception:
+        pass
+    return "Sans titre"
 
 def generate_index():
-    print("Mise à jour du sommaire...")
+    print("Génération du sommaire sécurisé...")
     if not os.path.exists(OUTPUT_FOLDER):
         return
         
     files = [f for f in os.listdir(OUTPUT_FOLDER) if f.endswith(".html") and f != "index.html"]
+    # Tri par date de modification
     files.sort(key=lambda x: os.path.getmtime(os.path.join(OUTPUT_FOLDER, x)), reverse=True)
 
     links_html = ""
     for f in files:
-        name_display = f.replace(".html", "").replace("_", " ")
         filepath = os.path.join(OUTPUT_FOLDER, f)
+        
+        # On récupère le VRAI titre complet depuis le contenu du fichier
+        full_title = get_page_title(filepath)
+        
         timestamp = os.path.getmtime(filepath)
         date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%d/%m/%Y')
 
@@ -43,7 +54,7 @@ def generate_index():
             <a href="{f}">
                 <div class="link-content">
                     <span class="icon">📧</span>
-                    <span class="title">{name_display}</span>
+                    <span class="title">{full_title}</span>
                 </div>
                 <span class="date">{date_str}</span>
             </a>
@@ -57,6 +68,7 @@ def generate_index():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Archives Newsletters</title>
+        <meta name="robots" content="noindex, nofollow">
         <style>
             body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f6f9fc; margin: 0; padding: 20px; color: #333; }}
             .container {{ max-width: 800px; margin: 40px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
@@ -65,10 +77,10 @@ def generate_index():
             li {{ margin-bottom: 12px; }}
             a {{ display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; background: #fff; border: 1px solid #eaeaea; border-radius: 10px; text-decoration: none; color: #2c3e50; transition: all 0.2s ease; }}
             a:hover {{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: #0070f3; color: #0070f3; }}
-            .link-content {{ display: flex; align-items: center; }}
-            .icon {{ font-size: 1.2rem; margin-right: 15px; }}
-            .title {{ font-weight: 600; font-size: 1.05rem; }}
-            .date {{ font-size: 0.85rem; color: #888; background: #f4f4f4; padding: 5px 10px; border-radius: 20px; }}
+            .link-content {{ display: flex; align-items: center; overflow: hidden; }}
+            .icon {{ font-size: 1.2rem; margin-right: 15px; flex-shrink: 0; }}
+            .title {{ font-weight: 600; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .date {{ font-size: 0.85rem; color: #888; background: #f4f4f4; padding: 5px 10px; border-radius: 20px; margin-left: 10px; flex-shrink: 0; }}
             a:hover .date {{ background: #e8f0fe; color: #0070f3; }}
         </style>
     </head>
@@ -85,6 +97,7 @@ def generate_index():
     
     with open(f"{OUTPUT_FOLDER}/index.html", "w", encoding='utf-8') as f:
         f.write(index_content)
+    print("Sommaire généré.")
 
 def process_emails():
     try:
@@ -103,6 +116,7 @@ def process_emails():
                 status, msg_data = mail.fetch(num, "(RFC822)")
                 msg = email.message_from_bytes(msg_data[0][1])
                 
+                # --- SUJET COMPLET ---
                 subject_header = msg["Subject"]
                 if subject_header:
                     decoded_list = decode_header(subject_header)
@@ -112,8 +126,9 @@ def process_emails():
                 else:
                     subject = "Sans Titre"
                 
-                safe_subject = clean_filename(subject)
-                print(f"Traitement de : {subject}")
+                # Génération d'un nom de fichier aléatoire (UUID) pour l'obfuscation
+                random_filename = str(uuid.uuid4().hex)[:10] # ex: a4e12b9f.html
+                print(f"Traitement de : {subject} -> {random_filename}.html")
 
                 # Extraction HTML
                 html_content = ""
@@ -133,7 +148,22 @@ def process_emails():
                 soup = BeautifulSoup(html_content, "html.parser")
                 for s in soup(["script", "iframe", "object"]):
                     s.extract()
+                
+                # --- IMPORTANT : On force l'insertion du titre complet dans le HTML ---
+                # Cela permet à generate_index() de le retrouver plus tard
+                if soup.title:
+                    soup.title.string = subject
+                else:
+                    new_title = soup.new_tag('title')
+                    new_title.string = subject
+                    if soup.head:
+                        soup.head.append(new_title)
+                    else:
+                        new_head = soup.new_tag('head')
+                        new_head.append(new_title)
+                        soup.insert(0, new_head)
 
+                # Téléchargement Images
                 img_counter = 0
                 for img in soup.find_all("img"):
                     src = img.get("src")
@@ -145,7 +175,8 @@ def process_emails():
                         if response.status_code == 200:
                             content_type = response.headers.get('content-type')
                             ext = mimetypes.guess_extension(content_type) or ".jpg"
-                            img_name = f"{safe_subject}_img_{img_counter}{ext}"
+                            # Nom d'image lié au fichier aléatoire
+                            img_name = f"{random_filename}_img_{img_counter}{ext}"
                             img_path = os.path.join(OUTPUT_FOLDER, img_name)
                             with open(img_path, "wb") as f:
                                 f.write(response.content)
@@ -154,7 +185,7 @@ def process_emails():
                             img_counter += 1
                     except Exception: pass
 
-                filename = f"{OUTPUT_FOLDER}/{safe_subject}.html"
+                filename = f"{OUTPUT_FOLDER}/{random_filename}.html"
                 with open(filename, "w", encoding='utf-8') as f:
                     f.write(str(soup))
                     
