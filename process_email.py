@@ -165,3 +165,110 @@ def process_emails():
                     continue
 
                 print(f"Traitement : {subject[:30]}...")
+                
+                status, msg_data = mail.fetch(num, "(RFC822)")
+                msg = email.message_from_bytes(msg_data[0][1])
+                
+                os.makedirs(newsletter_path, exist_ok=True)
+
+                html_content = ""
+                for part in msg.walk():
+                    if part.get_content_type() == "text/html":
+                        payload = part.get_payload(decode=True)
+                        charset = part.get_content_charset() or 'utf-8'
+                        html_content = payload.decode(charset, errors="ignore")
+                        break
+                
+                if not html_content and not msg.is_multipart():
+                    payload = msg.get_payload(decode=True)
+                    charset = msg.get_content_charset() or 'utf-8'
+                    html_content = payload.decode(charset, errors="ignore")
+
+                if not html_content: continue
+
+                soup = BeautifulSoup(html_content, "html.parser")
+                for s in soup(["script", "iframe", "object"]):
+                    s.extract()
+
+                # 2. NETTOYAGE DU CONTENU (Suppression de l'historique)
+                # On cherche si le mail est dans une citation (gmail_quote)
+                # C'est typique des transferts (Fwd). On ne garde que ce qu'il y a DEDANS.
+                quote = soup.find(class_="gmail_quote")
+                if quote:
+                    # On remplace tout le corps par le contenu de la citation
+                    # Cela supprime votre message "Pour info..." au dessus
+                    soup.body.clear()
+                    soup.body.append(quote)
+                
+                # On cherche les balises d'en-têtes de transfert (gmail_attr) et on les supprime
+                # Ex: "De : Machin <machin@mail.com>..."
+                for attr in soup.find_all(class_="gmail_attr"):
+                    attr.decompose()
+                
+                # Nettoyage supplémentaire des séparateurs texte (au cas où)
+                # Ex: ---------- Forwarded message ---------
+                for div in soup.find_all("div"):
+                    if div.string and "Forwarded message" in div.string:
+                        div.decompose()
+
+                # Titre dans <head>
+                if soup.title:
+                    soup.title.string = subject
+                else:
+                    new_title = soup.new_tag('title')
+                    new_title.string = subject
+                    if soup.head:
+                        soup.head.append(new_title)
+                    else:
+                        new_head = soup.new_tag('head')
+                        new_head.append(new_title)
+                        soup.insert(0, new_head)
+
+                # Bandeau Titre
+                header_div = soup.new_tag("div")
+                header_div['style'] = "background:#fff; border-bottom:1px solid #ddd; padding:15px; margin-bottom:20px; font-family:sans-serif; text-align:center;"
+                h1_tag = soup.new_tag("h1")
+                h1_tag.string = subject
+                h1_tag['style'] = "margin:0; font-size:18px; color:#333; font-weight:600;"
+                header_div.append(h1_tag)
+                if soup.body:
+                    soup.body.insert(0, header_div)
+
+                # Images
+                img_counter = 0
+                for img in soup.find_all("img"):
+                    src = img.get("src")
+                    if not src or src.startswith("data:") or src.startswith("cid:"):
+                        continue
+                    try:
+                        if src.startswith("//"): src = "https:" + src
+                        response = requests.get(src, headers=HEADERS, timeout=10)
+                        if response.status_code == 200:
+                            content_type = response.headers.get('content-type')
+                            ext = mimetypes.guess_extension(content_type) or ".jpg"
+                            img_name = f"img_{img_counter}{ext}"
+                            img_path = os.path.join(newsletter_path, img_name)
+                            with open(img_path, "wb") as f:
+                                f.write(response.content)
+                            img['src'] = img_name
+                            if img.has_attr('srcset'): del img['srcset']
+                            img_counter += 1
+                    except Exception: pass
+
+                filename = os.path.join(newsletter_path, "index.html")
+                with open(filename, "w", encoding='utf-8') as f:
+                    f.write(str(soup))
+            
+            generate_index()
+            print("Terminé.")
+        else:
+            print("Aucun email trouvé.")
+
+        mail.close()
+        mail.logout()
+
+    except Exception as e:
+        print(f"Erreur critique: {e}")
+
+if __name__ == "__main__":
+    process_emails()
