@@ -175,7 +175,7 @@ def generate_index():
             :root {{
                 --bg-body: #f6f9fc; --bg-card: #ffffff; --text-main: #333333; --text-muted: #666666; --text-light: #888888;
                 --border-color: #eaeaea; --accent-color: #0070f3; --hover-bg: #f8f9fa; --input-bg: #fcfcfc; --shadow: rgba(0,0,0,0.05);
-                --toggle-icon: "🌑";
+                --toggle-icon: "🌙";
             }}
             [data-theme="dark"] {{
                 --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #e0e0e0; --text-muted: #a0a0a0; --text-light: #666666;
