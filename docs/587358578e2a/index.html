@@ -24,47 +24,40 @@
                             
                             /* Iframe Wrapper - Desktop Default */
                             .iframe-wrapper { 
-                                width: 1200px; 
-                                max-width: 95%;
-                                height: 90%;
+                                width: 1200px; max-width: 95%; height: 90%;
                                 transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
-                                background: white; 
-                                box-shadow: 0 5px 30px rgba(0,0,0,0.1); 
-                                border-radius: 8px;
+                                background: white; box-shadow: 0 5px 30px rgba(0,0,0,0.1); border-radius: 8px;
                             }
                             
                             iframe { width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }
                             
-                            /* Mobile Mode */
+                            /* Mobile Mode - FIXED CLIPPING */
                             body.mobile-mode .iframe-wrapper { 
-                                width: 375px; 
-                                height: 812px; 
-                                max-height: 90vh;
-                                border-radius: 40px; 
-                                border: 12px solid #333; 
+                                width: 375px; height: 812px; max-height: 90vh;
+                                border-radius: 40px; border: 12px solid #333; 
                                 box-shadow: 0 20px 50px rgba(0,0,0,0.2);
                                 overflow: hidden;
-                                transform: translateZ(0); /* Fix for border-radius clipping */
+                                transform: translateZ(0); /* Force hardware accel for clipping */
                             }
                             
                             /* Links Sidebar */
                             .sidebar { position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }
                             .sidebar.open { right: 0; }
-                            .sidebar h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+                            .sidebar h3 { margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
                             .sidebar ul { list-style: none; padding: 0; }
                             .sidebar li { margin-bottom: 15px; word-break: break-all; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
                             .sidebar a { text-decoration: none; color: inherit; font-size: 12px; }
                             .link-txt { font-weight: bold; color: #0070f3; margin-bottom: 4px; }
                             .link-url { color: #666; }
                             
-                            /* Dark Mode */
+                            /* Dark Mode - HEADER ONLY */
                             body.dark-mode .main-view { background: #121212; }
                             body.dark-mode .header { background: #1e1e1e; border-bottom-color: #333; }
                             body.dark-mode .title { color: #e0e0e0; }
                             body.dark-mode .btn { background: #2c2c2c; border-color: #444; color: #ccc; }
                             body.dark-mode .btn.active { background: #0070f3; color: white; }
-                            body.dark-mode iframe { filter: invert(1) hue-rotate(180deg); }
                             
+                            /* Dark Mode - Sidebar */
                             body.dark-mode .sidebar { background: #1e1e1e; border-left-color: #333; }
                             body.dark-mode .sidebar h3 { color: #fff; border-bottom-color: #333; }
                             body.dark-mode .link-txt { color: #4da3ff; }
@@ -101,7 +94,18 @@
                             frame.contentDocument.close();
                             
                             const style = frame.contentDocument.createElement('style');
-                            style.textContent = 'body { margin: 0; overflow-x: hidden; } img { max-width: 100%; height: auto; }';
+                            style.textContent = `
+                                body { margin: 0; overflow-x: hidden; } 
+                                img { max-width: 100%; height: auto; }
+                                
+                                /* SMART INVERT DARK MODE (Injecté dans l'iframe) */
+                                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
+                                html.dark-mode-internal img, 
+                                html.dark-mode-internal video, 
+                                html.dark-mode-internal [style*="background-image"] { 
+                                    filter: invert(1) hue-rotate(180deg); 
+                                }
+                            `;
                             frame.contentDocument.head.appendChild(style);
 
                             function toggleMobile() {
@@ -111,6 +115,8 @@
                             function toggleDark() {
                                 document.body.classList.toggle('dark-mode');
                                 document.getElementById('btn-dark').classList.toggle('active');
+                                // Toggle class INSIDE the iframe for smart invert
+                                frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
                             }
                             function toggleLinks() {
                                 document.getElementById('sidebar').classList.toggle('open');
