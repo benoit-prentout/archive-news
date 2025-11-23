@@ -1,7 +1,7 @@
 import imaplib
 import email
 from email.header import decode_header
-from email.utils import parsedate_to_datetime
+from email.utils import parsedate_to_datetime, parseaddr
 from bs4 import BeautifulSoup
 import os
 import re
@@ -44,23 +44,58 @@ def get_email_date(msg):
         pass
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
+def get_clean_sender(msg):
+    """Extrait le nom de l'expéditeur (ex: 'Nike' depuis 'Nike <news@nike.com>')"""
+    try:
+        from_header = msg["From"]
+        if not from_header: return "Inconnu"
+        
+        # Décodage si caractères spéciaux
+        decoded_header = ""
+        for part, encoding in decode_header(from_header):
+            if isinstance(part, bytes):
+                decoded_header += part.decode(encoding or "utf-8", errors="ignore")
+            else:
+                decoded_header += str(part)
+        
+        # Extraction du nom et de l'email
+        realname, email_addr = parseaddr(decoded_header)
+        
+        # On préfère le vrai nom, sinon l'email, sinon "Inconnu"
+        sender = realname if realname else email_addr
+        return sender.strip() if sender else "Expéditeur Inconnu"
+    except:
+        return "Expéditeur Inconnu"
+
 def get_page_metadata(filepath):
     title = "Sans titre"
     date_str = None
+    sender = "Expéditeur Inconnu" # Valeur par défaut
+    
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             soup = BeautifulSoup(f, 'html.parser')
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
+            
+            # Récupération Date
             meta_date = soup.find("meta", attrs={"name": "creation_date"})
             if meta_date and meta_date.get("content"):
                 date_str = meta_date["content"]
+                
+            # Récupération Expéditeur (NOUVEAU)
+            meta_sender = soup.find("meta", attrs={"name": "sender"})
+            if meta_sender and meta_sender.get("content"):
+                sender = meta_sender["content"]
+                
     except Exception:
         pass
+    
     if not date_str:
         timestamp = os.path.getmtime(filepath)
         date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
-    return title, date_str
+        
+    return title, date_str, sender
 
 def clean_output_folder():
     if os.path.exists(OUTPUT_FOLDER):
@@ -79,7 +114,7 @@ def clean_output_folder():
         os.makedirs(OUTPUT_FOLDER)
 
 def generate_index():
-    print("Génération du sommaire avec Recherche & Design...")
+    print("Génération du sommaire (Dark Mode + Sender)...")
     if not os.path.exists(OUTPUT_FOLDER):
         return
         
@@ -91,7 +126,9 @@ def generate_index():
         index_file_path = os.path.join(folder, "index.html")
         if not os.path.exists(index_file_path): continue
 
-        full_title, date_str = get_page_metadata(index_file_path)
+        # On récupère aussi le sender maintenant
+        full_title, date_str, sender = get_page_metadata(index_file_path)
+        
         try:
             date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d')
             display_date = date_obj.strftime('%d/%m/%Y')
@@ -103,6 +140,7 @@ def generate_index():
         pages_data.append({
             "folder": folder_name,
             "title": full_title,
+            "sender": sender,
             "date": display_date,
             "sort_key": sort_key
         })
@@ -114,7 +152,10 @@ def generate_index():
         links_html += f'''
         <li>
             <a href="{page['folder']}/index.html" class="item-link">
-                <span class="title">{page['title']}</span>
+                <div class="info-col">
+                    <span class="sender">{page['sender']}</span>
+                    <span class="title">{page['title']}</span>
+                </div>
                 <span class="date">{page['date']}</span>
             </a>
         </li>
@@ -131,10 +172,58 @@ def generate_index():
         <title>Archives Newsletters - Benoît Prentout</title>
         <meta name="robots" content="noindex, nofollow">
         <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f6f9fc; margin: 0; padding: 20px; color: #333; display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; }}
-            .container {{ max-width: 800px; width: 100%; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1; }}
+            /* CSS VARIABLES FOR THEMING */
+            :root {{
+                --bg-body: #f6f9fc;
+                --bg-card: #ffffff;
+                --text-main: #333333;
+                --text-muted: #666666;
+                --text-light: #888888;
+                --border-color: #eaeaea;
+                --accent-color: #0070f3;
+                --hover-bg: #f8f9fa;
+                --input-bg: #fcfcfc;
+                --shadow: rgba(0,0,0,0.05);
+            }}
+
+            @media (prefers-color-scheme: dark) {{
+                :root {{
+                    --bg-body: #121212;
+                    --bg-card: #1e1e1e;
+                    --text-main: #e0e0e0;
+                    --text-muted: #a0a0a0;
+                    --text-light: #666666;
+                    --border-color: #333333;
+                    --accent-color: #4da3ff;
+                    --hover-bg: #252525;
+                    --input-bg: #252525;
+                    --shadow: rgba(0,0,0,0.3);
+                }}
+            }}
+
+            body {{ 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+                background-color: var(--bg-body); 
+                color: var(--text-main);
+                margin: 0; padding: 20px; 
+                display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; 
+                transition: background-color 0.3s, color 0.3s;
+            }}
             
-            h1 {{ text-align: center; color: #1a1a1a; margin-bottom: 30px; font-size: 1.8rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }}
+            .container {{ 
+                max-width: 800px; width: 100%; margin: 0 auto; 
+                background: var(--bg-card); 
+                padding: 40px; border-radius: 12px; 
+                box-shadow: 0 4px 12px var(--shadow); 
+                flex: 1; 
+            }}
+            
+            h1 {{ 
+                text-align: center; color: var(--text-main); 
+                margin-bottom: 30px; font-size: 1.8rem; 
+                border-bottom: 2px solid var(--border-color); 
+                padding-bottom: 20px; 
+            }}
             
             /* SEARCH BAR */
             #searchInput {{
@@ -142,21 +231,25 @@ def generate_index():
                 padding: 12px 20px;
                 margin-bottom: 25px;
                 box-sizing: border-box;
-                border: 2px solid #eaeaea;
+                border: 2px solid var(--border-color);
                 border-radius: 8px;
                 font-size: 16px;
+                background-color: var(--input-bg);
+                color: var(--text-main);
                 transition: border-color 0.3s;
-                background-color: #fcfcfc;
             }}
             #searchInput:focus {{
-                border-color: #0070f3;
+                border-color: var(--accent-color);
                 outline: none;
-                background-color: #fff;
             }}
 
             /* LIST DESIGN */
-            ul {{ list-style: none; padding: 0; margin: 0; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden; }}
-            li {{ border-bottom: 1px solid #eaeaea; margin: 0; }}
+            ul {{ 
+                list-style: none; padding: 0; margin: 0; 
+                border: 1px solid var(--border-color); 
+                border-radius: 8px; overflow: hidden; 
+            }}
+            li {{ border-bottom: 1px solid var(--border-color); margin: 0; }}
             li:last-child {{ border-bottom: none; }}
             
             a.item-link {{ 
@@ -164,44 +257,75 @@ def generate_index():
                 justify-content: space-between; 
                 align-items: center; 
                 padding: 16px 20px; 
-                background: #fff; 
+                background: var(--bg-card); 
                 text-decoration: none; 
-                color: #2c3e50; 
+                color: var(--text-main); 
                 transition: background 0.1s ease; 
             }}
-            a.item-link:hover {{ background-color: #f8f9fa; }}
+            a.item-link:hover {{ background-color: var(--hover-bg); }}
             
+            .info-col {{
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                min-width: 0;
+                margin-right: 15px;
+            }}
+
+            .sender {{
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: var(--text-light);
+                margin-bottom: 4px;
+                font-weight: 600;
+            }}
+
             .title {{ 
                 font-weight: 500; 
                 font-size: 1rem; 
-                color: #111;
+                color: var(--text-main);
                 white-space: nowrap; 
                 overflow: hidden; 
                 text-overflow: ellipsis; 
-                margin-right: 15px; 
-                flex: 1; 
-                min-width: 0; 
             }}
             
             .date {{ 
                 font-size: 0.85rem; 
-                color: #666; 
+                color: var(--text-muted); 
                 white-space: nowrap; 
                 flex-shrink: 0; 
                 font-variant-numeric: tabular-nums;
             }}
             
-            footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; color: #888; font-size: 0.85rem; }}
-            .copyright a {{ color: inherit; text-decoration: none; border-bottom: 1px dotted #999; transition: color 0.2s; }}
-            .copyright a:hover {{ color: #0070f3; border-bottom-color: #0070f3; }}
+            footer {{ 
+                margin-top: 40px; padding-top: 20px; 
+                border-top: 1px solid var(--border-color); 
+                text-align: center; color: var(--text-muted); 
+                font-size: 0.85rem; 
+            }}
+            
+            .copyright a {{ 
+                color: inherit; text-decoration: none; 
+                border-bottom: 1px dotted var(--text-muted); 
+                transition: color 0.2s; 
+            }}
+            .copyright a:hover {{ color: var(--accent-color); border-bottom-color: var(--accent-color); }}
+            
             details {{ margin-top: 15px; cursor: pointer; }}
+            details p {{
+                background: var(--hover-bg);
+                padding: 10px;
+                border-radius: 4px;
+                text-align: left;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
             <h1>📬 Archives Newsletters</h1>
             
-            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher une newsletter par titre ou date...">
+            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher par titre, expéditeur ou date...">
             
             <ul id="newsList">
                 {links_html}
@@ -211,7 +335,7 @@ def generate_index():
                 <p class="copyright">&copy; {current_year} <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>.</p>
                 <details>
                     <summary>Mentions Légales</summary>
-                    <p style="margin-top:10px; text-align: left; background: #f9f9f9; padding: 10px; border-radius: 4px;">
+                    <p style="margin-top:10px;">
                         <strong>Éditeur :</strong> Benoît Prentout<br>
                         <strong>Hébergement :</strong> GitHub Inc.<br>
                         Ce site est une archive personnelle à but de démonstration.
@@ -277,16 +401,18 @@ def process_emails():
 
             for num in email_ids:
                 try:
-                    status, msg_data = mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE)])')
+                    status, msg_data = mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE FROM)])')
                     msg_header = email.message_from_bytes(msg_data[0][1])
                     
+                    # Extraction métadonnées
                     raw_subject = get_decoded_email_subject(msg_header)
                     subject = clean_subject_prefixes(raw_subject)
                     email_date_str = get_email_date(msg_header)
+                    sender_name = get_clean_sender(msg_header) # NOUVEAU
                     
                     folder_id = get_deterministic_id(subject)
                     newsletter_path = os.path.join(OUTPUT_FOLDER, folder_id)
-                    print(f"Traitement : {subject[:30]}... ({email_date_str})")
+                    print(f"Traitement : {subject[:30]}... de {sender_name}")
                     
                     status, msg_data = mail.fetch(num, "(RFC822)")
                     msg = email.message_from_bytes(msg_data[0][1])
@@ -334,12 +460,17 @@ def process_emails():
                         new_body.extend(soup.contents)
                         soup.append(new_body)
 
-                    # Reconstruction
-                    meta_tag = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
-                    if soup.head: soup.head.append(meta_tag)
+                    # Reconstruction META (Avec Sender)
+                    meta_date = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
+                    meta_sender = soup.new_tag("meta", attrs={"name": "sender", "content": sender_name}) # NOUVEAU
+                    
+                    if soup.head: 
+                        soup.head.append(meta_date)
+                        soup.head.append(meta_sender)
                     else:
                         new_head = soup.new_tag("head")
-                        new_head.append(meta_tag)
+                        new_head.append(meta_date)
+                        new_head.append(meta_sender)
                         soup.insert(0, new_head)
 
                     if soup.title: soup.title.string = subject
@@ -356,7 +487,7 @@ def process_emails():
                     header_div.append(h1_tag)
                     soup.body.insert(0, header_div)
 
-                    # Images (Avec Lazy Loading)
+                    # Images (Lazy Loading)
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
@@ -370,9 +501,8 @@ def process_emails():
                                 img_name = f"img_{img_counter}{ext}"
                                 img_path = os.path.join(newsletter_path, img_name)
                                 with open(img_path, "wb") as f: f.write(response.content)
-                                
                                 img['src'] = img_name
-                                img['loading'] = 'lazy' # OPTIMISATION B : LAZY LOADING
+                                img['loading'] = 'lazy' # LAZY LOADING
                                 if img.has_attr('srcset'): del img['srcset']
                                 img_counter += 1
                         except Exception: pass
