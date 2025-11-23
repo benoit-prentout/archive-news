@@ -17,7 +17,8 @@ GMAIL_USER = os.environ["GMAIL_USER"]
 GMAIL_PASSWORD = os.environ["GMAIL_PASSWORD"]
 TARGET_LABEL = "Github/archive-newsletters"
 OUTPUT_FOLDER = "docs"
-BATCH_SIZE = 20  # Nombre max d'emails à traiter par exécution
+# BATCH_SIZE augmenté car on ne retélécharge pas les images existantes, donc c'est plus rapide.
+BATCH_SIZE = 50  
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -379,11 +380,9 @@ def process_emails():
             email_ids = messages[0].split()
             print(f"{len(email_ids)} emails trouvés au total.")
 
-            # --- PHASE 1: SCAN ET NETTOYAGE ---
-            print("Analyse des emails valides (Synchronisation)...")
+            # PHASE 1 : Synchro (Nettoyage)
             valid_folder_ids = set()
             email_map = {}
-
             for num in email_ids:
                 try:
                     status, msg_data = mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
@@ -393,273 +392,240 @@ def process_emails():
                     f_id = get_deterministic_id(subject)
                     valid_folder_ids.add(f_id)
                     email_map[f_id] = num
-                except Exception as e:
-                    print(f"Erreur lecture header {num}: {e}")
+                except: pass
 
             local_folders = set([f.name for f in os.scandir(OUTPUT_FOLDER) if f.is_dir() and not f.name.startswith('.')])
-            folders_to_delete = local_folders - valid_folder_ids
-            
-            if folders_to_delete:
-                print(f"🗑️ Suppression de {len(folders_to_delete)} dossiers obsolètes...")
-                for f_id in folders_to_delete:
-                    path_to_remove = os.path.join(OUTPUT_FOLDER, f_id)
-                    try:
-                        shutil.rmtree(path_to_remove)
-                        print(f"   - Supprimé: {f_id}")
-                    except Exception as e:
-                        print(f"   - Erreur suppression {f_id}: {e}")
-            
-            # --- PHASE 2: TÉLÉCHARGEMENT INCRÉMENTAL ---
-            folders_to_download = valid_folder_ids - local_folders
-            print(f"📥 {len(folders_to_download)} nouveaux emails à télécharger.")
-            
-            folders_to_process_now = list(folders_to_download)[:BATCH_SIZE]
-            
-            if folders_to_process_now:
-                print(f"🚀 Traitement du lot de {len(folders_to_process_now)} emails...")
-                
-                for f_id in folders_to_process_now:
-                    num = email_map[f_id]
-                    try:
-                        status, msg_data = mail.fetch(num, '(RFC822)')
-                        msg = email.message_from_bytes(msg_data[0][1])
-                        
-                        raw_subject = get_decoded_email_subject(msg)
-                        subject = clean_subject_prefixes(raw_subject)
-                        sender_name = get_clean_sender(msg)
-                        email_date_str = get_email_date(msg)
-                        
-                        newsletter_path = os.path.join(OUTPUT_FOLDER, f_id)
-                        os.makedirs(newsletter_path, exist_ok=True)
-                        
-                        print(f"   -> Téléchargement : {subject[:30]}...")
+            for f_id in (local_folders - valid_folder_ids):
+                shutil.rmtree(os.path.join(OUTPUT_FOLDER, f_id), ignore_errors=True)
+                print(f"Supprimé (Synchro): {f_id}")
 
-                        html_content = ""
-                        for part in msg.walk():
-                            if part.get_content_type() == "text/html":
-                                payload = part.get_payload(decode=True)
-                                charset = part.get_content_charset() or 'utf-8'
-                                html_content = payload.decode(charset, errors="ignore")
-                                break
-                        if not html_content and not msg.is_multipart():
-                            payload = msg.get_payload(decode=True)
-                            charset = msg.get_content_charset() or 'utf-8'
+            # PHASE 2 : Traitement (FORCE UPDATE pour appliquer les fix CSS, mais SKIP download images)
+            # On traite TOUT le monde, mais on ne retélécharge pas les images existantes.
+            # Cela permet de mettre à jour l'affichage sans consommer trop de quota.
+            folders_to_process = list(valid_folder_ids)[:BATCH_SIZE]
+            
+            print(f"Mise à jour de {len(folders_to_process)} emails (batch)...")
+
+            for f_id in folders_to_process:
+                num = email_map[f_id]
+                try:
+                    status, msg_data = mail.fetch(num, '(RFC822)')
+                    msg = email.message_from_bytes(msg_data[0][1])
+                    
+                    raw_subject = get_decoded_email_subject(msg)
+                    subject = clean_subject_prefixes(raw_subject)
+                    sender_name = get_clean_sender(msg)
+                    email_date_str = get_email_date(msg)
+                    
+                    newsletter_path = os.path.join(OUTPUT_FOLDER, f_id)
+                    os.makedirs(newsletter_path, exist_ok=True)
+                    
+                    print(f"   -> Traitement : {subject[:30]}...")
+
+                    # Extraction HTML
+                    html_content = ""
+                    for part in msg.walk():
+                        if part.get_content_type() == "text/html":
+                            payload = part.get_payload(decode=True)
+                            charset = part.get_content_charset() or 'utf-8'
                             html_content = payload.decode(charset, errors="ignore")
-                        
-                        if not html_content: continue
+                            break
+                    if not html_content and not msg.is_multipart():
+                        payload = msg.get_payload(decode=True)
+                        html_content = payload.decode(msg.get_content_charset() or 'utf-8', errors="ignore")
+                    
+                    if not html_content: continue
 
-                        soup = BeautifulSoup(html_content, "lxml")
-                        for s in soup(["script", "iframe", "object"]): s.extract()
+                    soup = BeautifulSoup(html_content, "lxml")
+                    for s in soup(["script", "iframe", "object"]): s.extract()
 
-                        # Nettoyage Forward
-                        split_keywords = ["Forwarded message", "Message transféré"]
-                        found_split = False
-                        for div in soup.find_all("div"):
-                            text = div.get_text()
-                            if any(k in text for k in split_keywords) and "-----" in text:
-                                real_content = []
-                                for sibling in div.next_siblings: real_content.append(sibling)
-                                if soup.body:
-                                    soup.body.clear()
-                                    for item in real_content:
-                                        if item: soup.body.append(item)
-                                found_split = True
-                                break
-                        if not found_split:
-                            quote = soup.find(class_="gmail_quote")
-                            if quote:
-                                soup.body.clear()
-                                soup.body.append(quote)
-                                for attr in soup.find_all(class_="gmail_attr"): attr.decompose()
-
-                        if not soup.body:
+                    # Cleaning Forwards
+                    for div in soup.find_all("div"):
+                        if any(k in div.get_text() for k in ["Forwarded message", "Message transféré"]) and "-----" in div.get_text():
                             new_body = soup.new_tag("body")
-                            new_body.extend(soup.contents)
-                            soup.append(new_body)
+                            for sibling in div.next_siblings: new_body.append(sibling)
+                            soup.body.replace_with(new_body)
+                            break
+                    
+                    # Link Extraction
+                    links = []
+                    for a in soup.find_all('a', href=True):
+                        txt = a.get_text(strip=True) or "[Image/Vide]"
+                        links.append({'txt': txt[:50] + "..." if len(txt)>50 else txt, 'url': a['href']})
+                    
+                    links_html = "".join([f'<li><a href="{l["url"]}" target="_blank"><div class="link-txt">{l["txt"]}</div><div class="link-url">{l["url"]}</div></a></li>' for l in links])
 
-                        # Link Extraction
-                        extracted_links = []
-                        for a_tag in soup.find_all('a', href=True):
-                            text = a_tag.get_text(strip=True)
-                            if not text:
-                                img_tag = a_tag.find('img')
-                                if img_tag and img_tag.get('alt'):
-                                    text = f"[Image: {img_tag.get('alt')}]"
-                                else:
-                                    text = "[Lien image/vide]"
-                            extracted_links.append({
-                                'text': text[:60] + "..." if len(text) > 60 else text, 
-                                'url': a_tag['href']
-                            })
-                        
-                        links_html_list = ""
-                        for l in extracted_links:
-                            links_html_list += f'<li><a href="{l["url"]}" target="_blank" rel="noopener noreferrer"><span class="link-text">{l["text"]}</span><span class="link-url">{l["url"]}</span></a></li>'
+                    # Auto-Fix Large Tables
+                    for t in soup.find_all("table"):
+                        if t.get("style"): t["style"] = re.sub(r'width:\s*([6-9]\d{2}|\d{4,})px', 'width: 100%', t["style"], flags=re.IGNORECASE)
+                        if t.get("width") and t["width"].isdigit() and int(t["width"]) > 600: t["width"] = "100%"
 
-                        # Correction Largeur Tables
-                        for table in soup.find_all("table"):
-                            if table.get("style"):
-                                table["style"] = re.sub(r'width:\s*([6-9]\d{2}|\d{4,})px', 'width: 100%', table["style"], flags=re.IGNORECASE)
-                            if table.get("width") and table["width"].isdigit():
-                                if int(table["width"]) > 600: table["width"] = "100%"
-
-                        # Images
-                        img_counter = 0
-                        for img in soup.find_all("img"):
-                            src = img.get("src")
-                            if not src or src.startswith("data:") or src.startswith("cid:"): continue
-                            try:
-                                if src.startswith("//"): src = "https:" + src
-                                response = requests.get(src, headers=HEADERS, timeout=5)
-                                if response.status_code == 200:
-                                    content_type = response.headers.get('content-type', '')
-                                    if 'image' not in content_type: continue
-                                    ext = mimetypes.guess_extension(content_type) or ".jpg"
-                                    img_name = f"img_{img_counter}{ext}"
-                                    img_path = os.path.join(newsletter_path, img_name)
-                                    with open(img_path, "wb") as f: f.write(response.content)
-                                    img['src'] = img_name
-                                    img['loading'] = 'lazy'
-                                    if img.has_attr('srcset'): del img['srcset']
-                                    img_counter += 1
-                            except Exception: pass
-
-                        # GENERATE VIEWER
-                        safe_html = json.dumps(str(soup))
-                        nb_links = len(extracted_links)
-                        
-                        viewer_content = f"""
-                        <!DOCTYPE html>
-                        <html lang="fr">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <meta name="creation_date" content="{email_date_str}">
-                            <meta name="sender" content="{sender_name}">
-                            <meta name="archiving_date" content="{datetime.datetime.now().strftime('%Y-%m-%d')}">
-                            <title>{subject}</title>
-                            <style>
-                                /* Main & Reset */
-                                body {{ margin: 0; padding: 0; background: #eef2f5; font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }}
-                                
-                                /* Header */
-                                .header {{ position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }}
-                                .title {{ font-size: 16px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; }}
-                                .controls {{ display: flex; gap: 10px; flex-shrink: 0; }}
-                                .btn {{ padding: 6px 12px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }}
-                                .btn:hover {{ background: #eee; }}
-                                .btn.active {{ background: #0070f3; color: white; border-color: #0070f3; }}
-                                
-                                /* Main View Area */
-                                .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: center; background: #eef2f5; overflow: hidden; }}
-                                
-                                /* Iframe Wrapper - Desktop Default */
-                                .iframe-wrapper {{ 
-                                    width: 1200px; 
-                                    max-width: 95%;
-                                    height: 90%;
-                                    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
-                                    background: white; 
-                                    box-shadow: 0 5px 30px rgba(0,0,0,0.1); 
-                                    border-radius: 8px;
-                                }}
-                                
-                                iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
-                                
-                                /* Mobile Mode */
-                                body.mobile-mode .iframe-wrapper {{ 
-                                    width: 375px; 
-                                    height: 812px; 
-                                    max-height: 90vh;
-                                    border-radius: 40px; 
-                                    border: 12px solid #333; 
-                                    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-                                }}
-                                
-                                /* Links Sidebar */
-                                .links-panel {{ position: fixed; top: 60px; right: -400px; width: 350px; height: calc(100vh - 60px); background: #ffffff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); z-index: 90; transition: right 0.3s ease; padding: 20px; overflow-y: auto; box-sizing: border-box; }}
-                                .links-panel.open {{ right: 0; }}
-                                .links-panel h3 {{ margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
-                                .links-panel ul {{ list-style: none; padding: 0; }}
-                                .links-panel li {{ margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 8px; }}
-                                .links-panel a {{ text-decoration: none; color: inherit; display: block; word-break: break-all; }}
-                                .links-panel a:hover .link-text {{ text-decoration: underline; }}
-                                .links-panel .link-text {{ font-weight: 600; font-size: 13px; color: #0070f3; display: block; margin-bottom: 2px; }}
-                                .links-panel .link-url {{ font-size: 11px; color: #888; display: block; }}
-                                .links-panel .close-btn {{ position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }}
-
-                                /* Dark Mode */
-                                body.dark-mode .main-view {{ background: #121212; }}
-                                body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
-                                body.dark-mode .title {{ color: #e0e0e0; }}
-                                body.dark-mode .btn {{ background: #2c2c2c; border-color: #444; color: #ccc; }}
-                                body.dark-mode .btn.active {{ background: #0070f3; color: white; }}
-                                body.dark-mode iframe {{ filter: invert(1) hue-rotate(180deg); }}
-                                
-                                body.dark-mode .links-panel {{ background: #1e1e1e; border-left: 1px solid #333; box-shadow: -2px 0 10px rgba(0,0,0,0.5); }}
-                                body.dark-mode .links-panel h3 {{ color: #e0e0e0; border-bottom-color: #333; }}
-                                body.dark-mode .links-panel li {{ border-bottom-color: #333; }}
-                                body.dark-mode .links-panel .link-text {{ color: #4da3ff; }}
-                                body.dark-mode .links-panel .link-url {{ color: #aaa; }}
-                                body.dark-mode .links-panel .close-btn {{ color: #e0e0e0; }}
-                            </style>
-                        </head>
-                        <body>
-                            <header class="header">
-                                <div class="title">{subject}</div>
-                                <div class="controls">
-                                    <button id="btn-links" class="btn" onclick="toggleLinks()"><span>🔗</span> Liens ({nb_links})</button>
-                                    <button id="btn-mobile" class="btn" onclick="toggleMobile()"><span>📱</span> Mobile</button>
-                                    <button id="btn-dark" class="btn" onclick="toggleDark()"><span>🌙</span> Sombre</button>
-                                </div>
-                            </header>
+                    # Images (SMART DOWNLOAD)
+                    img_counter = 0
+                    for img in soup.find_all("img"):
+                        src = img.get("src")
+                        if not src or src.startswith("data:") or src.startswith("cid:"): continue
+                        try:
+                            if src.startswith("//"): src = "https:" + src
                             
-                            <div class="main-view">
-                                <div class="iframe-wrapper">
-                                    <iframe id="emailFrame"></iframe>
-                                </div>
-                            </div>
+                            # On devine l'extension
+                            # Pour éviter une requête, on regarde l'extension dans l'url
+                            # Si pas d'extension, on met jpg par défaut et on verra
+                            ext = os.path.splitext(src.split('?')[0])[1]
+                            if not ext or len(ext) > 5: ext = ".jpg"
                             
-                            <div id="links-panel" class="links-panel">
-                                <h3>Liens extraits ({nb_links})</h3>
-                                <button class="close-btn" onclick="toggleLinks()">×</button>
-                                <ul>{links_html_list}</ul>
+                            local_name = f"img_{img_counter}{ext}"
+                            local_path = os.path.join(newsletter_path, local_name)
+
+                            # OPTIMISATION : On ne télécharge que si l'image n'existe pas
+                            if not os.path.exists(local_path):
+                                r = requests.get(src, headers=HEADERS, timeout=5)
+                                if r.status_code == 200:
+                                    if 'image' in r.headers.get('content-type', ''):
+                                        real_ext = mimetypes.guess_extension(r.headers.get('content-type')) or ".jpg"
+                                        local_name = f"img_{img_counter}{real_ext}" # Correction extension
+                                        local_path = os.path.join(newsletter_path, local_name)
+                                        with open(local_path, "wb") as f: f.write(r.content)
+                            
+                            # Dans tous les cas on met à jour le lien dans le HTML
+                            img['src'] = local_name
+                            img['loading'] = 'lazy'
+                            if img.has_attr('srcset'): del img['srcset']
+                            img_counter += 1
+                        except: pass
+
+                    # GENERATE VIEWER
+                    safe_html = json.dumps(str(soup))
+                    nb_links = len(links)
+                    
+                    viewer_content = f"""
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <meta name="creation_date" content="{email_date_str}">
+                        <meta name="sender" content="{sender_name}">
+                        <meta name="archiving_date" content="{datetime.datetime.now().strftime('%Y-%m-%d')}">
+                        <title>{subject}</title>
+                        <style>
+                            body {{ margin: 0; padding: 0; background: #eef2f5; font-family: system-ui, sans-serif; overflow: hidden; }}
+                            
+                            /* Header */
+                            .header {{ position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }}
+                            .title {{ font-size: 16px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; }}
+                            .controls {{ display: flex; gap: 10px; flex-shrink: 0; }}
+                            .btn {{ padding: 6px 12px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }}
+                            .btn:hover {{ background: #eee; }}
+                            .btn.active {{ background: #0070f3; color: white; border-color: #0070f3; }}
+                            
+                            /* Main Container */
+                            .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: center; background: #eef2f5; overflow: hidden; }}
+                            
+                            /* Iframe Wrapper - Desktop Default */
+                            .iframe-wrapper {{ 
+                                width: 1200px; 
+                                max-width: 95%;
+                                height: 90%;
+                                transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+                                background: white; 
+                                box-shadow: 0 5px 30px rgba(0,0,0,0.1); 
+                                border-radius: 8px;
+                            }}
+                            
+                            iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
+                            
+                            /* Mobile Mode */
+                            body.mobile-mode .iframe-wrapper {{ 
+                                width: 375px; 
+                                height: 812px; 
+                                max-height: 90vh;
+                                border-radius: 40px; 
+                                border: 12px solid #333; 
+                                box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+                                overflow: hidden;
+                                transform: translateZ(0); /* Fix for border-radius clipping */
+                            }}
+                            
+                            /* Links Sidebar */
+                            .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }}
+                            .sidebar.open {{ right: 0; }}
+                            .sidebar h3 {{ margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+                            .sidebar ul {{ list-style: none; padding: 0; }}
+                            .sidebar li {{ margin-bottom: 15px; word-break: break-all; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }}
+                            .sidebar a {{ text-decoration: none; color: inherit; font-size: 12px; }}
+                            .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 4px; }}
+                            .link-url {{ color: #666; }}
+                            
+                            /* Dark Mode */
+                            body.dark-mode .main-view {{ background: #121212; }}
+                            body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
+                            body.dark-mode .title {{ color: #e0e0e0; }}
+                            body.dark-mode .btn {{ background: #2c2c2c; border-color: #444; color: #ccc; }}
+                            body.dark-mode .btn.active {{ background: #0070f3; color: white; }}
+                            body.dark-mode iframe {{ filter: invert(1) hue-rotate(180deg); }}
+                            
+                            body.dark-mode .sidebar {{ background: #1e1e1e; border-left-color: #333; }}
+                            body.dark-mode .sidebar h3 {{ color: #fff; border-bottom-color: #333; }}
+                            body.dark-mode .link-txt {{ color: #4da3ff; }}
+                            body.dark-mode .link-url {{ color: #aaa; }}
+                        </style>
+                    </head>
+                    <body>
+                        <header class="header">
+                            <div class="title">{subject}</div>
+                            <div class="controls">
+                                <button class="btn" onclick="toggleLinks()" id="btn-links">🔗 Liens ({nb_links})</button>
+                                <button class="btn" onclick="toggleMobile()" id="btn-mobile">📱 Mobile</button>
+                                <button class="btn" onclick="toggleDark()" id="btn-dark">🌙 Sombre</button>
                             </div>
-
-                            <script>
-                                const emailContent = {safe_html};
-                                const frame = document.getElementById('emailFrame');
-                                
-                                frame.contentDocument.open();
-                                frame.contentDocument.write(emailContent);
-                                frame.contentDocument.close();
-                                
-                                const style = frame.contentDocument.createElement('style');
-                                style.textContent = 'body {{ margin: 0; overflow-x: hidden; }} img {{ max-width: 100%; height: auto; }}';
-                                frame.contentDocument.head.appendChild(style);
-
-                                function toggleMobile() {{
-                                    document.body.classList.toggle('mobile-mode');
-                                    document.getElementById('btn-mobile').classList.toggle('active');
-                                }}
-                                function toggleDark() {{
-                                    document.body.classList.toggle('dark-mode');
-                                    document.getElementById('btn-dark').classList.toggle('active');
-                                }}
-                                function toggleLinks() {{
-                                    document.getElementById('links-panel').classList.toggle('open');
-                                    document.getElementById('btn-links').classList.toggle('active');
-                                }}
-                            </script>
-                        </body>
-                        </html>
-                        """
+                        </header>
                         
-                        with open(os.path.join(newsletter_path, "index.html"), "w", encoding='utf-8') as f:
-                            f.write(viewer_content)
+                        <div class="main-view">
+                            <div class="iframe-wrapper">
+                                <iframe id="emailFrame"></iframe>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar" id="sidebar">
+                            <h3>Liens détectés</h3>
+                            <ul>{links_html}</ul>
+                        </div>
 
-                    except Exception as e:
-                        print(f"Erreur traitement {f_id}: {e}")
+                        <script>
+                            const emailContent = {safe_html};
+                            const frame = document.getElementById('emailFrame');
+                            
+                            frame.contentDocument.open();
+                            frame.contentDocument.write(emailContent);
+                            frame.contentDocument.close();
+                            
+                            const style = frame.contentDocument.createElement('style');
+                            style.textContent = 'body {{ margin: 0; overflow-x: hidden; }} img {{ max-width: 100%; height: auto; }}';
+                            frame.contentDocument.head.appendChild(style);
+
+                            function toggleMobile() {{
+                                document.body.classList.toggle('mobile-mode');
+                                document.getElementById('btn-mobile').classList.toggle('active');
+                            }}
+                            function toggleDark() {{
+                                document.body.classList.toggle('dark-mode');
+                                document.getElementById('btn-dark').classList.toggle('active');
+                            }}
+                            function toggleLinks() {{
+                                document.getElementById('sidebar').classList.toggle('open');
+                                document.getElementById('btn-links').classList.toggle('active');
+                            }}
+                        </script>
+                    </body>
+                    </html>
+                    """
+                    
+                    with open(os.path.join(newsletter_path, "index.html"), "w", encoding='utf-8') as f:
+                        f.write(viewer_content)
+
+                except Exception as e:
+                    print(f"Erreur traitement {f_id}: {e}")
 
             generate_index()
             print("Terminé.")
