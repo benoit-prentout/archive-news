@@ -45,23 +45,16 @@ def get_email_date(msg):
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
 def get_clean_sender(msg):
-    """Extrait le nom de l'expéditeur (ex: 'Nike' depuis 'Nike <news@nike.com>')"""
     try:
         from_header = msg["From"]
         if not from_header: return "Inconnu"
-        
-        # Décodage si caractères spéciaux
         decoded_header = ""
         for part, encoding in decode_header(from_header):
             if isinstance(part, bytes):
                 decoded_header += part.decode(encoding or "utf-8", errors="ignore")
             else:
                 decoded_header += str(part)
-        
-        # Extraction du nom et de l'email
         realname, email_addr = parseaddr(decoded_header)
-        
-        # On préfère le vrai nom, sinon l'email, sinon "Inconnu"
         sender = realname if realname else email_addr
         return sender.strip() if sender else "Expéditeur Inconnu"
     except:
@@ -70,31 +63,23 @@ def get_clean_sender(msg):
 def get_page_metadata(filepath):
     title = "Sans titre"
     date_str = None
-    sender = "Expéditeur Inconnu" # Valeur par défaut
-    
+    sender = "Expéditeur Inconnu"
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             soup = BeautifulSoup(f, 'html.parser')
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
-            
-            # Récupération Date
             meta_date = soup.find("meta", attrs={"name": "creation_date"})
             if meta_date and meta_date.get("content"):
                 date_str = meta_date["content"]
-                
-            # Récupération Expéditeur (NOUVEAU)
             meta_sender = soup.find("meta", attrs={"name": "sender"})
             if meta_sender and meta_sender.get("content"):
                 sender = meta_sender["content"]
-                
     except Exception:
         pass
-    
     if not date_str:
         timestamp = os.path.getmtime(filepath)
         date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
-        
     return title, date_str, sender
 
 def clean_output_folder():
@@ -114,7 +99,7 @@ def clean_output_folder():
         os.makedirs(OUTPUT_FOLDER)
 
 def generate_index():
-    print("Génération du sommaire (Dark Mode + Sender)...")
+    print("Génération du sommaire...")
     if not os.path.exists(OUTPUT_FOLDER):
         return
         
@@ -126,9 +111,7 @@ def generate_index():
         index_file_path = os.path.join(folder, "index.html")
         if not os.path.exists(index_file_path): continue
 
-        # On récupère aussi le sender maintenant
         full_title, date_str, sender = get_page_metadata(index_file_path)
-        
         try:
             date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d')
             display_date = date_obj.strftime('%d/%m/%Y')
@@ -172,201 +155,88 @@ def generate_index():
         <title>Archives Newsletters - Benoît Prentout</title>
         <meta name="robots" content="noindex, nofollow">
         <style>
-            /* CSS VARIABLES FOR THEMING */
             :root {{
-                --bg-body: #f6f9fc;
-                --bg-card: #ffffff;
-                --text-main: #333333;
-                --text-muted: #666666;
-                --text-light: #888888;
-                --border-color: #eaeaea;
-                --accent-color: #0070f3;
-                --hover-bg: #f8f9fa;
-                --input-bg: #fcfcfc;
-                --shadow: rgba(0,0,0,0.05);
+                --bg-body: #f6f9fc; --bg-card: #ffffff; --text-main: #333333; --text-muted: #666666; --text-light: #888888;
+                --border-color: #eaeaea; --accent-color: #0070f3; --hover-bg: #f8f9fa; --input-bg: #fcfcfc; --shadow: rgba(0,0,0,0.05);
+                --toggle-icon: "🌑";
             }}
-
-            @media (prefers-color-scheme: dark) {{
-                :root {{
-                    --bg-body: #121212;
-                    --bg-card: #1e1e1e;
-                    --text-main: #e0e0e0;
-                    --text-muted: #a0a0a0;
-                    --text-light: #666666;
-                    --border-color: #333333;
-                    --accent-color: #4da3ff;
-                    --hover-bg: #252525;
-                    --input-bg: #252525;
-                    --shadow: rgba(0,0,0,0.3);
-                }}
+            [data-theme="dark"] {{
+                --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #e0e0e0; --text-muted: #a0a0a0; --text-light: #666666;
+                --border-color: #333333; --accent-color: #4da3ff; --hover-bg: #252525; --input-bg: #252525; --shadow: rgba(0,0,0,0.3);
+                --toggle-icon: "☀️";
             }}
-
-            body {{ 
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-                background-color: var(--bg-body); 
-                color: var(--text-main);
-                margin: 0; padding: 20px; 
-                display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; 
-                transition: background-color 0.3s, color 0.3s;
-            }}
-            
-            .container {{ 
-                max-width: 800px; width: 100%; margin: 0 auto; 
-                background: var(--bg-card); 
-                padding: 40px; border-radius: 12px; 
-                box-shadow: 0 4px 12px var(--shadow); 
-                flex: 1; 
-            }}
-            
-            h1 {{ 
-                text-align: center; color: var(--text-main); 
-                margin-bottom: 30px; font-size: 1.8rem; 
-                border-bottom: 2px solid var(--border-color); 
-                padding-bottom: 20px; 
-            }}
-            
-            /* SEARCH BAR */
-            #searchInput {{
-                width: 100%;
-                padding: 12px 20px;
-                margin-bottom: 25px;
-                box-sizing: border-box;
-                border: 2px solid var(--border-color);
-                border-radius: 8px;
-                font-size: 16px;
-                background-color: var(--input-bg);
-                color: var(--text-main);
-                transition: border-color 0.3s;
-            }}
-            #searchInput:focus {{
-                border-color: var(--accent-color);
-                outline: none;
-            }}
-
-            /* LIST DESIGN */
-            ul {{ 
-                list-style: none; padding: 0; margin: 0; 
-                border: 1px solid var(--border-color); 
-                border-radius: 8px; overflow: hidden; 
-            }}
+            body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }}
+            .container {{ max-width: 800px; width: 100%; margin: 0 auto; background: var(--bg-card); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); flex: 1; position: relative; }}
+            .header-row {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; }}
+            h1 {{ text-align: center; color: var(--text-main); margin: 0; font-size: 1.8rem; flex-grow: 1; }}
+            #theme-toggle {{ background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }}
+            #theme-toggle:hover {{ background-color: var(--hover-bg); border-color: var(--accent-color); }}
+            #theme-toggle::after {{ content: var(--toggle-icon); }}
+            #searchInput {{ width: 100%; padding: 12px 20px; margin-bottom: 25px; box-sizing: border-box; border: 2px solid var(--border-color); border-radius: 8px; font-size: 16px; background-color: var(--input-bg); color: var(--text-main); transition: border-color 0.3s; }}
+            #searchInput:focus {{ border-color: var(--accent-color); outline: none; }}
+            ul {{ list-style: none; padding: 0; margin: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }}
             li {{ border-bottom: 1px solid var(--border-color); margin: 0; }}
             li:last-child {{ border-bottom: none; }}
-            
-            a.item-link {{ 
-                display: flex; 
-                justify-content: space-between; 
-                align-items: center; 
-                padding: 16px 20px; 
-                background: var(--bg-card); 
-                text-decoration: none; 
-                color: var(--text-main); 
-                transition: background 0.1s ease; 
-            }}
+            a.item-link {{ display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-card); text-decoration: none; color: var(--text-main); transition: background 0.1s ease; }}
             a.item-link:hover {{ background-color: var(--hover-bg); }}
-            
-            .info-col {{
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                min-width: 0;
-                margin-right: 15px;
-            }}
-
-            .sender {{
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-light);
-                margin-bottom: 4px;
-                font-weight: 600;
-            }}
-
-            .title {{ 
-                font-weight: 500; 
-                font-size: 1rem; 
-                color: var(--text-main);
-                white-space: nowrap; 
-                overflow: hidden; 
-                text-overflow: ellipsis; 
-            }}
-            
-            .date {{ 
-                font-size: 0.85rem; 
-                color: var(--text-muted); 
-                white-space: nowrap; 
-                flex-shrink: 0; 
-                font-variant-numeric: tabular-nums;
-            }}
-            
-            footer {{ 
-                margin-top: 40px; padding-top: 20px; 
-                border-top: 1px solid var(--border-color); 
-                text-align: center; color: var(--text-muted); 
-                font-size: 0.85rem; 
-            }}
-            
-            .copyright a {{ 
-                color: inherit; text-decoration: none; 
-                border-bottom: 1px dotted var(--text-muted); 
-                transition: color 0.2s; 
-            }}
+            .info-col {{ display: flex; flex-direction: column; flex: 1; min-width: 0; margin-right: 15px; }}
+            .sender {{ font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }}
+            .title {{ font-weight: 500; font-size: 1rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .date {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }}
+            footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.85rem; }}
+            .copyright a {{ color: inherit; text-decoration: none; border-bottom: 1px dotted var(--text-muted); transition: color 0.2s; }}
             .copyright a:hover {{ color: var(--accent-color); border-bottom-color: var(--accent-color); }}
-            
             details {{ margin-top: 15px; cursor: pointer; }}
-            details p {{
-                background: var(--hover-bg);
-                padding: 10px;
-                border-radius: 4px;
-                text-align: left;
-            }}
+            details p {{ background: var(--hover-bg); padding: 10px; border-radius: 4px; text-align: left; }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>📬 Archives Newsletters</h1>
-            
+            <div class="header-row">
+                <div style="width: 40px;"></div>
+                <h1>📬 Archives Newsletters</h1>
+                <button id="theme-toggle" title="Changer le thème"></button>
+            </div>
             <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher par titre, expéditeur ou date...">
-            
             <ul id="newsList">
                 {links_html}
             </ul>
-            
             <footer>
                 <p class="copyright">&copy; {current_year} <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>.</p>
                 <details>
                     <summary>Mentions Légales</summary>
-                    <p style="margin-top:10px;">
-                        <strong>Éditeur :</strong> Benoît Prentout<br>
-                        <strong>Hébergement :</strong> GitHub Inc.<br>
-                        Ce site est une archive personnelle à but de démonstration.
-                    </p>
+                    <p style="margin-top:10px;"><strong>Éditeur :</strong> Benoît Prentout<br><strong>Hébergement :</strong> GitHub Inc.<br>Ce site est une archive personnelle.</p>
                 </details>
             </footer>
         </div>
-
         <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+        const savedTheme = localStorage.getItem('theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {{ root.setAttribute('data-theme', 'dark'); }}
+        toggleBtn.addEventListener('click', () => {{
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }});
         function filterList() {{
             var input, filter, ul, li, a, i, txtValue;
             input = document.getElementById('searchInput');
             filter = input.value.toUpperCase();
             ul = document.getElementById("newsList");
             li = ul.getElementsByTagName('li');
-
             for (i = 0; i < li.length; i++) {{
                 a = li[i].getElementsByTagName("a")[0];
                 txtValue = a.textContent || a.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {{
-                    li[i].style.display = "";
-                }} else {{
-                    li[i].style.display = "none";
-                }}
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {{ li[i].style.display = ""; }} else {{ li[i].style.display = "none"; }}
             }}
         }}
         </script>
     </body>
     </html>
     """
-    
     with open(f"{OUTPUT_FOLDER}/index.html", "w", encoding='utf-8') as f:
         f.write(index_content)
 
@@ -404,15 +274,14 @@ def process_emails():
                     status, msg_data = mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE FROM)])')
                     msg_header = email.message_from_bytes(msg_data[0][1])
                     
-                    # Extraction métadonnées
                     raw_subject = get_decoded_email_subject(msg_header)
                     subject = clean_subject_prefixes(raw_subject)
                     email_date_str = get_email_date(msg_header)
-                    sender_name = get_clean_sender(msg_header) # NOUVEAU
+                    sender_name = get_clean_sender(msg_header)
                     
                     folder_id = get_deterministic_id(subject)
                     newsletter_path = os.path.join(OUTPUT_FOLDER, folder_id)
-                    print(f"Traitement : {subject[:30]}... de {sender_name}")
+                    print(f"Traitement : {subject[:30]}... ({sender_name})")
                     
                     status, msg_data = mail.fetch(num, "(RFC822)")
                     msg = email.message_from_bytes(msg_data[0][1])
@@ -434,7 +303,7 @@ def process_emails():
                     soup = BeautifulSoup(html_content, "html.parser")
                     for s in soup(["script", "iframe", "object"]): s.extract()
 
-                    # Nettoyage
+                    # Nettoyage des transferts
                     split_keywords = ["Forwarded message", "Message transféré"]
                     found_split = False
                     for div in soup.find_all("div"):
@@ -460,18 +329,136 @@ def process_emails():
                         new_body.extend(soup.contents)
                         soup.append(new_body)
 
-                    # Reconstruction META (Avec Sender)
-                    meta_date = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
-                    meta_sender = soup.new_tag("meta", attrs={"name": "sender", "content": sender_name}) # NOUVEAU
+                    # --- INJECTION UI PREVIEW ---
                     
+                    # 1. CSS/JS Injection
+                    style_tag = soup.new_tag("style")
+                    style_tag.string = """
+                        body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+                        
+                        /* TOOLBAR */
+                        #preview-toolbar {
+                            position: fixed; top: 0; left: 0; right: 0;
+                            height: 60px; background: #222; color: white;
+                            display: flex; align-items: center; justify-content: space-between;
+                            padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                            z-index: 10000;
+                        }
+                        #preview-toolbar h1 { margin: 0; font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%; }
+                        .toolbar-actions { display: flex; gap: 10px; }
+                        .tool-btn {
+                            background: #333; border: 1px solid #444; color: #eee;
+                            padding: 6px 12px; border-radius: 4px; cursor: pointer;
+                            font-size: 13px; transition: all 0.2s; display: flex; align-items: center; gap: 5px;
+                        }
+                        .tool-btn:hover { background: #444; }
+                        .tool-btn.active { background: #0070f3; border-color: #0070f3; }
+                        .back-btn { text-decoration: none; color: #aaa; font-size: 14px; margin-right: 15px; }
+                        .back-btn:hover { color: white; }
+
+                        /* EMAIL CONTAINER */
+                        #email-wrapper {
+                            margin-top: 60px; /* Espace pour la toolbar */
+                            width: 100%;
+                            min-height: calc(100vh - 60px);
+                            display: flex; justify-content: center;
+                            padding: 20px 0;
+                            transition: background-color 0.3s;
+                        }
+                        
+                        #email-content {
+                            width: 100%; max-width: 800px; /* Largeur desktop par défaut */
+                            background: #ffffff;
+                            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+                            transition: all 0.3s ease;
+                        }
+
+                        /* MOBILE VIEW */
+                        .mobile-active #email-content {
+                            max-width: 375px !important;
+                            border: 1px solid #ddd;
+                            border-radius: 20px;
+                            overflow: hidden;
+                        }
+
+                        /* DARK MODE SIMULATION */
+                        .dark-active #email-wrapper { background-color: #121212; }
+                        .dark-active #email-content {
+                            filter: invert(1) hue-rotate(180deg);
+                        }
+                        /* On réinverse les images pour qu'elles restent normales */
+                        .dark-active #email-content img {
+                            filter: invert(1) hue-rotate(180deg);
+                        }
+                    """
+                    if soup.head: soup.head.append(style_tag)
+                    else:
+                        new_head = soup.new_tag("head")
+                        new_head.append(style_tag)
+                        soup.insert(0, new_head)
+
+                    # 2. Script JS Injection
+                    script_tag = soup.new_tag("script")
+                    script_tag.string = """
+                        function toggleMobile() {
+                            document.body.classList.toggle('mobile-active');
+                            const btn = document.getElementById('btn-mobile');
+                            btn.classList.toggle('active');
+                        }
+                        function toggleDark() {
+                            document.body.classList.toggle('dark-active');
+                            const btn = document.getElementById('btn-dark');
+                            btn.classList.toggle('active');
+                        }
+                    """
+                    soup.body.append(script_tag)
+
+                    # 3. Création de la Toolbar
+                    toolbar_html = BeautifulSoup(f"""
+                    <div id="preview-toolbar">
+                        <div style="display:flex; align-items:center;">
+                            <a href="../index.html" class="back-btn">← Retour</a>
+                            <h1>{subject}</h1>
+                        </div>
+                        <div class="toolbar-actions">
+                            <button id="btn-mobile" class="tool-btn" onclick="toggleMobile()">📱 Mobile</button>
+                            <button id="btn-dark" class="tool-btn" onclick="toggleDark()">🌙 Dark Mode</button>
+                        </div>
+                    </div>
+                    """, 'html.parser')
+
+                    # 4. Wrappings du contenu existant
+                    # On crée un wrapper global
+                    wrapper_div = soup.new_tag("div", id="email-wrapper")
+                    # On crée le conteneur de l'email (la feuille blanche)
+                    content_div = soup.new_tag("div", id="email-content")
+                    
+                    # On déplace tout le contenu actuel du body dans content_div
+                    # Sauf les scripts qu'on vient d'ajouter
+                    to_move = []
+                    for child in soup.body.contents:
+                        if child != script_tag and child != toolbar_html:
+                            to_move.append(child)
+                    
+                    for child in to_move:
+                        content_div.append(child)
+                    
+                    wrapper_div.append(content_div)
+                    
+                    # On vide le body et on reconstruit : Toolbar + Wrapper
+                    # Note: soup.body.clear() est trop agressif ici car il supprime les ref
+                    # On réassigne le body
+                    soup.body.clear()
+                    soup.body.append(toolbar_html)
+                    soup.body.append(wrapper_div)
+                    soup.body.append(script_tag)
+
+                    # Méta-données pour le sommaire
+                    meta_date = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
+                    meta_sender = soup.new_tag("meta", attrs={"name": "sender", "content": sender_name})
                     if soup.head: 
                         soup.head.append(meta_date)
                         soup.head.append(meta_sender)
-                    else:
-                        new_head = soup.new_tag("head")
-                        new_head.append(meta_date)
-                        new_head.append(meta_sender)
-                        soup.insert(0, new_head)
 
                     if soup.title: soup.title.string = subject
                     else:
@@ -479,15 +466,7 @@ def process_emails():
                         new_title.string = subject
                         if soup.head: soup.head.append(new_title)
 
-                    header_div = soup.new_tag("div")
-                    header_div['style'] = "background:#fff; border-bottom:1px solid #ddd; padding:15px; margin-bottom:20px; font-family:sans-serif; text-align:center;"
-                    h1_tag = soup.new_tag("h1")
-                    h1_tag.string = subject
-                    h1_tag['style'] = "margin:0; font-size:18px; color:#333; font-weight:600;"
-                    header_div.append(h1_tag)
-                    soup.body.insert(0, header_div)
-
-                    # Images (Lazy Loading)
+                    # Images
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
@@ -502,7 +481,7 @@ def process_emails():
                                 img_path = os.path.join(newsletter_path, img_name)
                                 with open(img_path, "wb") as f: f.write(response.content)
                                 img['src'] = img_name
-                                img['loading'] = 'lazy' # LAZY LOADING
+                                img['loading'] = 'lazy'
                                 if img.has_attr('srcset'): del img['srcset']
                                 img_counter += 1
                         except Exception: pass
