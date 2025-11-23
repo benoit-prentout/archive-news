@@ -22,7 +22,6 @@ HEADERS = {
 }
 
 def clean_subject_prefixes(subject):
-    """Retire les Fwd:, Re:, Tr: en boucle"""
     if not subject: return "Sans titre"
     pattern = r'^\s*\[?(?:Fwd|Fw|Tr|Re|Aw|Wg)\s*:\s*\]?\s*'
     cleaned = subject
@@ -36,47 +35,34 @@ def get_deterministic_id(subject):
     return hash_object.hexdigest()[:10]
 
 def get_email_date(msg):
-    """Récupère la date de réception du mail et la formate"""
     try:
         date_header = msg["Date"]
         if date_header:
             dt = parsedate_to_datetime(date_header)
-            # On retourne au format YYYY-MM-DD pour le stockage
             return dt.strftime('%Y-%m-%d')
     except Exception:
         pass
-    # Date du jour par défaut si échec
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
 def get_page_metadata(filepath):
-    """Récupère le titre et la date depuis le fichier HTML stocké"""
     title = "Sans titre"
     date_str = None
-    
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             soup = BeautifulSoup(f, 'html.parser')
-            # Récupération Titre
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
-            
-            # Récupération Date (stockée dans une meta)
             meta_date = soup.find("meta", attrs={"name": "creation_date"})
             if meta_date and meta_date.get("content"):
                 date_str = meta_date["content"]
-                
     except Exception:
         pass
-        
-    # Si pas de date dans le fichier, on prend la date de modif du fichier
     if not date_str:
         timestamp = os.path.getmtime(filepath)
         date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
-        
     return title, date_str
 
 def clean_output_folder():
-    """Nettoie le dossier docs sauf les fichiers systèmes"""
     if os.path.exists(OUTPUT_FOLDER):
         for item in os.listdir(OUTPUT_FOLDER):
             item_path = os.path.join(OUTPUT_FOLDER, item)
@@ -93,29 +79,23 @@ def clean_output_folder():
         os.makedirs(OUTPUT_FOLDER)
 
 def generate_index():
-    print("Génération du sommaire global...")
+    print("Génération du sommaire global avec footer...")
     if not os.path.exists(OUTPUT_FOLDER):
         return
         
     subfolders = [f.path for f in os.scandir(OUTPUT_FOLDER) if f.is_dir() and not f.name.startswith('.')]
-    
-    # On va stocker les infos pour trier par DATE DU MAIL (et pas date du fichier)
     pages_data = []
     
     for folder in subfolders:
         folder_name = os.path.basename(folder)
         index_file_path = os.path.join(folder, "index.html")
-        
-        if not os.path.exists(index_file_path):
-            continue
+        if not os.path.exists(index_file_path): continue
 
         full_title, date_str = get_page_metadata(index_file_path)
-        
-        # On convertit en format affichable (YYYY-MM-DD -> DD/MM/YYYY)
         try:
             date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d')
             display_date = date_obj.strftime('%d/%m/%Y')
-            sort_key = date_str # On trie sur YYYY-MM-DD
+            sort_key = date_str
         except:
             display_date = date_str
             sort_key = date_str
@@ -127,7 +107,6 @@ def generate_index():
             "sort_key": sort_key
         })
 
-    # Tri par date de réception (décroissant)
     pages_data.sort(key=lambda x: x["sort_key"], reverse=True)
 
     links_html = ""
@@ -144,35 +123,66 @@ def generate_index():
         </li>
         '''
 
+    current_year = datetime.datetime.now().year
+
     index_content = f"""
     <!DOCTYPE html>
     <html lang="fr">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Archives Newsletters</title>
+        <title>Archives Newsletters - Benoît Prentout</title>
         <meta name="robots" content="noindex, nofollow">
         <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f6f9fc; margin: 0; padding: 20px; color: #333; }}
-            .container {{ max-width: 800px; margin: 40px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
+            body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f6f9fc; margin: 0; padding: 20px; color: #333; display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; }}
+            .container {{ max-width: 800px; width: 100%; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1; }}
             h1 {{ text-align: center; color: #1a1a1a; margin-bottom: 40px; font-size: 1.8rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }}
             ul {{ list-style: none; padding: 0; }}
             li {{ margin-bottom: 12px; }}
-            a {{ display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; background: #fff; border: 1px solid #eaeaea; border-radius: 10px; text-decoration: none; color: #2c3e50; transition: all 0.2s ease; }}
-            a:hover {{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: #0070f3; color: #0070f3; }}
+            a.item-link {{ display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; background: #fff; border: 1px solid #eaeaea; border-radius: 10px; text-decoration: none; color: #2c3e50; transition: all 0.2s ease; }}
+            a.item-link:hover {{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: #0070f3; color: #0070f3; }}
             .link-content {{ display: flex; align-items: center; overflow: hidden; }}
             .icon {{ font-size: 1.2rem; margin-right: 15px; flex-shrink: 0; }}
             .title {{ font-weight: 600; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
             .date {{ font-size: 0.85rem; color: #888; background: #f4f4f4; padding: 5px 10px; border-radius: 20px; margin-left: 10px; flex-shrink: 0; }}
-            a:hover .date {{ background: #e8f0fe; color: #0070f3; }}
+            a.item-link:hover .date {{ background: #e8f0fe; color: #0070f3; }}
+            
+            /* Footer Styles */
+            footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; color: #666; font-size: 0.9rem; }}
+            .footer-links {{ margin-bottom: 15px; }}
+            .footer-links a {{ color: #0070f3; text-decoration: none; font-weight: 600; margin: 0 10px; }}
+            .footer-links a:hover {{ text-decoration: underline; }}
+            .legal-details {{ margin-top: 15px; font-size: 0.8rem; color: #999; }}
+            details {{ cursor: pointer; }}
+            summary {{ outline: none; }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>📬 Mes Newsletters</h1>
+            <h1>📬 Archives Newsletters</h1>
             <ul>
                 {links_html}
             </ul>
+            
+            <footer>
+                <div class="footer-links">
+                    <a href="https://github.com/benoit-prentout" target="_blank">Mon Profil GitHub</a> • 
+                    <a href="https://www.getinside.fr/" target="_blank">GetInside.fr</a>
+                </div>
+                <p>&copy; {current_year} Benoît Prentout. Tous droits réservés.</p>
+                
+                <div class="legal-details">
+                    <details>
+                        <summary>Mentions Légales & Infos</summary>
+                        <p style="margin-top:10px;">
+                            <strong>Éditeur :</strong> Benoît Prentout<br>
+                            <strong>Hébergement :</strong> GitHub Inc., 88 Colin P. Kelly Jr. St, San Francisco, CA 94107, USA.<br>
+                            <strong>Nature du site :</strong> Ce site est une archive personnelle à but de démonstration technique et de portfolio (DevOps/Automation).<br>
+                            Les contenus (newsletters) restent la propriété intellectuelle de leurs auteurs respectifs.
+                        </p>
+                    </details>
+                </div>
+            </footer>
         </div>
     </body>
     </html>
@@ -183,8 +193,7 @@ def generate_index():
 
 def get_decoded_email_subject(msg):
     subject_header = msg["Subject"]
-    if not subject_header:
-        return "Sans Titre"
+    if not subject_header: return "Sans Titre"
     decoded_list = decode_header(subject_header)
     full_subject = ""
     for part, encoding in decoded_list:
@@ -197,7 +206,6 @@ def get_decoded_email_subject(msg):
 def process_emails():
     try:
         clean_output_folder()
-        
         print("Connexion au serveur Gmail...")
         mail = imaplib.IMAP4_SSL("imap.gmail.com")
         mail.login(GMAIL_USER, GMAIL_PASSWORD)
@@ -208,31 +216,25 @@ def process_emails():
             return
 
         status, messages = mail.search(None, 'ALL')
-        
         if messages[0]:
             email_ids = messages[0].split()
             print(f"{len(email_ids)} emails trouvés.")
 
             for num in email_ids:
                 try:
-                    # 1. RECUPERATION EN-TETES (Sujet + Date)
                     status, msg_data = mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE)])')
                     msg_header = email.message_from_bytes(msg_data[0][1])
                     
                     raw_subject = get_decoded_email_subject(msg_header)
                     subject = clean_subject_prefixes(raw_subject)
-                    
-                    # Récupération de la vraie date du mail
                     email_date_str = get_email_date(msg_header)
                     
                     folder_id = get_deterministic_id(subject)
                     newsletter_path = os.path.join(OUTPUT_FOLDER, folder_id)
-
                     print(f"Traitement : {subject[:30]}... ({email_date_str})")
                     
                     status, msg_data = mail.fetch(num, "(RFC822)")
                     msg = email.message_from_bytes(msg_data[0][1])
-                    
                     os.makedirs(newsletter_path, exist_ok=True)
 
                     html_content = ""
@@ -242,81 +244,55 @@ def process_emails():
                             charset = part.get_content_charset() or 'utf-8'
                             html_content = payload.decode(charset, errors="ignore")
                             break
-                    
                     if not html_content and not msg.is_multipart():
                         payload = msg.get_payload(decode=True)
                         charset = msg.get_content_charset() or 'utf-8'
                         html_content = payload.decode(charset, errors="ignore")
-
                     if not html_content: continue
 
                     soup = BeautifulSoup(html_content, "html.parser")
-                    for s in soup(["script", "iframe", "object"]):
-                        s.extract()
+                    for s in soup(["script", "iframe", "object"]): s.extract()
 
-                    # --- CORRECTION CONTENU (EXTRACTION FORCEE) ---
-                    # Logique : On cherche le "Splitter" (Message transféré).
-                    # Si on le trouve, on jette tout ce qui est AVANT.
-                    
-                    split_keywords = ["Forwarded message", "Message transféré", "Message transféré"]
+                    # Nettoyage
+                    split_keywords = ["Forwarded message", "Message transféré"]
                     found_split = False
-                    
-                    # Méthode 1 : Chercher la div séparatrice standard de Gmail
                     for div in soup.find_all("div"):
                         text = div.get_text()
                         if any(k in text for k in split_keywords) and "-----" in text:
-                            # On a trouvé le séparateur !
-                            # On garde tous les frères suivants (le vrai contenu)
                             real_content = []
-                            for sibling in div.next_siblings:
-                                real_content.append(sibling)
-                            
-                            # On vide le body et on remet le vrai contenu
+                            for sibling in div.next_siblings: real_content.append(sibling)
                             if soup.body:
                                 soup.body.clear()
                                 for item in real_content:
                                     if item: soup.body.append(item)
                             found_split = True
                             break
-                    
-                    # Méthode 2 : Si pas de splitter texte, on cherche le container 'gmail_quote'
-                    # (Backup au cas où)
                     if not found_split:
                         quote = soup.find(class_="gmail_quote")
                         if quote:
                             soup.body.clear()
                             soup.body.append(quote)
-                            # On supprime les headers dans la quote (De:, Envoyé le:)
-                            for attr in soup.find_all(class_="gmail_attr"):
-                                attr.decompose()
+                            for attr in soup.find_all(class_="gmail_attr"): attr.decompose()
 
-                    # Protection Body vide
                     if not soup.body:
                         new_body = soup.new_tag("body")
                         new_body.extend(soup.contents)
                         soup.append(new_body)
 
-                    # --- RECONSTRUCTION ---
-                    
-                    # Insertion de la DATE dans une meta pour le sommaire
+                    # Reconstruction
                     meta_tag = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
-                    if soup.head:
-                        soup.head.append(meta_tag)
+                    if soup.head: soup.head.append(meta_tag)
                     else:
                         new_head = soup.new_tag("head")
                         new_head.append(meta_tag)
                         soup.insert(0, new_head)
 
-                    # Titre <head>
-                    if soup.title:
-                        soup.title.string = subject
+                    if soup.title: soup.title.string = subject
                     else:
                         new_title = soup.new_tag('title')
                         new_title.string = subject
-                        if soup.head:
-                            soup.head.append(new_title)
+                        if soup.head: soup.head.append(new_title)
 
-                    # Bandeau Titre
                     header_div = soup.new_tag("div")
                     header_div['style'] = "background:#fff; border-bottom:1px solid #ddd; padding:15px; margin-bottom:20px; font-family:sans-serif; text-align:center;"
                     h1_tag = soup.new_tag("h1")
@@ -329,8 +305,7 @@ def process_emails():
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
-                        if not src or src.startswith("data:") or src.startswith("cid:"):
-                            continue
+                        if not src or src.startswith("data:") or src.startswith("cid:"): continue
                         try:
                             if src.startswith("//"): src = "https:" + src
                             response = requests.get(src, headers=HEADERS, timeout=10)
@@ -339,8 +314,7 @@ def process_emails():
                                 ext = mimetypes.guess_extension(content_type) or ".jpg"
                                 img_name = f"img_{img_counter}{ext}"
                                 img_path = os.path.join(newsletter_path, img_name)
-                                with open(img_path, "wb") as f:
-                                    f.write(response.content)
+                                with open(img_path, "wb") as f: f.write(response.content)
                                 img['src'] = img_name
                                 if img.has_attr('srcset'): del img['srcset']
                                 img_counter += 1
@@ -349,22 +323,17 @@ def process_emails():
                     filename = os.path.join(newsletter_path, "index.html")
                     with open(filename, "w", encoding='utf-8') as f:
                         f.write(str(soup))
-                
                 except Exception as e_mail:
                     print(f"Erreur email {num}: {e_mail}")
                     continue
-            
             generate_index()
             print("Terminé.")
         else:
             print("Aucun email trouvé.")
-
         mail.close()
         mail.logout()
-
     except Exception as e:
         print(f"Erreur critique: {e}")
-        # On ne raise pas l'erreur pour éviter Exit Code 1
 
 if __name__ == "__main__":
     process_emails()
