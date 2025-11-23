@@ -44,7 +44,7 @@
             .date { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
             .date-arch { font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 3px; }
             
-            /* Pagination */
+            /* Pagination Styles */
             .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 25px; flex-wrap: wrap; }
             .page-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
             .page-btn:hover { background: var(--hover-bg); border-color: var(--accent-color); }
@@ -135,6 +135,7 @@
         const root = document.documentElement;
         const savedTheme = localStorage.getItem('theme');
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
         if (savedTheme === 'dark' || (!savedTheme && systemDark)) { root.setAttribute('data-theme', 'dark'); }
         
         toggleBtn.addEventListener('click', () => {
@@ -155,8 +156,13 @@
             currentPage = page;
             const start = (page - 1) * itemsPerPage;
             const end = start + itemsPerPage;
+            
             allItems.forEach((item, index) => {
-                if (index >= start && index < end) { item.style.display = ""; } else { item.style.display = "none"; }
+                if (index >= start && index < end) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
             });
             renderPaginationControls();
             window.scrollTo(0, 0);
@@ -165,6 +171,7 @@
         function renderPaginationControls() {
             const totalPages = Math.ceil(allItems.length / itemsPerPage);
             paginationContainer.innerHTML = '';
+            
             if (totalPages <= 1) return;
 
             const prevBtn = document.createElement('button');
@@ -176,6 +183,7 @@
 
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, currentPage + 2);
+            
             if (startPage > 1) {
                 const firstPage = document.createElement('button');
                 firstPage.className = 'page-btn';
@@ -184,6 +192,7 @@
                 paginationContainer.appendChild(firstPage);
                 if (startPage > 2) paginationContainer.appendChild(document.createTextNode('...'));
             }
+
             for (let i = startPage; i <= endPage; i++) {
                 const btn = document.createElement('button');
                 btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
@@ -191,6 +200,7 @@
                 btn.onclick = () => showPage(i);
                 paginationContainer.appendChild(btn);
             }
+
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) paginationContainer.appendChild(document.createTextNode('...'));
                 const lastPage = document.createElement('button');
@@ -199,6 +209,7 @@
                 lastPage.onclick = () => showPage(totalPages);
                 paginationContainer.appendChild(lastPage);
             }
+
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
             nextBtn.innerHTML = '&raquo;';
@@ -210,6 +221,7 @@
         function filterList() {
             const input = document.getElementById('searchInput');
             const filter = input.value.toUpperCase();
+            
             if (filter === "") {
                 paginationContainer.style.display = "flex";
                 showPage(1);
@@ -217,10 +229,15 @@
                 paginationContainer.style.display = "none";
                 allItems.forEach(item => {
                     const text = item.textContent || item.innerText;
-                    if (text.toUpperCase().indexOf(filter) > -1) { item.style.display = ""; } else { item.style.display = "none"; }
+                    if (text.toUpperCase().indexOf(filter) > -1) {
+                        item.style.display = "";
+                    } else {
+                        item.style.display = "none";
+                    }
                 });
             }
         }
+
         showPage(1);
         </script>
     </body>
