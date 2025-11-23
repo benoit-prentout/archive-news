@@ -2,47 +2,63 @@
                         /* Reset */
                         body { margin: 0; padding: 0; background-color: #eef2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
                         
-                        /* HEADER PANEL */
+                        /* HEADER PANEL (FIXE & ALIGNÉ) */
                         .preview-header {
+                            position: sticky; top: 0; left: 0; right: 0;
                             background-color: #ffffff;
                             border-bottom: 1px solid #dcdcdc;
-                            padding: 20px 30px;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            gap: 15px;
+                            z-index: 1000;
                             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+                            display: flex;
+                            justify-content: center; /* Pour centrer le contenu principal */
                         }
                         
-                        /* TITRE (Avec préfixe) */
-                        .preview-header h1 {
+                        /* Conteneur interne du header aligné avec le contenu */
+                        .header-inner {
+                            width: 100%;
+                            max-width: 800px; /* Même largeur que l'email */
+                            padding: 15px 20px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            flex-wrap: wrap;
+                            gap: 15px;
+                        }
+                        
+                        /* TITRE */
+                        .header-title {
+                            flex: 1;
+                            min-width: 200px;
+                        }
+                        .header-title h1 {
                             margin: 0;
-                            font-size: 18px;
+                            font-size: 16px;
                             color: #333;
                             font-weight: 600;
-                            text-align: center;
                             line-height: 1.4;
                         }
                         
-                        /* CONTROLES (BOUTONS) */
+                        /* CONTROLES (BOUTONS ALIGNÉS À DROITE) */
                         .controls {
                             display: flex;
-                            gap: 15px;
+                            gap: 10px;
+                            align-items: center;
                         }
                         
                         .btn {
                             background-color: #f8f9fa;
                             border: 1px solid #ddd;
                             color: #555;
-                            padding: 8px 16px;
+                            padding: 6px 12px;
                             border-radius: 6px;
-                            font-size: 14px;
+                            font-size: 13px;
                             font-weight: 500;
                             cursor: pointer;
                             display: flex;
                             align-items: center;
-                            gap: 8px;
+                            gap: 6px;
                             transition: all 0.2s ease;
+                            white-space: nowrap;
                         }
                         .btn:hover {
                             background-color: #e2e6ea;
@@ -61,9 +77,8 @@
                             width: 100%;
                             display: flex;
                             justify-content: center;
-                            padding: 40px 20px;
+                            padding: 20px 20px 60px 20px; /* Marge pour le scroll */
                             box-sizing: border-box;
-                            min-height: calc(100vh - 150px);
                         }
                         
                         #email-content {
@@ -77,12 +92,14 @@
                         /* --- MOBILE MODE --- */
                         body.mobile-active #email-content {
                             max-width: 375px !important;
-                            border: 10px solid #333;
-                            border-radius: 30px;
+                            /* Bordure fine élégante */
+                            border: 1px solid #d1d1d1;
+                            border-radius: 20px;
                             overflow: hidden;
+                            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
                         }
                         
-                        /* Force adaptation mobile pour vieux mails */
+                        /* Force adaptation mobile */
                         body.mobile-active table, 
                         body.mobile-active img {
                             max-width: 100% !important;
@@ -92,11 +109,13 @@
 
                         /* --- DARK MODE (SMART INVERT) --- */
                         body.dark-active { background-color: #121212; }
+                        
                         body.dark-active .preview-header { 
                             background-color: #1e1e1e; 
                             border-bottom-color: #333; 
                         }
-                        body.dark-active .preview-header h1 { color: #e0e0e0; }
+                        body.dark-active .header-title h1 { color: #e0e0e0; }
+                        
                         body.dark-active .btn { 
                             background-color: #2c2c2c; 
                             border-color: #444; 
@@ -108,6 +127,7 @@
                         /* Inversion intelligente du contenu mail */
                         body.dark-active #email-content {
                             filter: invert(1) hue-rotate(180deg);
+                            border-color: #333; /* Bordure sombre en mode mobile */
                         }
                         /* Ré-inversion des médias pour qu'ils restent normaux */
                         body.dark-active img, 
@@ -117,14 +137,18 @@
                         }
                     </style><meta content="2025-11-23" name="creation_date"/><meta content="Benoît Prentout" name="sender"/><title>On a un cadeau pour votre chat 🐱</title></head><body>
 <header class="preview-header">
-<h1>Titre : On a un cadeau pour votre chat 🐱</h1>
+<div class="header-inner">
+<div class="header-title">
+<h1>Sujet : On a un cadeau pour votre chat 🐱</h1>
+</div>
 <div class="controls">
 <button class="btn" id="btn-mobile" onclick="toggleMobile()">
-<span>📱</span> Vue Mobile
-                            </button>
+<span>📱</span> Mobile
+                                </button>
 <button class="btn" id="btn-dark" onclick="toggleDark()">
-<span>🌙</span> Mode Sombre
-                            </button>
+<span>🌙</span> Sombre
+                                </button>
+</div>
 </div>
 </header>
 <div id="email-wrapper"><div id="email-content"><div dir="ltr"><div><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:rgb(247,247,247);width:1136px"><tbody><tr><td><div style="margin:0px auto;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px"><tbody><tr><td style="direction:ltr;font-size:0px;padding:0px;text-align:center"><div style="background:rgb(255,255,255);margin:0px auto;border-radius:0px;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-image:initial;background-position:initial;background-size:initial;background-repeat:initial;background-origin:initial;background-clip:initial;width:600px;border-radius:0px"><tbody><tr><td style="direction:ltr;padding:0px"><div><div style="display:table;table-layout:fixed;width:600px"><div style="display:table-cell;vertical-align:top;width:600px"><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:0px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="center" style="word-break:break-word"><table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0px"><tbody><tr><td style="border:0px;padding:0px;width:600px" valign="top"><a href="https://bitli.pro/2C9e9_b1cd0b6f" style="color:rgb(0,0,0);display:block" target="_blank"><img alt="Chargement en cours..." class="gmail-CToWUd" loading="lazy" src="img_0.png" style="display: block; outline: none; text-decoration-line: none; height: auto; font-size: 13px; width: 600px;" title="Chargement en cours..." width="600"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:30px 20px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="left" style="padding:0px;word-break:break-word"><div style="font-family:Arial;font-size:14px;letter-spacing:0px;line-height:1.3;color:rgb(0,98,93)"><div style="text-align:center"><span style='color:rgb(26,26,26);font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:16px'><div>Alors. Vu comme ça, ça peut sembler étrange, c’est vrai. Mais non, on ne lance pas de couches <span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">pour chat</span></span>. Pas encore. Enfin… On ne s’était pas vraiment posé la question en fait. Ça marcherait, vous pensez ? Bon bref, revenons à notre sujet. Les croquettes <span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">pour chat</span></span> !</div><div> </div><div>Chez Les Petits Culottés, on a choisi de s’associer à Caats, une marque de croquettes premium <span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">pour</span></span> chats avec des menus personnalisés ET <span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">un</span></span> système d’abonnement (comme nous).<br/><br/></div><div>Pourquoi ? Parce que nous avons une volonté commune : proposer des produits de qualité, au juste prix, à vos petits êtres préférés. Et on s’est dit qu’il fallait absolument qu’on vous partage ce bon plan !</div></span></div></div></td></tr></tbody></table></td></tr></tbody></table></div></div></div></div></td></tr></tbody></table></div></td></tr></tbody></table></div></td></tr></tbody></table><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:rgb(247,247,247);width:1136px"><tbody><tr><td><div style="margin:0px auto;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px"><tbody><tr><td style="direction:ltr;font-size:0px;padding:0px;text-align:center"><div style="background:rgb(255,255,255);margin:0px auto;border-radius:0px;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-image:initial;background-position:initial;background-size:initial;background-repeat:initial;background-origin:initial;background-clip:initial;width:600px;border-radius:0px"><tbody><tr><td style="direction:ltr;padding:0px"><div><div style="display:table;table-layout:fixed;width:600px"><div style="display:table-cell;vertical-align:top;width:600px"><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:0px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="center" style="word-break:break-word"><table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0px"><tbody><tr><td style="border:0px;padding:0px;width:600px" valign="top"><a href="https://bitli.pro/2C9ec_2081e4e0" style="color:rgb(0,0,0);display:block" target="_blank"><img alt="Chargement en cours..." class="gmail-CToWUd" loading="lazy" src="img_1.png" style="display: block; outline: none; text-decoration-line: none; height: auto; font-size: 13px; width: 600px;" title="Chargement en cours..." width="600"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:20px 0px 0px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="center" style="word-break:break-word"><table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0px"><tbody><tr><td style="border:0px;padding:0px;width:600px" valign="top"><a href="https://bitli.pro/2C9ed_c280ee4b" style="color:rgb(0,0,0);display:block" target="_blank"><img alt="Chargement en cours..." class="gmail-CToWUd" loading="lazy" src="img_2.png" style="display: block; outline: none; text-decoration-line: none; height: auto; font-size: 13px; width: 600px;" title="Chargement en cours..." width="600"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:0px 20px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="left" style="padding:0px;word-break:break-word"><div style="font-family:Arial;font-size:14px;letter-spacing:0px;line-height:1.3;color:rgb(0,98,93)"></div></td></tr></tbody></table></td></tr></tbody></table></div></div></div></div></td></tr></tbody></table></div></td></tr></tbody></table></div></td></tr></tbody></table><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:rgb(247,247,247);width:1136px"><tbody><tr><td><div style="margin:0px auto;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px"><tbody><tr><td style="direction:ltr;font-size:0px;padding:0px;text-align:center"><div style="background:rgb(255,255,255);margin:0px auto;border-radius:0px;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-image:initial;background-position:initial;background-size:initial;background-repeat:initial;background-origin:initial;background-clip:initial;width:600px;border-radius:0px"><tbody><tr><td style="direction:ltr;padding:0px"><div><div style="display:table;table-layout:fixed;width:600px"><div style="display:table-cell;vertical-align:top;width:600px"><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:30px 20px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="left" style="padding:0px;word-break:break-word"><div style="font-family:Arial;font-size:14px;letter-spacing:0px;line-height:1.3;color:rgb(0,98,93)"><div style="text-align:center"><span style='color:rgb(26,26,26);font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:16px'><div>Et parce que comme nous, Caats fonctionne en abonnement, vous recevez ses croquettes de qualité chez vous, sans bouger de <span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">votre</span></span> canapé !</div><div> </div><div><span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">Votre</span></span> chat va enfin arrêter de vous fixer avec ce regard de reproche à 6h du matin. Enfin pas sûr. On ne promet rien.</div><div> </div><div>Allez, filez gâter ce petit dictateur<br/>à fourrure. </div><div><br/> L'équipe des Petits Culottés</div></span></div></div></td></tr></tbody></table></td></tr></tbody></table></div></div></div></div></td></tr></tbody></table></div></td></tr></tbody></table></div></td></tr></tbody></table><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:rgb(247,247,247);width:1136px"><tbody><tr><td><div style="margin:0px auto;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px"><tbody><tr><td style="direction:ltr;font-size:0px;padding:0px;text-align:center"><div style="background:rgb(255,255,255);margin:0px auto;border-radius:0px;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-image:initial;background-position:initial;background-size:initial;background-repeat:initial;background-origin:initial;background-clip:initial;width:600px;border-radius:0px"><tbody><tr><td style="direction:ltr;padding:0px"><div><div style="display:table;table-layout:fixed;width:600px"><div style="display:table-cell;vertical-align:middle;width:600px"><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:0px 20px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="left" style="padding:0px;word-break:break-word"><div style="font-family:Arial;font-size:14px;letter-spacing:0px;line-height:1.3;color:rgb(0,98,93)"></div></td></tr></tbody></table></td></tr></tbody></table></div></div></div></div></td></tr></tbody></table></div></td></tr></tbody></table></div></td></tr></tbody></table><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:rgb(247,247,247);width:1136px"><tbody><tr><td><div style="margin:0px auto;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px"><tbody><tr><td style="direction:ltr;font-size:0px;padding:0px;text-align:center"><div style="background:rgb(255,255,255);margin:0px auto;border-radius:0px;max-width:600px"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-image:initial;background-position:initial;background-size:initial;background-repeat:initial;background-origin:initial;background-clip:initial;width:600px;border-radius:0px"><tbody><tr><td style="direction:ltr;padding:0px"><div><div style="display:table;table-layout:fixed;width:600px"><div style="display:table-cell;vertical-align:top;width:600px"><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:0px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="center" style="word-break:break-word"><table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0px"><tbody><tr><td style="border:0px;padding:0px;width:600px" valign="top"><a href="https://bitli.pro/2C9ei_637b428d" style="color:rgb(0,0,0);display:block" target="_blank"><img alt="Chargement en cours..." class="gmail-CToWUd" loading="lazy" src="img_3.png" style="display: block; outline: none; text-decoration-line: none; height: auto; font-size: 13px; width: 600px;" title="Chargement en cours..." width="600"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:0px 20px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="left" style="padding:0px;word-break:break-word"><div style="font-family:Arial;font-size:14px;letter-spacing:0px;line-height:1.3;color:rgb(0,98,93)"></div></td></tr></tbody></table></td></tr></tbody></table></div><div style="text-align:left;direction:ltr;vertical-align:top;width:600px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:600px" width="100%"><tbody><tr><td style="vertical-align:top;padding:20px 0px"><table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td align="center" style="padding:9px 18px;word-break:break-word"><div style="font-family:Arial;font-size:12px;letter-spacing:0px;line-height:1.3;color:rgb(114,114,114)"><div><span style='font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:14px'>En application de la réglementation applicable, vous disposez d’<span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">un</span></span> droit d’accès, d’interrogation, de limitation, de portabilité, d’effacement, de modification et de rectification des informations vous concernant. Vous pouvez également vous opposer à tout traitement de vos données personnelles. Ces droits doivent être exercés en adressant <span class="gmail-il" style="background-position:-192px -55px"><span class="gmail-il" style="background-position:-192px -55px">un</span></span> courrier au Responsable de traitement de LES PETITS CULOTTES (<a href="mailto:serviceclient@lespetitsculottes.fr" target="_blank">serviceclient@lespetitsculottes.fr</a>). Vous pouvez également vous désabonner en utilisant la fonction « Se désabonner » prévue dans ce courriel.</span></div><div><span style='font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:14px'> </span></div><div><span style='font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:14px'>Vous ne souhaitez plus recevoir nos emails culottés ?</span><br/><span style='font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:14px'><span style="color:rgb(0,98,93)"><a href="https://bitli.pro/2C9el_23ce0ca4" style="color:rgb(0,0,0)" target="_blank">Me désinscrire</a></span></span></div><div><br/><span style='font-family:Raleway,Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:14px'>Les Petits Culottés </span></div></div></td></tr></tbody></table></td></tr></tbody></table></div></div></div></div></td></tr></tbody></table></div></td></tr></tbody></table></div></td></tr></tbody></table></div><div><div class="gmail_signature" data-smartmail="gmail_signature" dir="ltr"></div></div></div>
