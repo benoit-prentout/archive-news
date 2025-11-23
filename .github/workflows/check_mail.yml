@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'pip'
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -34,5 +35,4 @@ jobs:
         with:
           commit_message: "Mise à jour archives newsletters"
           file_pattern: 'docs/*'
-          # Cette option permet d'ajouter les nouveaux fichiers ET de noter les suppressions
           add_options: '-A'
