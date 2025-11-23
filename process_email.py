@@ -17,8 +17,8 @@ GMAIL_USER = os.environ["GMAIL_USER"]
 GMAIL_PASSWORD = os.environ["GMAIL_PASSWORD"]
 TARGET_LABEL = "Github/archive-newsletters"
 OUTPUT_FOLDER = "docs"
-# Augmenté car on ne retélécharge pas les images existantes, c'est donc très rapide
-BATCH_SIZE = 50  
+# BATCH_SIZE illimité pour tout mettre à jour d'un coup (rapide car pas de download d'images existantes)
+BATCH_SIZE = 9999  
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -364,7 +364,7 @@ def process_emails():
             email_ids = messages[0].split()
             print(f"{len(email_ids)} emails trouvés au total.")
 
-            # PHASE 1 : Synchro (Nettoyage)
+            # PHASE 1 : Synchro (Nettoyage des dossiers qui n'existent plus dans Gmail)
             valid_folder_ids = set()
             email_map = {}
             for num in email_ids:
@@ -383,7 +383,7 @@ def process_emails():
                 shutil.rmtree(os.path.join(OUTPUT_FOLDER, f_id), ignore_errors=True)
                 print(f"Supprimé (Synchro): {f_id}")
 
-            # PHASE 2 : Traitement (UPDATE MASSIF INTELLIGENT)
+            # PHASE 2 : Traitement MASSIF (Tout le monde y passe pour maj le viewer)
             folders_to_process = list(valid_folder_ids)[:BATCH_SIZE]
             
             print(f"Mise à jour de {len(folders_to_process)} emails (batch)...")
@@ -440,7 +440,7 @@ def process_emails():
                         if t.get("style"): t["style"] = re.sub(r'width:\s*([6-9]\d{2}|\d{4,})px', 'width: 100%', t["style"], flags=re.IGNORECASE)
                         if t.get("width") and t["width"].isdigit() and int(t["width"]) > 600: t["width"] = "100%"
 
-                    # Images (SMART DOWNLOAD)
+                    # Images (SMART DOWNLOAD - On ne télécharge que si absent)
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
@@ -448,7 +448,6 @@ def process_emails():
                         try:
                             if src.startswith("//"): src = "https:" + src
                             
-                            # Détermination de l'extension
                             ext = os.path.splitext(src.split('?')[0])[1]
                             if not ext or len(ext) > 5: ext = ".jpg"
                             
@@ -514,7 +513,8 @@ def process_emails():
                                 border-radius: 40px; border: 12px solid #333; 
                                 box-shadow: 0 20px 50px rgba(0,0,0,0.2);
                                 overflow: hidden;
-                                transform: translateZ(0); /* Force hardware accel for clipping */
+                                transform: translateZ(0); /* Essential for border-radius masking */
+                                -webkit-mask-image: -webkit-radial-gradient(white, black); /* Fix for Safari/Chrome clipping */
                             }}
                             
                             /* Links Sidebar */
@@ -527,14 +527,13 @@ def process_emails():
                             .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 4px; }}
                             .link-url {{ color: #666; }}
                             
-                            /* Dark Mode - HEADER ONLY */
+                            /* Dark Mode - Header/UI Only */
                             body.dark-mode .main-view {{ background: #121212; }}
                             body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
                             body.dark-mode .title {{ color: #e0e0e0; }}
                             body.dark-mode .btn {{ background: #2c2c2c; border-color: #444; color: #ccc; }}
                             body.dark-mode .btn.active {{ background: #0070f3; color: white; }}
                             
-                            /* Dark Mode - Sidebar */
                             body.dark-mode .sidebar {{ background: #1e1e1e; border-left-color: #333; }}
                             body.dark-mode .sidebar h3 {{ color: #fff; border-bottom-color: #333; }}
                             body.dark-mode .link-txt {{ color: #4da3ff; }}
@@ -570,13 +569,16 @@ def process_emails():
                             frame.contentDocument.write(emailContent);
                             frame.contentDocument.close();
                             
+                            // Inject Styles into Iframe
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                body {{ margin: 0; overflow-x: hidden; }} 
+                                body {{ margin: 0; overflow-x: hidden; background-color: white; }} 
                                 img {{ max-width: 100%; height: auto; }}
                                 
-                                /* SMART INVERT DARK MODE (Injecté dans l'iframe) */
-                                html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
+                                /* SMART INVERT DARK MODE (Injected inside iframe) */
+                                html.dark-mode-internal {{ 
+                                    filter: invert(1) hue-rotate(180deg); 
+                                }}
                                 html.dark-mode-internal img, 
                                 html.dark-mode-internal video, 
                                 html.dark-mode-internal [style*="background-image"] {{ 
@@ -589,12 +591,16 @@ def process_emails():
                                 document.body.classList.toggle('mobile-mode');
                                 document.getElementById('btn-mobile').classList.toggle('active');
                             }}
+                            
                             function toggleDark() {{
                                 document.body.classList.toggle('dark-mode');
                                 document.getElementById('btn-dark').classList.toggle('active');
                                 // Toggle class INSIDE the iframe for smart invert
-                                frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
+                                if(frame.contentDocument.documentElement) {{
+                                    frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
+                                }}
                             }}
+                            
                             function toggleLinks() {{
                                 document.getElementById('sidebar').classList.toggle('open');
                                 document.getElementById('btn-links').classList.toggle('active');
