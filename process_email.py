@@ -339,7 +339,6 @@ def process_emails():
 
                     # --- INJECTION UI PREVIEW (HEADER FIXE & LAYOUT) ---
                     
-                    # 1. Style (Sans transition pour éviter les glitchs)
                     style_tag = soup.new_tag("style")
                     style_tag.string = """
                         /* Reset */
@@ -353,13 +352,12 @@ def process_emails():
                             z-index: 1000;
                             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
                             display: flex;
-                            justify-content: center; /* Pour centrer le contenu principal */
+                            justify-content: center;
                         }
                         
-                        /* Conteneur interne du header aligné avec le contenu */
                         .header-inner {
                             width: 100%;
-                            max-width: 800px; /* Même largeur que l'email */
+                            max-width: 800px;
                             padding: 15px 20px;
                             display: flex;
                             justify-content: space-between;
@@ -368,81 +366,58 @@ def process_emails():
                             gap: 15px;
                         }
                         
-                        /* TITRE */
-                        .header-title {
-                            flex: 1;
-                            min-width: 200px;
-                        }
+                        .header-title { flex: 1; min-width: 200px; }
                         .header-title h1 {
-                            margin: 0;
-                            font-size: 16px;
-                            color: #333;
-                            font-weight: 600;
-                            line-height: 1.4;
+                            margin: 0; font-size: 16px; color: #333; font-weight: 600; line-height: 1.4;
                         }
                         
-                        /* CONTROLES (BOUTONS ALIGNÉS À DROITE) */
-                        .controls {
-                            display: flex;
-                            gap: 10px;
-                            align-items: center;
-                        }
+                        .controls { display: flex; gap: 10px; align-items: center; }
                         
                         .btn {
-                            background-color: #f8f9fa;
-                            border: 1px solid #ddd;
-                            color: #555;
-                            padding: 6px 12px;
-                            border-radius: 6px;
-                            font-size: 13px;
-                            font-weight: 500;
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            transition: all 0.2s ease;
-                            white-space: nowrap;
+                            background-color: #f8f9fa; border: 1px solid #ddd; color: #555;
+                            padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500;
+                            cursor: pointer; display: flex; align-items: center; gap: 6px;
+                            transition: all 0.2s ease; white-space: nowrap;
                         }
-                        .btn:hover {
-                            background-color: #e2e6ea;
-                            color: #333;
-                            border-color: #ccc;
-                        }
-                        .btn.active {
-                            background-color: #0070f3;
-                            color: white;
-                            border-color: #0070f3;
-                            box-shadow: 0 2px 8px rgba(0, 112, 243, 0.3);
-                        }
+                        .btn:hover { background-color: #e2e6ea; color: #333; border-color: #ccc; }
+                        .btn.active { background-color: #0070f3; color: white; border-color: #0070f3; box-shadow: 0 2px 8px rgba(0, 112, 243, 0.3); }
                         
                         /* WRAPPER EMAIL */
                         #email-wrapper {
                             width: 100%;
                             display: flex;
                             justify-content: center;
-                            padding: 20px 20px 60px 20px; /* Marge pour le scroll */
+                            padding: 20px 20px 60px 20px;
                             box-sizing: border-box;
                         }
                         
                         #email-content {
                             width: 100%; 
-                            max-width: 800px; /* Desktop par défaut */
+                            max-width: 800px;
                             background: #ffffff;
                             box-shadow: 0 5px 30px rgba(0,0,0,0.08);
-                            /* Pas de transition pour éviter les glitchs dark mode */
+                            /* CENTRAGE DU CONTENU INTERNE */
+                            display: flex; 
+                            flex-direction: column; 
+                            align-items: center;
+                        }
+                        
+                        /* Force les éléments internes à être centrés et ne pas dépasser */
+                        #email-content > * {
+                            margin-left: auto !important;
+                            margin-right: auto !important;
+                            max-width: 100%;
                         }
 
                         /* --- MOBILE MODE --- */
                         body.mobile-active #email-content {
                             max-width: 375px !important;
-                            /* Bordure fine élégante */
                             border: 1px solid #d1d1d1;
                             border-radius: 20px;
                             overflow: hidden;
                             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
                         }
                         
-                        /* Force adaptation mobile */
                         body.mobile-active table, 
                         body.mobile-active img {
                             max-width: 100% !important;
@@ -454,139 +429,10 @@ def process_emails():
                         body.dark-active { background-color: #121212; }
                         
                         body.dark-active .preview-header { 
-                            background-color: #1e1e1e; 
-                            border-bottom-color: #333; 
+                            background-color: #1e1e1e; border-bottom-color: #333; 
                         }
                         body.dark-active .header-title h1 { color: #e0e0e0; }
                         
-                        body.dark-active .btn { 
-                            background-color: #2c2c2c; 
-                            border-color: #444; 
-                            color: #ccc; 
-                        }
+                        body.dark-active .btn { background-color: #2c2c2c; border-color: #444; color: #ccc; }
                         body.dark-active .btn:hover { background-color: #383838; }
-                        body.dark-active .btn.active { background-color: #0070f3; color: white; }
-
-                        /* Inversion intelligente du contenu mail */
-                        body.dark-active #email-content {
-                            filter: invert(1) hue-rotate(180deg);
-                            border-color: #333; /* Bordure sombre en mode mobile */
-                        }
-                        /* Ré-inversion des médias pour qu'ils restent normaux */
-                        body.dark-active img, 
-                        body.dark-active video, 
-                        body.dark-active iframe {
-                            filter: invert(1) hue-rotate(180deg) !important;
-                        }
-                    """
-                    if soup.head: soup.head.append(style_tag)
-                    else:
-                        new_head = soup.new_tag("head")
-                        new_head.append(style_tag)
-                        soup.insert(0, new_head)
-
-                    # 2. JS
-                    script_tag = soup.new_tag("script")
-                    script_tag.string = """
-                        function toggleMobile() {
-                            document.body.classList.toggle('mobile-active');
-                            document.getElementById('btn-mobile').classList.toggle('active');
-                        }
-                        function toggleDark() {
-                            document.body.classList.toggle('dark-active');
-                            document.getElementById('btn-dark').classList.toggle('active');
-                        }
-                    """
-                    soup.body.append(script_tag)
-
-                    # 3. Header (Dashboard Aligné)
-                    header_html = BeautifulSoup(f"""
-                    <header class="preview-header">
-                        <div class="header-inner">
-                            <div class="header-title">
-                                <h1>Sujet : {subject}</h1>
-                            </div>
-                            <div class="controls">
-                                <button id="btn-mobile" class="btn" onclick="toggleMobile()">
-                                    <span>📱</span> Mobile
-                                </button>
-                                <button id="btn-dark" class="btn" onclick="toggleDark()">
-                                    <span>🌙</span> Sombre
-                                </button>
-                            </div>
-                        </div>
-                    </header>
-                    """, 'html.parser')
-
-                    # 4. Wrappings
-                    wrapper_div = soup.new_tag("div", id="email-wrapper")
-                    content_div = soup.new_tag("div", id="email-content")
-                    
-                    to_move = []
-                    for child in soup.body.contents:
-                        if child != script_tag and child != header_html:
-                            to_move.append(child)
-                    
-                    for child in to_move:
-                        content_div.append(child)
-                    
-                    wrapper_div.append(content_div)
-                    
-                    soup.body.clear()
-                    soup.body.append(header_html)
-                    soup.body.append(wrapper_div)
-                    soup.body.append(script_tag)
-
-                    # Méta-données
-                    meta_date = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
-                    meta_sender = soup.new_tag("meta", attrs={"name": "sender", "content": sender_name})
-                    if soup.head: 
-                        soup.head.append(meta_date)
-                        soup.head.append(meta_sender)
-
-                    if soup.title: soup.title.string = subject
-                    else:
-                        new_title = soup.new_tag('title')
-                        new_title.string = subject
-                        if soup.head: soup.head.append(new_title)
-
-                    # Bandeau Titre INTERNE supprimé (car présent dans le header fixe)
-                    # On ne garde que le contenu brut dans le content_div
-
-                    # Images (Lazy Loading)
-                    img_counter = 0
-                    for img in soup.find_all("img"):
-                        src = img.get("src")
-                        if not src or src.startswith("data:") or src.startswith("cid:"): continue
-                        try:
-                            if src.startswith("//"): src = "https:" + src
-                            response = requests.get(src, headers=HEADERS, timeout=10)
-                            if response.status_code == 200:
-                                content_type = response.headers.get('content-type')
-                                ext = mimetypes.guess_extension(content_type) or ".jpg"
-                                img_name = f"img_{img_counter}{ext}"
-                                img_path = os.path.join(newsletter_path, img_name)
-                                with open(img_path, "wb") as f: f.write(response.content)
-                                img['src'] = img_name
-                                img['loading'] = 'lazy'
-                                if img.has_attr('srcset'): del img['srcset']
-                                img_counter += 1
-                        except Exception: pass
-
-                    filename = os.path.join(newsletter_path, "index.html")
-                    with open(filename, "w", encoding='utf-8') as f:
-                        f.write(str(soup))
-                except Exception as e_mail:
-                    print(f"Erreur email {num}: {e_mail}")
-                    continue
-            generate_index()
-            print("Terminé.")
-        else:
-            print("Aucun email trouvé.")
-        mail.close()
-        mail.logout()
-    except Exception as e:
-        print(f"Erreur critique: {e}")
-
-if __name__ == "__main__":
-    process_emails()
+                        body.dark-active .btn.active { background-color: #
