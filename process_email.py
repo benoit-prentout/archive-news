@@ -79,7 +79,7 @@ def clean_output_folder():
         os.makedirs(OUTPUT_FOLDER)
 
 def generate_index():
-    print("Génération du sommaire...")
+    print("Génération du sommaire final...")
     if not os.path.exists(OUTPUT_FOLDER):
         return
         
@@ -173,8 +173,10 @@ def generate_index():
             }}
             
             footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; color: #888; font-size: 0.85rem; }}
-            .footer-links a {{ color: #0070f3; text-decoration: none; margin: 0 8px; }}
-            .footer-links a:hover {{ text-decoration: underline; }}
+            /* Lien copyright discret mais accessible */
+            .copyright a {{ color: inherit; text-decoration: none; border-bottom: 1px dotted #999; transition: color 0.2s; }}
+            .copyright a:hover {{ color: #0070f3; border-bottom-color: #0070f3; }}
+            
             details {{ margin-top: 15px; cursor: pointer; }}
         </style>
     </head>
@@ -186,10 +188,7 @@ def generate_index():
             </ul>
             
             <footer>
-                <div class="footer-links">
-                    <a href="https://github.com/benoit-prentout" target="_blank">Mon Profil GitHub</a>
-                </div>
-                <p>&copy; {current_year} Benoît Prentout.</p>
+                <p class="copyright">&copy; {current_year} <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>.</p>
                 <details>
                     <summary>Mentions Légales</summary>
                     <p style="margin-top:10px; text-align: left; background: #f9f9f9; padding: 10px; border-radius: 4px;">
