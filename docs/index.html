@@ -8,26 +8,54 @@
         <meta name="robots" content="noindex, nofollow">
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f6f9fc; margin: 0; padding: 20px; color: #333; display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; }
-            .container { max-width: 800px; width: 100%; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1; }
-            h1 { text-align: center; color: #1a1a1a; margin-bottom: 40px; font-size: 1.8rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }
-            ul { list-style: none; padding: 0; }
-            li { margin-bottom: 12px; }
-            a.item-link { display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; background: #fff; border: 1px solid #eaeaea; border-radius: 10px; text-decoration: none; color: #2c3e50; transition: all 0.2s ease; }
-            a.item-link:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: #0070f3; color: #0070f3; }
-            .link-content { display: flex; align-items: center; overflow: hidden; }
-            .icon { font-size: 1.2rem; margin-right: 15px; flex-shrink: 0; }
-            .title { font-weight: 600; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .date { font-size: 0.85rem; color: #888; background: #f4f4f4; padding: 5px 10px; border-radius: 20px; margin-left: 10px; flex-shrink: 0; }
-            a.item-link:hover .date { background: #e8f0fe; color: #0070f3; }
+            .container { max-width: 800px; width: 100%; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1; }
             
-            /* Footer Styles */
-            footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; color: #666; font-size: 0.9rem; }
-            .footer-links { margin-bottom: 15px; }
-            .footer-links a { color: #0070f3; text-decoration: none; font-weight: 600; margin: 0 10px; }
+            h1 { text-align: center; color: #1a1a1a; margin-bottom: 30px; font-size: 1.8rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }
+            
+            /* LIST DESIGN */
+            ul { list-style: none; padding: 0; margin: 0; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden; }
+            li { border-bottom: 1px solid #eaeaea; margin: 0; }
+            li:last-child { border-bottom: none; }
+            
+            a.item-link { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                padding: 16px 20px; 
+                background: #fff; 
+                text-decoration: none; 
+                color: #2c3e50; 
+                transition: background 0.1s ease; 
+            }
+            a.item-link:hover { background-color: #f8f9fa; }
+            
+            /* TYPOGRAPHY */
+            .title { 
+                font-weight: 500; 
+                font-size: 1rem; 
+                color: #111;
+                /* Force single line with ellipsis */
+                white-space: nowrap; 
+                overflow: hidden; 
+                text-overflow: ellipsis; 
+                margin-right: 15px; 
+                flex: 1; /* Takes all available space */
+                min-width: 0; /* Fix for flexbox text overflow */
+            }
+            
+            .date { 
+                font-size: 0.85rem; 
+                color: #666; 
+                white-space: nowrap; 
+                flex-shrink: 0; 
+                font-variant-numeric: tabular-nums;
+            }
+            
+            /* FOOTER */
+            footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; color: #888; font-size: 0.85rem; }
+            .footer-links a { color: #0070f3; text-decoration: none; margin: 0 8px; }
             .footer-links a:hover { text-decoration: underline; }
-            .legal-details { margin-top: 15px; font-size: 0.8rem; color: #999; }
-            details { cursor: pointer; }
-            summary { outline: none; }
+            details { margin-top: 15px; cursor: pointer; }
         </style>
     </head>
     <body>
@@ -36,41 +64,29 @@
             <ul>
                 
         <li>
-            <a href="e9904f3cd9/index.html">
-                <div class="link-content">
-                    <span class="icon">📧</span>
-                    <span class="title">On a un cadeau pour votre chat 🐈</span>
-                </div>
+            <a href="b94f7e2c6f/index.html" class="item-link">
+                <span class="title">On a un cadeau pour votre chat 🐱</span>
                 <span class="date">23/11/2025</span>
             </a>
         </li>
         
         <li>
-            <a href="224513c4af/index.html">
-                <div class="link-content">
-                    <span class="icon">📧</span>
-                    <span class="title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</span>
-                </div>
+            <a href="224513c4af/index.html" class="item-link">
+                <span class="title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</span>
                 <span class="date">20/11/2025</span>
             </a>
         </li>
         
         <li>
-            <a href="cafed1ec01/index.html">
-                <div class="link-content">
-                    <span class="icon">📧</span>
-                    <span class="title">Besoin d'un mode de garde pour bébé ?</span>
-                </div>
+            <a href="cafed1ec01/index.html" class="item-link">
+                <span class="title">Besoin d'un mode de garde pour bébé ?</span>
                 <span class="date">17/11/2025</span>
             </a>
         </li>
         
         <li>
-            <a href="1038d04a25/index.html">
-                <div class="link-content">
-                    <span class="icon">📧</span>
-                    <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
-                </div>
+            <a href="1038d04a25/index.html" class="item-link">
+                <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
                 <span class="date">02/10/2025</span>
             </a>
         </li>
@@ -79,22 +95,18 @@
             
             <footer>
                 <div class="footer-links">
-                    <a href="https://github.com/benoit-prentout" target="_blank">Mon Profil GitHub</a> • 
+                    <a href="https://github.com/benoit-prentout" target="_blank">GitHub</a> • 
                     <a href="https://www.getinside.fr/" target="_blank">GetInside.fr</a>
                 </div>
-                <p>&copy; 2025 Benoît Prentout. Tous droits réservés.</p>
-                
-                <div class="legal-details">
-                    <details>
-                        <summary>Mentions Légales & Infos</summary>
-                        <p style="margin-top:10px;">
-                            <strong>Éditeur :</strong> Benoît Prentout<br>
-                            <strong>Hébergement :</strong> GitHub Inc., 88 Colin P. Kelly Jr. St, San Francisco, CA 94107, USA.<br>
-                            <strong>Nature du site :</strong> Ce site est une archive personnelle à but de démonstration technique et de portfolio (DevOps/Automation).<br>
-                            Les contenus (newsletters) restent la propriété intellectuelle de leurs auteurs respectifs.
-                        </p>
-                    </details>
-                </div>
+                <p>&copy; 2025 Benoît Prentout.</p>
+                <details>
+                    <summary>Mentions Légales</summary>
+                    <p style="margin-top:10px; text-align: left; background: #f9f9f9; padding: 10px; border-radius: 4px;">
+                        <strong>Éditeur :</strong> Benoît Prentout<br>
+                        <strong>Hébergement :</strong> GitHub Inc.<br>
+                        Ce site est une archive personnelle à but de démonstration.
+                    </p>
+                </details>
             </footer>
         </div>
     </body>
