@@ -76,7 +76,6 @@ Go to `Settings` > `Pages`:
 
 **Benoît Prentout**
 * GitHub: [@benoit-prentout](https://github.com/benoit-prentout)
-* Website: [getinside.fr](https://www.getinside.fr/)
 
 ---
 
