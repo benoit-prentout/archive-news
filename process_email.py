@@ -79,7 +79,7 @@ def clean_output_folder():
         os.makedirs(OUTPUT_FOLDER)
 
 def generate_index():
-    print("Génération du sommaire final...")
+    print("Génération du sommaire avec Recherche & Design...")
     if not os.path.exists(OUTPUT_FOLDER):
         return
         
@@ -136,6 +136,25 @@ def generate_index():
             
             h1 {{ text-align: center; color: #1a1a1a; margin-bottom: 30px; font-size: 1.8rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }}
             
+            /* SEARCH BAR */
+            #searchInput {{
+                width: 100%;
+                padding: 12px 20px;
+                margin-bottom: 25px;
+                box-sizing: border-box;
+                border: 2px solid #eaeaea;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: border-color 0.3s;
+                background-color: #fcfcfc;
+            }}
+            #searchInput:focus {{
+                border-color: #0070f3;
+                outline: none;
+                background-color: #fff;
+            }}
+
+            /* LIST DESIGN */
             ul {{ list-style: none; padding: 0; margin: 0; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden; }}
             li {{ border-bottom: 1px solid #eaeaea; margin: 0; }}
             li:last-child {{ border-bottom: none; }}
@@ -173,17 +192,18 @@ def generate_index():
             }}
             
             footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; color: #888; font-size: 0.85rem; }}
-            /* Lien copyright discret mais accessible */
             .copyright a {{ color: inherit; text-decoration: none; border-bottom: 1px dotted #999; transition: color 0.2s; }}
             .copyright a:hover {{ color: #0070f3; border-bottom-color: #0070f3; }}
-            
             details {{ margin-top: 15px; cursor: pointer; }}
         </style>
     </head>
     <body>
         <div class="container">
             <h1>📬 Archives Newsletters</h1>
-            <ul>
+            
+            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher une newsletter par titre ou date...">
+            
+            <ul id="newsList">
                 {links_html}
             </ul>
             
@@ -199,6 +219,26 @@ def generate_index():
                 </details>
             </footer>
         </div>
+
+        <script>
+        function filterList() {{
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("newsList");
+            li = ul.getElementsByTagName('li');
+
+            for (i = 0; i < li.length; i++) {{
+                a = li[i].getElementsByTagName("a")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {{
+                    li[i].style.display = "";
+                }} else {{
+                    li[i].style.display = "none";
+                }}
+            }}
+        }}
+        </script>
     </body>
     </html>
     """
@@ -268,6 +308,7 @@ def process_emails():
                     soup = BeautifulSoup(html_content, "html.parser")
                     for s in soup(["script", "iframe", "object"]): s.extract()
 
+                    # Nettoyage
                     split_keywords = ["Forwarded message", "Message transféré"]
                     found_split = False
                     for div in soup.find_all("div"):
@@ -293,6 +334,7 @@ def process_emails():
                         new_body.extend(soup.contents)
                         soup.append(new_body)
 
+                    # Reconstruction
                     meta_tag = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
                     if soup.head: soup.head.append(meta_tag)
                     else:
@@ -314,6 +356,7 @@ def process_emails():
                     header_div.append(h1_tag)
                     soup.body.insert(0, header_div)
 
+                    # Images (Avec Lazy Loading)
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
@@ -327,7 +370,9 @@ def process_emails():
                                 img_name = f"img_{img_counter}{ext}"
                                 img_path = os.path.join(newsletter_path, img_name)
                                 with open(img_path, "wb") as f: f.write(response.content)
+                                
                                 img['src'] = img_name
+                                img['loading'] = 'lazy' # OPTIMISATION B : LAZY LOADING
                                 if img.has_attr('srcset'): del img['srcset']
                                 img_counter += 1
                         except Exception: pass
