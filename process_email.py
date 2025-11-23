@@ -9,7 +9,6 @@ import mimetypes
 import requests
 import datetime
 import hashlib
-import shutil
 
 # --- CONFIGURATION ---
 GMAIL_USER = os.environ["GMAIL_USER"]
@@ -31,7 +30,6 @@ def clean_subject_prefixes(subject):
 
 def get_deterministic_id(subject):
     if not subject: subject = "sans_titre"
-    # Utilisation de SHA256 au lieu de MD5 pour plus de sécurité et moins de collisions
     hash_object = hashlib.sha256(subject.encode('utf-8', errors='ignore'))
     return hash_object.hexdigest()[:12]
 
@@ -43,7 +41,6 @@ def get_email_date(msg):
             return dt.strftime('%Y-%m-%d')
     except Exception:
         pass
-    # Fallback : Date du jour si échec
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
 def get_clean_sender(msg):
@@ -65,28 +62,55 @@ def get_clean_sender(msg):
 def get_page_metadata(filepath):
     title = "Sans titre"
     date_str = None
+    archiving_date_str = None
     sender = "Expéditeur Inconnu"
+    
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            # Utilisation de lxml pour la lecture rapide des métadonnées
             soup = BeautifulSoup(f, 'lxml')
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
+            
+            # Date de réception (email)
             meta_date = soup.find("meta", attrs={"name": "creation_date"})
             if meta_date and meta_date.get("content"):
                 date_str = meta_date["content"]
+            
+            # Date d'archivage (script)
+            meta_arch = soup.find("meta", attrs={"name": "archiving_date"})
+            if meta_arch and meta_arch.get("content"):
+                archiving_date_str = meta_arch["content"]
+                
             meta_sender = soup.find("meta", attrs={"name": "sender"})
             if meta_sender and meta_sender.get("content"):
                 sender = meta_sender["content"]
     except Exception:
         pass
+
+    # Fallbacks
     if not date_str:
         try:
             timestamp = os.path.getmtime(filepath)
             date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
         except:
             date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-    return title, date_str, sender
+            
+    if not archiving_date_str:
+        # Si pas de date d'archivage (vieux fichiers), on utilise la date de modif du fichier
+        try:
+            timestamp = os.path.getmtime(filepath)
+            archiving_date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
+        except:
+            archiving_date_str = date_str
+
+    return title, date_str, sender, archiving_date_str
+
+def format_date_fr(date_iso):
+    try:
+        dt = datetime.datetime.strptime(date_iso, '%Y-%m-%d')
+        return dt.strftime('%d/%m/%Y')
+    except:
+        return date_iso
 
 def generate_index():
     print("Génération du sommaire...")
@@ -101,23 +125,18 @@ def generate_index():
         index_file_path = os.path.join(folder, "index.html")
         if not os.path.exists(index_file_path): continue
 
-        full_title, date_str, sender = get_page_metadata(index_file_path)
-        try:
-            date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d')
-            display_date = date_obj.strftime('%d/%m/%Y')
-            sort_key = date_str
-        except:
-            display_date = date_str
-            sort_key = date_str
-
+        full_title, date_rec_str, sender, date_arch_str = get_page_metadata(index_file_path)
+        
         pages_data.append({
             "folder": folder_name,
             "title": full_title,
             "sender": sender,
-            "date": display_date,
-            "sort_key": sort_key
+            "date_rec": format_date_fr(date_rec_str),
+            "date_arch": format_date_fr(date_arch_str),
+            "sort_key": date_rec_str # Tri par date de réception
         })
 
+    # Tri du plus récent au plus ancien
     pages_data.sort(key=lambda x: x["sort_key"], reverse=True)
 
     links_html = ""
@@ -129,7 +148,10 @@ def generate_index():
                     <span class="sender">{page['sender']}</span>
                     <span class="title">{page['title']}</span>
                 </div>
-                <span class="date">{page['date']}</span>
+                <div class="date-col">
+                    <span class="date" title="Date de réception">📩 {page['date_rec']}</span>
+                    <span class="date-arch" title="Date d'archivage">🗄️ {page['date_arch']}</span>
+                </div>
             </a>
         </li>
         '''
@@ -177,7 +199,10 @@ def generate_index():
             .info-col {{ display: flex; flex-direction: column; flex: 1; min-width: 0; margin-right: 15px; }}
             .sender {{ font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }}
             .title {{ font-weight: 500; font-size: 1rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-            .date {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }}
+            
+            .date-col {{ display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; margin-left: 10px; }}
+            .date {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }}
+            .date-arch {{ font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 3px; }}
             
             footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.85rem; }}
             .copyright a {{ color: inherit; text-decoration: none; border-bottom: 1px dotted var(--text-muted); transition: color 0.2s; }}
@@ -290,7 +315,7 @@ def process_emails():
 
                     print(f"Traitement : {subject[:30]}... ({sender_name})")
                     
-                    # 3. Téléchargement complet uniquement si nécessaire
+                    # 3. Téléchargement complet car nouveau mail
                     status, msg_data = mail.fetch(num, "(RFC822)")
                     msg = email.message_from_bytes(msg_data[0][1])
                     os.makedirs(newsletter_path, exist_ok=True)
@@ -308,11 +333,11 @@ def process_emails():
                         html_content = payload.decode(charset, errors="ignore")
                     if not html_content: continue
 
-                    # Utilisation de lxml pour le parsing (plus robuste)
+                    # Parsing
                     soup = BeautifulSoup(html_content, "lxml")
                     for s in soup(["script", "iframe", "object"]): s.extract()
 
-                    # Nettoyage des transferts (inchangé)
+                    # Nettoyage des transferts
                     split_keywords = ["Forwarded message", "Message transféré"]
                     found_split = False
                     for div in soup.find_all("div"):
@@ -341,7 +366,7 @@ def process_emails():
                     # --- INJECTION UI PREVIEW ---
                     
                     style_tag = soup.new_tag("style")
-                    # Correction BUG : Ajout de !important sur body.dark-active et visibility:hidden sur img cassées
+                    # Correction BUG : Ajout de !important sur body.dark-active
                     style_tag.string = """
                         /* Reset */
                         body { margin: 0; padding: 0; background-color: #eef2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -503,10 +528,18 @@ def process_emails():
                     soup.body.append(wrapper_div)
                     soup.body.append(script_tag)
 
+                    # Méta-données
                     meta_date = soup.new_tag("meta", attrs={"name": "creation_date", "content": email_date_str})
+                    
+                    # Ajout de la date d'archivage (aujourd'hui)
+                    current_arch_date = datetime.datetime.now().strftime('%Y-%m-%d')
+                    meta_arch = soup.new_tag("meta", attrs={"name": "archiving_date", "content": current_arch_date})
+                    
                     meta_sender = soup.new_tag("meta", attrs={"name": "sender", "content": sender_name})
+                    
                     if soup.head: 
                         soup.head.append(meta_date)
+                        soup.head.append(meta_arch)
                         soup.head.append(meta_sender)
 
                     if soup.title: soup.title.string = subject
@@ -515,14 +548,13 @@ def process_emails():
                         new_title.string = subject
                         if soup.head: soup.head.append(new_title)
 
-                    # Images (Sécurisation + Timeout réduit)
+                    # Images (Optimisation timeout + validation)
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
                         if not src or src.startswith("data:") or src.startswith("cid:"): continue
                         try:
                             if src.startswith("//"): src = "https:" + src
-                            # Timeout réduit à 5s et validation
                             response = requests.get(src, headers=HEADERS, timeout=5)
                             if response.status_code == 200:
                                 content_type = response.headers.get('content-type', '')
