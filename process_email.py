@@ -88,7 +88,7 @@ def get_page_metadata(filepath):
     
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f, 'lxml')
+            soup = BeautifulSoup(f, 'html.parser') # Changé en html.parser
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
             
@@ -170,6 +170,7 @@ def generate_index():
 
     current_year = datetime.datetime.now().year
 
+    # Le template HTML du sommaire est resté identique car il est fonctionnel
     index_content = f"""
     <!DOCTYPE html>
     <html lang="fr">
@@ -271,7 +272,6 @@ def generate_index():
             localStorage.setItem('theme', newTheme);
         }});
 
-        // --- PAGINATION & SEARCH LOGIC ---
         const itemsPerPage = 10;
         let currentPage = 1;
         const list = document.getElementById("newsList");
@@ -391,7 +391,7 @@ def process_emails():
             email_ids = messages[0].split()
             print(f"{len(email_ids)} emails trouvés au total.")
 
-            # PHASE 1 : Synchro (Nettoyage des dossiers qui n'existent plus dans Gmail)
+            # PHASE 1 : Synchro (Suppression locale des dossiers qui n'existent plus dans Gmail)
             valid_folder_ids = set()
             email_map = {}
             for num in email_ids:
@@ -410,7 +410,7 @@ def process_emails():
                 shutil.rmtree(os.path.join(OUTPUT_FOLDER, f_id), ignore_errors=True)
                 print(f"Supprimé (Synchro): {f_id}")
 
-            # PHASE 2 : Traitement MASSIF (Tout le monde y passe pour maj le viewer)
+            # PHASE 2 : Traitement MASSIF
             folders_to_process = list(valid_folder_ids)[:BATCH_SIZE]
             
             print(f"Mise à jour de {len(folders_to_process)} emails (batch)...")
@@ -429,32 +429,59 @@ def process_emails():
                     newsletter_path = os.path.join(OUTPUT_FOLDER, f_id)
                     os.makedirs(newsletter_path, exist_ok=True)
                     
-                    # Extraction HTML
+                    # --- EXTRACTION HTML ROBUSTE ---
+                    payload = None
+                    charset = None
                     html_content = ""
-                    for part in msg.walk():
-                        if part.get_content_type() == "text/html":
-                            payload = part.get_payload(decode=True)
-                            charset = part.get_content_charset() or 'utf-8'
-                            html_content = payload.decode(charset, errors="ignore")
-                            break
-                    if not html_content and not msg.is_multipart():
-                        payload = msg.get_payload(decode=True)
-                        html_content = payload.decode(msg.get_content_charset() or 'utf-8', errors="ignore")
+
+                    if msg.is_multipart():
+                        for part in msg.walk():
+                            if part.get_content_type() == "text/html":
+                                payload = part.get_payload(decode=True)
+                                charset = part.get_content_charset()
+                                break
+                    else:
+                        if msg.get_content_type() == "text/html":
+                            payload = msg.get_payload(decode=True)
+                            charset = msg.get_content_charset()
+
+                    if not payload:
+                        print(f"Ignoré (Pas de HTML): {subject}")
+                        continue
                     
-                    if not html_content: continue
+                    # Tentative de décodage en cascade
+                    decoding_options = [charset, 'utf-8', 'windows-1252', 'iso-8859-1']
+                    decoded = False
+                    for encoding in decoding_options:
+                        if not encoding: continue
+                        try:
+                            html_content = payload.decode(encoding)
+                            decoded = True
+                            break
+                        except (UnicodeDecodeError, LookupError):
+                            continue
+                    
+                    if not decoded:
+                        html_content = payload.decode('utf-8', errors='ignore')
 
-                    soup = BeautifulSoup(html_content, "lxml")
-                    for s in soup(["script", "iframe", "object"]): s.extract()
+                    # --- NETTOYAGE ---
+                    # Utilisation de html.parser au lieu de lxml pour plus de tolérance
+                    soup = BeautifulSoup(html_content, "html.parser")
+                    
+                    # Suppression des éléments dangereux ou inutiles
+                    for s in soup(["script", "iframe", "object", "meta"]): 
+                        s.extract()
 
-                    # Cleaning Forwards
+                    # Nettoyage des forwards (Spécifique pour archives)
                     for div in soup.find_all("div"):
                         if any(k in div.get_text() for k in ["Forwarded message", "Message transféré"]) and "-----" in div.get_text():
                             new_body = soup.new_tag("body")
                             for sibling in div.next_siblings: new_body.append(sibling)
-                            soup.body.replace_with(new_body)
+                            if soup.body:
+                                soup.body.replace_with(new_body)
                             break
                     
-                    # Link Extraction
+                    # Extraction des liens
                     links = []
                     for a in soup.find_all('a', href=True):
                         txt = a.get_text(strip=True) or "[Image/Vide]"
@@ -462,17 +489,10 @@ def process_emails():
                     
                     links_html = "".join([f'<li><a href="{l["url"]}" target="_blank"><div class="link-txt">{l["txt"]}</div><div class="link-url">{l["url"]}</div></a></li>' for l in links])
 
-                    # Auto-Fix Large Tables & Min-Widths (PYTHON CLEANUP)
-                    for t in soup.find_all("table"):
-                        if t.get("style"): 
-                            # Fix width fixes
-                            t["style"] = re.sub(r'width:\s*([6-9]\d{2}|\d{4,})px', 'width: 100%', t["style"], flags=re.IGNORECASE)
-                            # Fix min-width fixes (NOUVEAU)
-                            t["style"] = re.sub(r'min-width:\s*([6-9]\d{2}|\d{4,})px', 'min-width: 0', t["style"], flags=re.IGNORECASE)
-                        
-                        if t.get("width") and t["width"].isdigit() and int(t["width"]) > 600: t["width"] = "100%"
+                    # NOTE: Suppression du bloc Regex agressif sur les tables. 
+                    # On laisse le HTML tranquille et on gère via CSS injecté.
 
-                    # Images (SMART DOWNLOAD - On ne télécharge que si absent)
+                    # --- IMAGES (Téléchargement local) ---
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
@@ -486,7 +506,6 @@ def process_emails():
                             local_name = f"img_{img_counter}{ext}"
                             local_path = os.path.join(newsletter_path, local_name)
 
-                            # OPTIMISATION : On ne télécharge que si l'image n'existe pas
                             if not os.path.exists(local_path):
                                 r = requests.get(src, headers=HEADERS, timeout=5)
                                 if r.status_code == 200:
@@ -499,10 +518,11 @@ def process_emails():
                             img['src'] = local_name
                             img['loading'] = 'lazy'
                             if img.has_attr('srcset'): del img['srcset']
+                            # On ne force pas de width/height ici pour laisser le CSS agir
                             img_counter += 1
                         except: pass
 
-                    # GENERATE VIEWER
+                    # --- GÉNÉRATION DU VIEWER ---
                     safe_html = json.dumps(str(soup))
                     nb_links = len(links)
                     
@@ -531,7 +551,7 @@ def process_emails():
                             /* Main Container */
                             .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: center; background: #eef2f5; overflow: hidden; }}
                             
-                            /* Iframe Wrapper - Desktop Default */
+                            /* Iframe Wrapper */
                             .iframe-wrapper {{ 
                                 width: 1200px; max-width: 95%; height: 90%;
                                 transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
@@ -540,14 +560,14 @@ def process_emails():
                             
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             
-                            /* Mobile Mode - FIXED CLIPPING */
+                            /* Mobile Mode */
                             body.mobile-mode .iframe-wrapper {{ 
                                 width: 375px; height: 812px; max-height: 90vh;
                                 border-radius: 40px; border: 12px solid #333; 
                                 box-shadow: 0 20px 50px rgba(0,0,0,0.2);
                                 overflow: hidden;
-                                transform: translateZ(0); /* Essential for border-radius masking */
-                                -webkit-mask-image: -webkit-radial-gradient(white, black); /* Fix for Safari/Chrome clipping */
+                                transform: translateZ(0);
+                                -webkit-mask-image: -webkit-radial-gradient(white, black);
                             }}
                             
                             /* Links Sidebar */
@@ -560,13 +580,12 @@ def process_emails():
                             .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 4px; }}
                             .link-url {{ color: #666; }}
                             
-                            /* Dark Mode - Header/UI Only */
+                            /* Dark Mode - UI Only */
                             body.dark-mode .main-view {{ background: #121212; }}
                             body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
                             body.dark-mode .title {{ color: #e0e0e0; }}
                             body.dark-mode .btn {{ background: #2c2c2c; border-color: #444; color: #ccc; }}
                             body.dark-mode .btn.active {{ background: #0070f3; color: white; }}
-                            
                             body.dark-mode .sidebar {{ background: #1e1e1e; border-left-color: #333; }}
                             body.dark-mode .sidebar h3 {{ color: #fff; border-bottom-color: #333; }}
                             body.dark-mode .link-txt {{ color: #4da3ff; }}
@@ -602,24 +621,20 @@ def process_emails():
                             frame.contentDocument.write(emailContent);
                             frame.contentDocument.close();
                             
-                            // Inject Styles into Iframe
+                            // --- INJECTION CSS INTELLIGENTE ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                body {{ margin: 0 !important; padding: 0 !important; width: 100% !important; min-width: 0 !important; background-color: white; overflow-x: hidden; }} 
+                                body {{ margin: 0 !important; padding: 10px !important; width: auto !important; background-color: white; overflow-x: hidden; font-family: sans-serif; }} 
                                 
-                                /* FORCE RESPONSIVE IMAGES & TABLES */
-                                img {{ max-width: 100% !important; height: auto !important; display: block; }}
-                                table, td, tr {{ max-width: 100% !important; min-width: 0 !important; height: auto !important; }}
+                                /* PRESERVE LES COLONNES MAIS EMPECHE LE DEBORDEMENT */
+                                table {{ max-width: 100% !important; height: auto !important; }}
+                                img {{ max-width: 100% !important; height: auto !important; display: inline-block; }}
                                 
-                                /* SMART INVERT DARK MODE (Injected inside iframe) */
-                                html.dark-mode-internal {{ 
-                                    filter: invert(1) hue-rotate(180deg); 
-                                }}
+                                /* DARK MODE INTERNE */
+                                html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, 
                                 html.dark-mode-internal video, 
-                                html.dark-mode-internal [style*="background-image"] {{ 
-                                    filter: invert(1) hue-rotate(180deg); 
-                                }}
+                                html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
                             `;
                             frame.contentDocument.head.appendChild(style);
 
@@ -631,7 +646,6 @@ def process_emails():
                             function toggleDark() {{
                                 document.body.classList.toggle('dark-mode');
                                 document.getElementById('btn-dark').classList.toggle('active');
-                                // Toggle class INSIDE the iframe for smart invert
                                 if(frame.contentDocument.documentElement) {{
                                     frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
                                 }}
