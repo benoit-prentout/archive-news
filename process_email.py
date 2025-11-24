@@ -538,21 +538,24 @@ def process_emails():
                             
                             .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: center; background: #eef2f5; overflow: hidden; }}
                             
+                            /* STYLE DU CONTENEUR DESKTOP */
                             .iframe-wrapper {{ 
                                 width: 1200px; max-width: 95%; height: 90%;
-                                transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+                                transition: all 0.3s ease; 
                                 background: white; box-shadow: 0 5px 30px rgba(0,0,0,0.1); border-radius: 8px;
                             }}
                             
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             
+                            /* STYLE MOBILE : Ratio et dimensions fixes type iPhone X */
                             body.mobile-mode .iframe-wrapper {{ 
-                                width: 375px; height: 812px; max-height: 90vh;
-                                border-radius: 40px; border: 12px solid #333; 
-                                box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-                                overflow: hidden;
-                                transform: translateZ(0);
-                                -webkit-mask-image: -webkit-radial-gradient(white, black);
+                                width: 375px;
+                                height: 812px; 
+                                max-height: 90vh; /* Pour ne pas dépasser sur les petits écrans */
+                                max-width: 100%;
+                                border-radius: 0; /* Suppression des coins arrondis comme demandé */
+                                border: none; 
+                                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
                             }}
                             
                             .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }}
@@ -604,44 +607,47 @@ def process_emails():
                             frame.contentDocument.write(emailContent);
                             frame.contentDocument.close();
                             
-                            // --- INJECTION CSS EQUILIBREE (Correction Finale) ---
+                            // --- CSS INJECTÉ DANS L'IFRAME ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
                                 * {{ box-sizing: border-box !important; }}
+
+                                /* CACHER LA SCROLLBAR mais garder le scroll */
+                                html {{ scrollbar-width: none; }} /* Firefox */
+                                body::-webkit-scrollbar {{ display: none; }} /* Chrome/Safari */
                                 
-                                /* BODY: Centré mais pas forcé à 100% de large pour garder l'aspect "papier" sur desktop */
+                                /* CORRECTION DESKTOP : Contrainte stricte */
                                 body {{ 
                                     margin: 0 auto !important; 
-                                    padding: 0 !important; 
-                                    background-color: transparent; /* Laisse le fond naturel de l'email */
+                                    padding: 10px !important;
+                                    width: 100% !important;
+                                    max-width: 800px !important; /* Force la largeur max du contenu texte */
+                                    background-color: white; 
                                     font-family: sans-serif;
-                                    text-align: center; /* Centre le conteneur principal si l'email n'a pas de wrapper */
-                                    overflow-x: hidden;
+                                    overflow-x: hidden; /* Coupe ce qui dépasse horizontalement */
                                 }}
                                 
-                                /* Conteneurs internes: Remis à gauche */
-                                div, table {{ text-align: left; }}
+                                /* Force TOUS les éléments à ne pas dépasser */
+                                div, table, p, span, pre, code {{ 
+                                    max-width: 100% !important;
+                                }}
 
-                                /* TABLES: On empêche le débordement MAIS on ne force pas l'affichage en block */
                                 table, tbody, tr, td {{ 
-                                    max-width: 100% !important; 
                                     height: auto !important; 
-                                    /* RETRAIT de display: block qui cassait les colonnes */
                                 }}
                                 
-                                /* Permet aux vieilles tables de rétrécir sur mobile */
+                                /* Permet le redimensionnement fluide */
                                 table {{ min-width: 0 !important; }}
                                 td {{ min-width: 0 !important; }}
 
-                                /* IMAGES: Fluides */
                                 img {{ 
                                     max-width: 100% !important; 
                                     height: auto !important; 
                                     display: inline-block; 
                                 }}
 
-                                /* TEXTE: Césure pour éviter les débordements horizontaux */
-                                p, h1, h2, h3, h4, span, div, td, a {{
+                                /* CÉSURE VIOLENTE pour les URL ou mots longs qui dépassent */
+                                p, h1, h2, h3, h4, span, div, td, a, li {{
                                     word-break: break-word !important; 
                                     overflow-wrap: break-word !important;
                                     white-space: normal !important;
