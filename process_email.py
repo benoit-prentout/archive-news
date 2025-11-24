@@ -461,7 +461,7 @@ def process_emails():
                     if not decoded:
                         html_content = payload.decode('utf-8', errors='ignore')
 
-                    # PARSING (html.parser)
+                    # PARSING
                     soup = BeautifulSoup(html_content, "html.parser")
                     
                     for s in soup(["script", "iframe", "object", "meta"]): 
@@ -604,42 +604,43 @@ def process_emails():
                             frame.contentDocument.write(emailContent);
                             frame.contentDocument.close();
                             
-                            // --- INJECTION CSS INTELLIGENTE (FIX MOBILE & OVERFLOW) ---
+                            // --- INJECTION CSS EQUILIBREE (Correction Finale) ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
                                 * {{ box-sizing: border-box !important; }}
                                 
+                                /* BODY: Centré mais pas forcé à 100% de large pour garder l'aspect "papier" sur desktop */
                                 body {{ 
-                                    margin: 0 !important; 
+                                    margin: 0 auto !important; 
                                     padding: 0 !important; 
-                                    width: 100% !important; 
-                                    min-width: 0 !important;
-                                    background-color: white; 
+                                    background-color: transparent; /* Laisse le fond naturel de l'email */
                                     font-family: sans-serif;
-                                    overflow-x: hidden; 
-                                }} 
+                                    text-align: center; /* Centre le conteneur principal si l'email n'a pas de wrapper */
+                                    overflow-x: hidden;
+                                }}
                                 
+                                /* Conteneurs internes: Remis à gauche */
+                                div, table {{ text-align: left; }}
+
+                                /* TABLES: On empêche le débordement MAIS on ne force pas l'affichage en block */
                                 table, tbody, tr, td {{ 
                                     max-width: 100% !important; 
                                     height: auto !important; 
-                                    width: 100% !important;
-                                    min-width: 0 !important;
-                                    display: block !important;
+                                    /* RETRAIT de display: block qui cassait les colonnes */
                                 }}
                                 
-                                /* Exception pour petites tables internes de mise en forme */
-                                table[width], table[style*="width"] {{
-                                   display: table !important;
-                                   width: 100% !important;
-                                }}
+                                /* Permet aux vieilles tables de rétrécir sur mobile */
+                                table {{ min-width: 0 !important; }}
+                                td {{ min-width: 0 !important; }}
 
+                                /* IMAGES: Fluides */
                                 img {{ 
                                     max-width: 100% !important; 
                                     height: auto !important; 
-                                    display: block; 
-                                    margin: 0 auto;
+                                    display: inline-block; 
                                 }}
 
+                                /* TEXTE: Césure pour éviter les débordements horizontaux */
                                 p, h1, h2, h3, h4, span, div, td, a {{
                                     word-break: break-word !important; 
                                     overflow-wrap: break-word !important;
@@ -647,6 +648,7 @@ def process_emails():
                                     max-width: 100% !important;
                                 }}
 
+                                /* DARK MODE */
                                 html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, 
                                 html.dark-mode-internal video, 
