@@ -88,7 +88,7 @@ def get_page_metadata(filepath):
     
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f, 'html.parser') # Changé en html.parser
+            soup = BeautifulSoup(f, 'html.parser')
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
             
@@ -170,7 +170,6 @@ def generate_index():
 
     current_year = datetime.datetime.now().year
 
-    # Le template HTML du sommaire est resté identique car il est fonctionnel
     index_content = f"""
     <!DOCTYPE html>
     <html lang="fr">
@@ -196,7 +195,6 @@ def generate_index():
             #theme-toggle {{ background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-main); }}
             #theme-toggle:hover {{ background-color: var(--hover-bg); border-color: var(--accent-color); }}
             
-            /* Icon Switching Logic */
             .icon-moon {{ display: block; }}
             .icon-sun {{ display: none; }}
             [data-theme="dark"] .icon-moon {{ display: none; }}
@@ -220,7 +218,6 @@ def generate_index():
             .date {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }}
             .date-arch {{ font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 3px; }}
             
-            /* Pagination Styles */
             .pagination {{ display: flex; justify-content: center; gap: 8px; margin-top: 25px; flex-wrap: wrap; }}
             .page-btn {{ background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }}
             .page-btn:hover {{ background: var(--hover-bg); border-color: var(--accent-color); }}
@@ -391,7 +388,7 @@ def process_emails():
             email_ids = messages[0].split()
             print(f"{len(email_ids)} emails trouvés au total.")
 
-            # PHASE 1 : Synchro (Suppression locale des dossiers qui n'existent plus dans Gmail)
+            # PHASE 1 : Synchro
             valid_folder_ids = set()
             email_map = {}
             for num in email_ids:
@@ -410,7 +407,7 @@ def process_emails():
                 shutil.rmtree(os.path.join(OUTPUT_FOLDER, f_id), ignore_errors=True)
                 print(f"Supprimé (Synchro): {f_id}")
 
-            # PHASE 2 : Traitement MASSIF
+            # PHASE 2 : Traitement
             folders_to_process = list(valid_folder_ids)[:BATCH_SIZE]
             
             print(f"Mise à jour de {len(folders_to_process)} emails (batch)...")
@@ -429,7 +426,7 @@ def process_emails():
                     newsletter_path = os.path.join(OUTPUT_FOLDER, f_id)
                     os.makedirs(newsletter_path, exist_ok=True)
                     
-                    # --- EXTRACTION HTML ROBUSTE ---
+                    # EXTRACTION
                     payload = None
                     charset = None
                     html_content = ""
@@ -449,7 +446,7 @@ def process_emails():
                         print(f"Ignoré (Pas de HTML): {subject}")
                         continue
                     
-                    # Tentative de décodage en cascade
+                    # DECODAGE
                     decoding_options = [charset, 'utf-8', 'windows-1252', 'iso-8859-1']
                     decoded = False
                     for encoding in decoding_options:
@@ -464,15 +461,12 @@ def process_emails():
                     if not decoded:
                         html_content = payload.decode('utf-8', errors='ignore')
 
-                    # --- NETTOYAGE ---
-                    # Utilisation de html.parser au lieu de lxml pour plus de tolérance
+                    # PARSING (html.parser)
                     soup = BeautifulSoup(html_content, "html.parser")
                     
-                    # Suppression des éléments dangereux ou inutiles
                     for s in soup(["script", "iframe", "object", "meta"]): 
                         s.extract()
 
-                    # Nettoyage des forwards (Spécifique pour archives)
                     for div in soup.find_all("div"):
                         if any(k in div.get_text() for k in ["Forwarded message", "Message transféré"]) and "-----" in div.get_text():
                             new_body = soup.new_tag("body")
@@ -481,7 +475,6 @@ def process_emails():
                                 soup.body.replace_with(new_body)
                             break
                     
-                    # Extraction des liens
                     links = []
                     for a in soup.find_all('a', href=True):
                         txt = a.get_text(strip=True) or "[Image/Vide]"
@@ -489,10 +482,7 @@ def process_emails():
                     
                     links_html = "".join([f'<li><a href="{l["url"]}" target="_blank"><div class="link-txt">{l["txt"]}</div><div class="link-url">{l["url"]}</div></a></li>' for l in links])
 
-                    # NOTE: Suppression du bloc Regex agressif sur les tables. 
-                    # On laisse le HTML tranquille et on gère via CSS injecté.
-
-                    # --- IMAGES (Téléchargement local) ---
+                    # IMAGES
                     img_counter = 0
                     for img in soup.find_all("img"):
                         src = img.get("src")
@@ -518,11 +508,10 @@ def process_emails():
                             img['src'] = local_name
                             img['loading'] = 'lazy'
                             if img.has_attr('srcset'): del img['srcset']
-                            # On ne force pas de width/height ici pour laisser le CSS agir
                             img_counter += 1
                         except: pass
 
-                    # --- GÉNÉRATION DU VIEWER ---
+                    # VIEWER
                     safe_html = json.dumps(str(soup))
                     nb_links = len(links)
                     
@@ -539,7 +528,6 @@ def process_emails():
                         <style>
                             body {{ margin: 0; padding: 0; background: #eef2f5; font-family: system-ui, sans-serif; overflow: hidden; }}
                             
-                            /* Header */
                             .header {{ position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }}
                             .title {{ font-size: 16px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; }}
                             .controls {{ display: flex; gap: 10px; flex-shrink: 0; }}
@@ -548,10 +536,8 @@ def process_emails():
                             .btn.active {{ background: #0070f3; color: white; border-color: #0070f3; }}
                             .btn svg {{ display: block; }}
                             
-                            /* Main Container */
                             .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: center; background: #eef2f5; overflow: hidden; }}
                             
-                            /* Iframe Wrapper */
                             .iframe-wrapper {{ 
                                 width: 1200px; max-width: 95%; height: 90%;
                                 transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
@@ -560,7 +546,6 @@ def process_emails():
                             
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             
-                            /* Mobile Mode */
                             body.mobile-mode .iframe-wrapper {{ 
                                 width: 375px; height: 812px; max-height: 90vh;
                                 border-radius: 40px; border: 12px solid #333; 
@@ -570,7 +555,6 @@ def process_emails():
                                 -webkit-mask-image: -webkit-radial-gradient(white, black);
                             }}
                             
-                            /* Links Sidebar */
                             .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }}
                             .sidebar.open {{ right: 0; }}
                             .sidebar h3 {{ margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
@@ -580,7 +564,6 @@ def process_emails():
                             .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 4px; }}
                             .link-url {{ color: #666; }}
                             
-                            /* Dark Mode - UI Only */
                             body.dark-mode .main-view {{ background: #121212; }}
                             body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
                             body.dark-mode .title {{ color: #e0e0e0; }}
@@ -621,60 +604,53 @@ def process_emails():
                             frame.contentDocument.write(emailContent);
                             frame.contentDocument.close();
                             
-                            // --- INJECTION CSS INTELLIGENTE ---
+                            // --- INJECTION CSS INTELLIGENTE (FIX MOBILE & OVERFLOW) ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                /* 1. RESET GLOBAL & BOITE */
-                                * {
-                                    box-sizing: border-box !important;
-                                }
-
-                                /* 2. BODY FULL BLEED (Plein écran sans marges blanches) */
-                                body { 
+                                * {{ box-sizing: border-box !important; }}
+                                
+                                body {{ 
                                     margin: 0 !important; 
-                                    padding: 0 !important; /* Enlève le "jour" autour du téléphone */
+                                    padding: 0 !important; 
                                     width: 100% !important; 
                                     min-width: 0 !important;
                                     background-color: white; 
                                     font-family: sans-serif;
-                                    overflow-x: hidden; /* Empêche le scroll horizontal forcé */
-                                } 
-
-                                /* 3. CONTRAINTE DES TABLES & IMAGES (Mobile Friendly) */
-                                table, tbody, tr, td { 
+                                    overflow-x: hidden; 
+                                }} 
+                                
+                                table, tbody, tr, td {{ 
                                     max-width: 100% !important; 
                                     height: auto !important; 
-                                    width: 100% !important; /* Force l'adaptation à la largeur dispo */
-                                    min-width: 0 !important; /* Écrase les min-width: 600px nuisibles */
-                                    display: block !important; /* Technique radicale pour transformer les tables en blocs empilés si nécessaire */
-                                }
+                                    width: 100% !important;
+                                    min-width: 0 !important;
+                                    display: block !important;
+                                }}
                                 
-                                /* On remet display:table pour les structures internes simples pour ne pas tout casser */
-                                table[width], table[style*="width"] {
+                                /* Exception pour petites tables internes de mise en forme */
+                                table[width], table[style*="width"] {{
                                    display: table !important;
                                    width: 100% !important;
-                                }
+                                }}
 
-                                img { 
+                                img {{ 
                                     max-width: 100% !important; 
                                     height: auto !important; 
-                                    display: block; /* Évite les espaces sous les images */
+                                    display: block; 
                                     margin: 0 auto;
-                                }
+                                }}
 
-                                /* 4. GESTION DU TEXTE QUI DEBORDE */
-                                p, h1, h2, h3, h4, span, div, td, a {
-                                    word-break: break-word !important; /* Casse les mots trop longs */
+                                p, h1, h2, h3, h4, span, div, td, a {{
+                                    word-break: break-word !important; 
                                     overflow-wrap: break-word !important;
                                     white-space: normal !important;
                                     max-width: 100% !important;
-                                }
+                                }}
 
-                                /* 5. DARK MODE INTERNE */
-                                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
+                                html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, 
                                 html.dark-mode-internal video, 
-                                html.dark-mode-internal [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
+                                html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
                             `;
                             frame.contentDocument.head.appendChild(style);
 
