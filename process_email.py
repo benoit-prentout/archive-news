@@ -1,203 +1,215 @@
-import imaplib
-import email
 import os
-import hashlib
-import requests
 import re
-from email.header import decode_header
-from bs4 import BeautifulSoup
 from datetime import datetime
+from bs4 import BeautifulSoup
 
 # --- Configuration ---
-GMAIL_USER = os.environ.get("GMAIL_USER")
-GMAIL_PASSWORD = os.environ.get("GMAIL_PASSWORD")
 DOCS_DIR = "docs"
-IMAP_SERVER = "imap.gmail.com"
-SEARCH_CRITERIA = '(LABEL "Github/archive-newsletters")' # Ensure this matches your Gmail Label
+OUTPUT_FILE = os.path.join(DOCS_DIR, "index.html")
 
-def connect_imap():
-    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
-    mail.login(GMAIL_USER, GMAIL_PASSWORD)
-    return mail
-
-def clean_filename(s):
-    return "".join(c for c in s if c.isalnum() or c in (' ', '-', '_')).strip()
-
-def get_body_content(msg):
-    if msg.is_multipart():
-        for part in msg.walk():
-            ctype = part.get_content_type()
-            cdispo = str(part.get('Content-Disposition'))
-            if ctype == 'text/html' and 'attachment' not in cdispo:
-                return part.get_payload(decode=True).decode('utf-8', errors='ignore')
-    else:
-        return msg.get_payload(decode=True).decode('utf-8', errors='ignore')
-    return ""
-
-def wrap_email_html(title, date_str, content):
-    """
-    Wraps the raw email content in a responsive, centered viewer.
-    """
-    return f"""
+# --- HTML Template ---
+# A clean, responsive grid layout.
+HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="date" content="{date_str}">
-    <title>{title}</title>
+    <title>Newsletter Archive</title>
     <style>
-        body {{
-            background-color: #f0f2f5;
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #95a5a6;
+            --accent: #3498db;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             margin: 0;
-            padding: 0;
-            font-family: sans-serif;
-        }}
-        .navbar {{
-            background: #2c3e50;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }}
-        .navbar a {{
-            color: white;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 60px; }
+        h1 { font-size: 2.5rem; color: var(--text-primary); margin-bottom: 10px; }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+        
+        /* Search Bar */
+        .search-wrapper { margin-top: 30px; display: flex; justify-content: center; }
+        input[type="text"] {
+            width: 100%; max-width: 500px; padding: 15px 25px;
+            border-radius: 50px; border: 1px solid #ddd;
+            font-size: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease; outline: none;
+        }
+        input[type="text"]:focus {
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
             text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-        }}
-        .email-container {{
-            max-width: 800px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }}
-        .email-content {{
-            padding: 20px;
-            /* Force images to not overflow */
-        }}
-        .email-content img {{
-            max-width: 100% !important;
-            height: auto !important;
-        }}
-        /* Reset common email table styles that break layout */
-        table {{ max-width: 100% !important; }}
+            color: inherit;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: rgba(52, 152, 219, 0.3);
+        }
+        .card-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.5;
+            margin: 0;
+            color: var(--text-primary);
+        }
+        .empty-state {
+            text-align: center; color: var(--text-secondary);
+            margin-top: 50px; display: none; font-size: 1.2rem;
+        }
+        footer {
+            margin-top: 80px; text-align: center;
+            color: var(--text-secondary); font-size: 0.9rem;
+            border-top: 1px solid #e1e1e1; padding-top: 30px;
+        }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="../index.html">← Back to Archive</a>
-    </div>
-    <div class="email-container">
-        <!-- Original Email Content Start -->
-        <div class="email-content">
+    <div class="container">
+        <header>
+            <h1>📬 Newsletter Archive</h1>
+            <div class="subtitle">A curated collection of incoming newsletters</div>
+            <div class="search-wrapper">
+                <input type="text" id="search" placeholder="Search archives..." onkeyup="filterGrid()">
+            </div>
+        </header>
+
+        <div class="grid" id="grid">
             {content}
         </div>
-        <!-- Original Email Content End -->
+        
+        <div id="no-results" class="empty-state">No newsletters found.</div>
+
+        <footer>
+            <p>Archive updated automatically.</p>
+        </footer>
     </div>
+
+    <script>
+        function filterGrid() {
+            const input = document.getElementById('search').value.toLowerCase();
+            const cards = document.getElementsByClassName('card');
+            let visibleCount = 0;
+
+            for (let card of cards) {
+                const title = card.querySelector('.card-title').innerText.toLowerCase();
+                const date = card.querySelector('.card-meta').innerText.toLowerCase();
+                
+                if (title.includes(input) || date.includes(input)) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            }
+            document.getElementById('no-results').style.display = visibleCount === 0 ? "block" : "none";
+        }
+    </script>
 </body>
 </html>
 """
 
-def save_email(subject, date_str, html_content, message_id):
-    # Create deterministic folder name
-    folder_name = hashlib.md5(message_id.encode()).hexdigest()[:12]
-    folder_path = os.path.join(DOCS_DIR, folder_name)
+def get_date_from_html(soup, filepath):
+    """
+    Tries to find the date in <meta> tags, or falls back to file modification time.
+    """
+    # 1. Try meta tag
+    meta_date = soup.find("meta", {"name": "date"})
+    if meta_date and meta_date.get('content'):
+        return meta_date['content']
     
-    if os.path.exists(folder_path):
-        print(f"Skipping already archived: {subject}")
+    # 2. Fallback to file mtime
+    try:
+        ts = os.path.getmtime(filepath)
+        return datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+    except:
+        return "Unknown Date"
+
+def generate_index():
+    print("Generating index.html...")
+    if not os.path.exists(DOCS_DIR):
+        print(f"Directory '{DOCS_DIR}' not found. Creating it.")
+        os.makedirs(DOCS_DIR)
         return
 
-    os.makedirs(folder_path, exist_ok=True)
+    newsletters = []
     
-    # Process Images (Download and replace links)
-    soup = BeautifulSoup(html_content, 'html.parser')
-    
-    # 1. Sanitize: Extract only body content if full HTML is present
-    if soup.body:
-        body_content = soup.body.decode_contents()
-    else:
-        body_content = str(soup)
+    # Scan directories
+    for entry in os.scandir(DOCS_DIR):
+        if entry.is_dir():
+            index_path = os.path.join(entry.path, "index.html")
+            if os.path.exists(index_path):
+                try:
+                    with open(index_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        soup = BeautifulSoup(f, 'html.parser')
+                        
+                        title = soup.title.string if soup.title else "Untitled"
+                        date_str = get_date_from_html(soup, index_path)
+                        
+                        link = f"./{entry.name}/index.html"
+                        
+                        newsletters.append({
+                            "title": title.strip(),
+                            "date": date_str,
+                            "link": link
+                        })
+                except Exception as e:
+                    print(f"Skipping {entry.name}: {e}")
 
-    # 2. Download Images
-    images_dir = os.path.join(folder_path, "images")
-    os.makedirs(images_dir, exist_ok=True)
-    
-    for i, img in enumerate(soup.find_all('img')):
-        if img.get('src') and img['src'].startswith('http'):
-            try:
-                img_url = img['src']
-                ext = img_url.split('.')[-1].split('?')[0]
-                if len(ext) > 4: ext = 'jpg'
-                
-                img_name = f"img_{i}.{ext}"
-                local_path = os.path.join(images_dir, img_name)
-                
-                # Download
-                response = requests.get(img_url, timeout=10)
-                if response.status_code == 200:
-                    with open(local_path, 'wb') as f:
-                        f.write(response.content)
-                    # Update HTML src to relative path
-                    img['src'] = f"./images/{img_name}"
-            except Exception as e:
-                print(f"Failed to download image: {e}")
+    # Sort by date (newest first)
+    newsletters.sort(key=lambda x: x['date'], reverse=True)
 
-    # 3. Wrap and Save
-    final_html = wrap_email_html(subject, date_str, str(soup))
-    
-    with open(os.path.join(folder_path, "index.html"), "w", encoding="utf-8") as f:
+    # Build HTML
+    cards_html = ""
+    for item in newsletters:
+        cards_html += f"""
+        <a href="{item['link']}" class="card">
+            <div class="card-meta">{item['date']}</div>
+            <h2 class="card-title">{item['title']}</h2>
+        </a>
+        """
+
+    final_html = HTML_TEMPLATE.format(content=cards_html)
+
+    with open(OUTPUT_FILE, "w", encoding='utf-8') as f:
         f.write(final_html)
     
-    print(f"Archived: {subject}")
-
-def main():
-    if not os.path.exists(DOCS_DIR):
-        os.makedirs(DOCS_DIR)
-
-    mail = connect_imap()
-    mail.select('inbox')
-    
-    # Search for emails
-    status, messages = mail.search(None, SEARCH_CRITERIA)
-    email_ids = messages[0].split()
-
-    print(f"Found {len(email_ids)} emails to process...")
-
-    for e_id in email_ids:
-        res, msg_data = mail.fetch(e_id, '(RFC822)')
-        for response_part in msg_data:
-            if isinstance(response_part, tuple):
-                msg = email.message_from_bytes(response_part[1])
-                
-                # Decode Subject
-                subject, encoding = decode_header(msg["Subject"])[0]
-                if isinstance(subject, bytes):
-                    subject = subject.decode(encoding if encoding else "utf-8")
-                
-                # Get Date
-                date_tuple = email.utils.parsedate_tz(msg['Date'])
-                if date_tuple:
-                    local_date = datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-                    date_str = local_date.strftime("%Y-%m-%d")
-                else:
-                    date_str = datetime.now().strftime("%Y-%m-%d")
-
-                # Get Body
-                html_body = get_body_content(msg)
-                
-                if html_body:
-                    # Message-ID for unique folder generation
-                    msg_id = msg.get("Message-ID") or subject + date_str
-                    save_email(subject, date_str, html_body, msg_id)
-    
-    mail.close()
-    mail.logout()
+    print(f"Done. Index generated with {len(newsletters)} items.")
 
 if __name__ == "__main__":
-    main()
+    generate_index()
