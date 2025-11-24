@@ -462,9 +462,14 @@ def process_emails():
                     
                     links_html = "".join([f'<li><a href="{l["url"]}" target="_blank"><div class="link-txt">{l["txt"]}</div><div class="link-url">{l["url"]}</div></a></li>' for l in links])
 
-                    # Auto-Fix Large Tables
+                    # Auto-Fix Large Tables & Min-Widths (PYTHON CLEANUP)
                     for t in soup.find_all("table"):
-                        if t.get("style"): t["style"] = re.sub(r'width:\s*([6-9]\d{2}|\d{4,})px', 'width: 100%', t["style"], flags=re.IGNORECASE)
+                        if t.get("style"): 
+                            # Fix width fixes
+                            t["style"] = re.sub(r'width:\s*([6-9]\d{2}|\d{4,})px', 'width: 100%', t["style"], flags=re.IGNORECASE)
+                            # Fix min-width fixes (NOUVEAU)
+                            t["style"] = re.sub(r'min-width:\s*([6-9]\d{2}|\d{4,})px', 'min-width: 0', t["style"], flags=re.IGNORECASE)
+                        
                         if t.get("width") and t["width"].isdigit() and int(t["width"]) > 600: t["width"] = "100%"
 
                     # Images (SMART DOWNLOAD - On ne télécharge que si absent)
@@ -600,8 +605,11 @@ def process_emails():
                             // Inject Styles into Iframe
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                body {{ margin: 0; overflow-x: hidden; background-color: white; }} 
-                                img {{ max-width: 100%; height: auto; }}
+                                body {{ margin: 0 !important; padding: 0 !important; width: 100% !important; min-width: 0 !important; background-color: white; overflow-x: hidden; }} 
+                                
+                                /* FORCE RESPONSIVE IMAGES & TABLES */
+                                img {{ max-width: 100% !important; height: auto !important; display: block; }}
+                                table, td, tr {{ max-width: 100% !important; min-width: 0 !important; height: auto !important; }}
                                 
                                 /* SMART INVERT DARK MODE (Injected inside iframe) */
                                 html.dark-mode-internal {{ 
