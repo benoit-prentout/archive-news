@@ -10,21 +10,24 @@
             :root {
                 --bg-body: #f6f9fc; --bg-card: #ffffff; --text-main: #333333; --text-muted: #666666; --text-light: #888888;
                 --border-color: #eaeaea; --accent-color: #0070f3; --hover-bg: #f8f9fa; --input-bg: #fcfcfc; --shadow: rgba(0,0,0,0.05);
-                --toggle-icon: "🌙";
             }
             [data-theme="dark"] {
                 --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #e0e0e0; --text-muted: #a0a0a0; --text-light: #666666;
                 --border-color: #333333; --accent-color: #4da3ff; --hover-bg: #252525; --input-bg: #252525; --shadow: rgba(0,0,0,0.3);
-                --toggle-icon: "☀️";
             }
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
             .container { max-width: 800px; width: 100%; margin: 0 auto; background: var(--bg-card); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); flex: 1; position: relative; }
             .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; }
             h1 { text-align: center; color: var(--text-main); margin: 0; font-size: 1.8rem; flex-grow: 1; }
             
-            #theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+            #theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-main); }
             #theme-toggle:hover { background-color: var(--hover-bg); border-color: var(--accent-color); }
-            #theme-toggle::after { content: var(--toggle-icon); }
+            
+            /* Icon Switching Logic */
+            .icon-moon { display: block; }
+            .icon-sun { display: none; }
+            [data-theme="dark"] .icon-moon { display: none; }
+            [data-theme="dark"] .icon-sun { display: block; }
             
             #searchInput { width: 100%; padding: 12px 20px; margin-bottom: 25px; box-sizing: border-box; border: 2px solid var(--border-color); border-radius: 8px; font-size: 16px; background-color: var(--input-bg); color: var(--text-main); transition: border-color 0.3s; }
             #searchInput:focus { border-color: var(--accent-color); outline: none; }
@@ -63,63 +66,14 @@
             <div class="header-row">
                 <div style="width: 40px;"></div>
                 <h1>📬 Archives Newsletters</h1>
-                <button id="theme-toggle" title="Changer le thème"></button>
+                <button id="theme-toggle" title="Changer le thème">
+                    <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+                    <span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+                </button>
             </div>
             <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher par titre, expéditeur ou date...">
             <ul id="newsList">
-                
-        <li class="news-item">
-            <a href="fb0907efa715/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Benoît Prentout</span>
-                    <span class="title">On a un cadeau pour votre chat 🐱</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Date de réception">📩 23/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 24/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="2efc3f2b022e/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Benoît Prentout</span>
-                    <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Date de réception">📩 23/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 24/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="2191e5f5452c/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Atelier Loupiote | Lampes artisanales françaises</span>
-                    <span class="title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Date de réception">📩 20/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 24/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="587358578e2a/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Fanny de Yooji</span>
-                    <span class="title">Besoin d'un mode de garde pour bébé ?</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Date de réception">📩 17/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 24/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
+                {links_html}
             </ul>
             <div id="pagination" class="pagination"></div>
             <footer>
@@ -156,8 +110,13 @@
             currentPage = page;
             const start = (page - 1) * itemsPerPage;
             const end = start + itemsPerPage;
+            
             allItems.forEach((item, index) => {
-                if (index >= start && index < end) { item.style.display = ""; } else { item.style.display = "none"; }
+                if (index >= start && index < end) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
             });
             renderPaginationControls();
             window.scrollTo(0, 0);
@@ -166,6 +125,7 @@
         function renderPaginationControls() {
             const totalPages = Math.ceil(allItems.length / itemsPerPage);
             paginationContainer.innerHTML = '';
+            
             if (totalPages <= 1) return;
 
             const prevBtn = document.createElement('button');
@@ -177,6 +137,7 @@
 
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, currentPage + 2);
+            
             if (startPage > 1) {
                 const firstPage = document.createElement('button');
                 firstPage.className = 'page-btn';
@@ -185,6 +146,7 @@
                 paginationContainer.appendChild(firstPage);
                 if (startPage > 2) paginationContainer.appendChild(document.createTextNode('...'));
             }
+
             for (let i = startPage; i <= endPage; i++) {
                 const btn = document.createElement('button');
                 btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
@@ -192,6 +154,7 @@
                 btn.onclick = () => showPage(i);
                 paginationContainer.appendChild(btn);
             }
+
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) paginationContainer.appendChild(document.createTextNode('...'));
                 const lastPage = document.createElement('button');
@@ -200,6 +163,7 @@
                 lastPage.onclick = () => showPage(totalPages);
                 paginationContainer.appendChild(lastPage);
             }
+
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
             nextBtn.innerHTML = '&raquo;';
@@ -211,6 +175,7 @@
         function filterList() {
             const input = document.getElementById('searchInput');
             const filter = input.value.toUpperCase();
+            
             if (filter === "") {
                 paginationContainer.style.display = "flex";
                 showPage(1);
@@ -218,10 +183,15 @@
                 paginationContainer.style.display = "none";
                 allItems.forEach(item => {
                     const text = item.textContent || item.innerText;
-                    if (text.toUpperCase().indexOf(filter) > -1) { item.style.display = ""; } else { item.style.display = "none"; }
+                    if (text.toUpperCase().indexOf(filter) > -1) {
+                        item.style.display = "";
+                    } else {
+                        item.style.display = "none";
+                    }
                 });
             }
         }
+
         showPage(1);
         </script>
     </body>
