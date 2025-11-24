@@ -1,215 +1,301 @@
+import imaplib
+import email
 import os
+import hashlib
+import requests
 import re
+import sys
+from email.header import decode_header
 from datetime import datetime
 from bs4 import BeautifulSoup
 
 # --- Configuration ---
+GMAIL_USER = os.environ.get("GMAIL_USER")
+GMAIL_PASSWORD = os.environ.get("GMAIL_PASSWORD")
 DOCS_DIR = "docs"
-OUTPUT_FILE = os.path.join(DOCS_DIR, "index.html")
+IMAP_SERVER = "imap.gmail.com"
+SEARCH_CRITERIA = '(LABEL "Github/archive-newsletters")' # Ensure exact label match
 
-# --- HTML Template ---
-# A clean, responsive grid layout.
-HTML_TEMPLATE = """
+# --- Helper Functions ---
+
+def decode_str(header_value):
+    """
+    Decodes MIME header strings safely.
+    Handles 'utf-8', 'iso-8859-1', and None cases.
+    """
+    if not header_value:
+        return ""
+    
+    decoded_fragments = decode_header(header_value)
+    result = ""
+    
+    for part, encoding in decoded_fragments:
+        if isinstance(part, bytes):
+            try:
+                if encoding:
+                    result += part.decode(encoding, errors='replace')
+                else:
+                    result += part.decode('utf-8', errors='replace')
+            except LookupError:
+                # Fallback for unknown encodings
+                result += part.decode('utf-8', errors='replace')
+        elif isinstance(part, str):
+            result += part
+            
+    return result.strip()
+
+def get_safe_filename(s):
+    """Creates a filesystem-safe string."""
+    return "".join([c for c in s if c.isalnum() or c in (' ', '-', '_')]).strip()
+
+def extract_html_content(msg):
+    """
+    Robustly extracts HTML content from an email object.
+    Falls back to text if no HTML found, wrapped in <pre>.
+    """
+    html_content = None
+    text_content = None
+
+    if msg.is_multipart():
+        for part in msg.walk():
+            content_type = part.get_content_type()
+            content_disposition = str(part.get("Content-Disposition"))
+
+            if "attachment" in content_disposition:
+                continue
+
+            try:
+                payload = part.get_payload(decode=True)
+                if not payload: continue
+                
+                charset = part.get_content_charset() or 'utf-8'
+                decoded_text = payload.decode(charset, errors='replace')
+
+                if content_type == "text/html":
+                    html_content = decoded_text
+                elif content_type == "text/plain":
+                    text_content = decoded_text
+            except Exception as e:
+                print(f"Error decoding part: {e}")
+    else:
+        # Single part email
+        try:
+            payload = msg.get_payload(decode=True)
+            charset = msg.get_content_charset() or 'utf-8'
+            if payload:
+                content = payload.decode(charset, errors='replace')
+                if msg.get_content_type() == "text/html":
+                    html_content = content
+                else:
+                    text_content = content
+        except Exception as e:
+            print(f"Error decoding body: {e}")
+
+    if html_content:
+        return html_content
+    elif text_content:
+        # Wrap plain text in simple HTML
+        return f"<html><body><pre>{text_content}</pre></body></html>"
+    return "<html><body><p>No readable content found.</p></body></html>"
+
+def wrap_in_viewer(title, date_str, raw_html):
+    """
+    Wraps the email content in a centered container to fix display issues on wide screens.
+    REMOVED: The 'Back' button navigation.
+    """
+    return f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newsletter Archive</title>
+    <meta name="date" content="{date_str}">
+    <title>{title}</title>
     <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-primary: #2c3e50;
-            --text-secondary: #95a5a6;
-            --accent: #3498db;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
+        /* Reset and Base Styles */
+        body {{
+            background-color: #e9ecef;
             margin: 0;
-            padding: 40px 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 60px; }
-        h1 { font-size: 2.5rem; color: var(--text-primary); margin-bottom: 10px; }
-        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+            padding: 0;
+            font-family: sans-serif;
+            min-height: 100vh;
+        }}
         
-        /* Search Bar */
-        .search-wrapper { margin-top: 30px; display: flex; justify-content: center; }
-        input[type="text"] {
-            width: 100%; max-width: 500px; padding: 15px 25px;
-            border-radius: 50px; border: 1px solid #ddd;
-            font-size: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease; outline: none;
-        }
-        input[type="text"]:focus {
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
-            border-color: var(--accent);
-        }
+        /* The Wrapper: Centers content like a paper document */
+        .email-container {{
+            max-width: 800px;  /* Standard email width */
+            margin: 0 auto;
+            background: #ffffff;
+            position: relative;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+        }}
 
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            padding: 20px 0;
-        }
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            border-color: rgba(52, 152, 219, 0.3);
-        }
-        .card-meta {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            line-height: 1.5;
-            margin: 0;
-            color: var(--text-primary);
-        }
-        .empty-state {
-            text-align: center; color: var(--text-secondary);
-            margin-top: 50px; display: none; font-size: 1.2rem;
-        }
-        footer {
-            margin-top: 80px; text-align: center;
-            color: var(--text-secondary); font-size: 0.9rem;
-            border-top: 1px solid #e1e1e1; padding-top: 30px;
-        }
+        /* Content Isolation */
+        .email-content {{
+            padding: 20px 0; /* Vertical padding only */
+        }}
+
+        /* Responsive Fixes for Email Content */
+        .email-content img {{
+            max-width: 100% !important;
+            height: auto !important;
+        }}
+        .email-content table {{
+            max-width: 100% !important;
+            width: auto !important; /* Allow tables to shrink */
+        }}
+        
+        /* Mobile Tweak */
+        @media (max-width: 820px) {{
+            .email-container {{ width: 100%; box-shadow: none; }}
+        }}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📬 Newsletter Archive</h1>
-            <div class="subtitle">A curated collection of incoming newsletters</div>
-            <div class="search-wrapper">
-                <input type="text" id="search" placeholder="Search archives..." onkeyup="filterGrid()">
-            </div>
-        </header>
-
-        <div class="grid" id="grid">
-            {content}
+    <div class="email-container">
+        <div class="email-content">
+            {raw_html}
         </div>
-        
-        <div id="no-results" class="empty-state">No newsletters found.</div>
-
-        <footer>
-            <p>Archive updated automatically.</p>
-        </footer>
     </div>
-
-    <script>
-        function filterGrid() {
-            const input = document.getElementById('search').value.toLowerCase();
-            const cards = document.getElementsByClassName('card');
-            let visibleCount = 0;
-
-            for (let card of cards) {
-                const title = card.querySelector('.card-title').innerText.toLowerCase();
-                const date = card.querySelector('.card-meta').innerText.toLowerCase();
-                
-                if (title.includes(input) || date.includes(input)) {
-                    card.style.display = "flex";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
-                }
-            }
-            document.getElementById('no-results').style.display = visibleCount === 0 ? "block" : "none";
-        }
-    </script>
 </body>
 </html>
 """
 
-def get_date_from_html(soup, filepath):
+def download_images(soup, folder_path):
     """
-    Tries to find the date in <meta> tags, or falls back to file modification time.
+    Downloads images referenced in <img> tags to a local 'images' folder.
+    Updates the soup object in-place with relative paths.
     """
-    # 1. Try meta tag
-    meta_date = soup.find("meta", {"name": "date"})
-    if meta_date and meta_date.get('content'):
-        return meta_date['content']
-    
-    # 2. Fallback to file mtime
+    images_dir = os.path.join(folder_path, "images")
+    if not os.path.exists(images_dir):
+        os.makedirs(images_dir)
+
+    for i, img in enumerate(soup.find_all('img')):
+        src = img.get('src')
+        if not src or not src.startswith('http'):
+            continue
+
+        try:
+            # Simple extension detection
+            ext = 'jpg'
+            if '.png' in src.lower(): ext = 'png'
+            elif '.gif' in src.lower(): ext = 'gif'
+            elif '.svg' in src.lower(): ext = 'svg'
+
+            filename = f"image_{i}.{ext}"
+            local_path = os.path.join(images_dir, filename)
+
+            # Check if we already have it (deduplication based on filename not content for speed)
+            if not os.path.exists(local_path):
+                response = requests.get(src, timeout=10, stream=True)
+                if response.status_code == 200:
+                    with open(local_path, 'wb') as f:
+                        for chunk in response.iter_content(1024):
+                            f.write(chunk)
+            
+            # Update HTML to point to local file
+            img['src'] = f"./images/{filename}"
+            # Remove srcset to prevent browser loading original
+            if img.has_attr('srcset'):
+                del img['srcset']
+                
+        except Exception as e:
+            print(f"Failed to download image {src}: {e}")
+
+def process_single_email(msg_data):
+    """Processes a single RFC822 email message."""
     try:
-        ts = os.path.getmtime(filepath)
-        return datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
-    except:
-        return "Unknown Date"
+        msg = email.message_from_bytes(msg_data)
+        
+        # 1. Metadata extraction
+        subject = decode_str(msg["Subject"]) or "No Subject"
+        msg_date = msg["Date"]
+        
+        # Parse Date
+        date_obj = datetime.now()
+        if msg_date:
+            try:
+                date_tuple = email.utils.parsedate_tz(msg_date)
+                if date_tuple:
+                    date_obj = datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
+            except Exception:
+                pass
+        
+        date_str = date_obj.strftime("%Y-%m-%d")
+        
+        # 2. Generate ID and Path
+        # Use Message-ID or hash of subject+date for uniqueness
+        uid = msg.get("Message-ID") or f"{subject}{date_str}"
+        folder_name = hashlib.md5(uid.encode()).hexdigest()[:12]
+        folder_path = os.path.join(DOCS_DIR, folder_name)
 
-def generate_index():
-    print("Generating index.html...")
-    if not os.path.exists(DOCS_DIR):
-        print(f"Directory '{DOCS_DIR}' not found. Creating it.")
-        os.makedirs(DOCS_DIR)
-        return
+        if os.path.exists(folder_path):
+            print(f"Skipping existing: {subject}")
+            return # Already archived
 
-    newsletters = []
-    
-    # Scan directories
-    for entry in os.scandir(DOCS_DIR):
-        if entry.is_dir():
-            index_path = os.path.join(entry.path, "index.html")
-            if os.path.exists(index_path):
-                try:
-                    with open(index_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        soup = BeautifulSoup(f, 'html.parser')
-                        
-                        title = soup.title.string if soup.title else "Untitled"
-                        date_str = get_date_from_html(soup, index_path)
-                        
-                        link = f"./{entry.name}/index.html"
-                        
-                        newsletters.append({
-                            "title": title.strip(),
-                            "date": date_str,
-                            "link": link
-                        })
-                except Exception as e:
-                    print(f"Skipping {entry.name}: {e}")
+        print(f"Processing: {subject}")
+        os.makedirs(folder_path, exist_ok=True)
 
-    # Sort by date (newest first)
-    newsletters.sort(key=lambda x: x['date'], reverse=True)
+        # 3. Extract and Clean HTML
+        raw_html = extract_html_content(msg)
+        soup = BeautifulSoup(raw_html, 'html.parser')
 
-    # Build HTML
-    cards_html = ""
-    for item in newsletters:
-        cards_html += f"""
-        <a href="{item['link']}" class="card">
-            <div class="card-meta">{item['date']}</div>
-            <h2 class="card-title">{item['title']}</h2>
-        </a>
-        """
+        # 4. Download Assets
+        download_images(soup, folder_path)
 
-    final_html = HTML_TEMPLATE.format(content=cards_html)
+        # 5. Extract BODY only (remove Head/Html tags from the email to prevent conflict)
+        # We want to inject the *content* of the email into our wrapper.
+        email_body_content = ""
+        if soup.body:
+            email_body_content = soup.body.decode_contents()
+        else:
+            email_body_content = str(soup)
 
-    with open(OUTPUT_FILE, "w", encoding='utf-8') as f:
-        f.write(final_html)
-    
-    print(f"Done. Index generated with {len(newsletters)} items.")
+        # 6. Wrap and Save
+        final_html = wrap_in_viewer(subject, date_str, email_body_content)
+        
+        with open(os.path.join(folder_path, "index.html"), "w", encoding='utf-8') as f:
+            f.write(final_html)
+
+    except Exception as e:
+        print(f"Error processing email: {e}")
+
+def main():
+    if not GMAIL_USER or not GMAIL_PASSWORD:
+        print("Error: GMAIL_USER or GMAIL_PASSWORD not set.")
+        sys.exit(1)
+
+    print(f"Connecting to {IMAP_SERVER}...")
+    try:
+        mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+        mail.login(GMAIL_USER, GMAIL_PASSWORD)
+        mail.select('inbox')
+
+        status, messages = mail.search(None, SEARCH_CRITERIA)
+        if status != "OK":
+            print("No emails found or search failed.")
+            return
+
+        email_ids = messages[0].split()
+        print(f"Found {len(email_ids)} emails matching criteria.")
+
+        for e_id in email_ids:
+            # Fetch the email body (RFC822)
+            res, data = mail.fetch(e_id, '(RFC822)')
+            if res == 'OK':
+                process_single_email(data[0][1])
+            else:
+                print(f"Failed to fetch email ID {e_id}")
+
+        mail.close()
+        mail.logout()
+        print("Done.")
+
+    except Exception as e:
+        print(f"Critical Error: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    generate_index()
+    main()
+```[[1](https://www.google.com/url?sa=E&q=https%3A%2F%2Fgithub.com%2Fbenoit-prentout%2Farchive-news)]
