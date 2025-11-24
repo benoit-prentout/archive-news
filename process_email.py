@@ -541,17 +541,21 @@ def process_emails():
                             /* STYLE DU CONTENEUR DESKTOP */
                             .iframe-wrapper {{ 
                                 width: 1200px; max-width: 95%; height: 90%;
-                                transition: width 0.3s ease; /* Transition douce lors du changement de mode */
+                                transition: all 0.3s ease; 
                                 background: white; box-shadow: 0 5px 30px rgba(0,0,0,0.1); border-radius: 8px;
                             }}
                             
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             
-                            /* STYLE MOBILE : Plus de simulation téléphone, juste un redimensionnement propre */
+                            /* STYLE MOBILE : Ratio et dimensions fixes type iPhone X */
                             body.mobile-mode .iframe-wrapper {{ 
-                                width: 400px; /* Largeur type mobile */
+                                width: 375px;
+                                height: 812px; 
+                                max-height: 90vh; /* Pour ne pas dépasser sur les petits écrans */
                                 max-width: 100%;
-                                /* On garde le même style que le desktop (bordures, ombres) */
+                                border-radius: 0; /* Suppression des coins arrondis comme demandé */
+                                border: none; 
+                                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
                             }}
                             
                             .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }}
@@ -607,20 +611,24 @@ def process_emails():
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
                                 * {{ box-sizing: border-box !important; }}
+
+                                /* CACHER LA SCROLLBAR mais garder le scroll */
+                                html {{ scrollbar-width: none; }} /* Firefox */
+                                body::-webkit-scrollbar {{ display: none; }} /* Chrome/Safari */
                                 
-                                /* CORRECTION DESKTOP : Contrainte de largeur pour éviter le texte qui s'étale à l'infini */
+                                /* CORRECTION DESKTOP : Contrainte stricte */
                                 body {{ 
                                     margin: 0 auto !important; 
                                     padding: 10px !important;
                                     width: 100% !important;
-                                    max-width: 800px !important; /* Largeur de lecture confortable */
+                                    max-width: 800px !important; /* Force la largeur max du contenu texte */
                                     background-color: white; 
                                     font-family: sans-serif;
-                                    overflow-x: hidden;
+                                    overflow-x: hidden; /* Coupe ce qui dépasse horizontalement */
                                 }}
                                 
-                                /* On s'assure que les conteneurs internes ne dépassent pas */
-                                div, table {{ 
+                                /* Force TOUS les éléments à ne pas dépasser */
+                                div, table, p, span, pre, code {{ 
                                     max-width: 100% !important;
                                 }}
 
@@ -638,7 +646,8 @@ def process_emails():
                                     display: inline-block; 
                                 }}
 
-                                p, h1, h2, h3, h4, span, div, td, a {{
+                                /* CÉSURE VIOLENTE pour les URL ou mots longs qui dépassent */
+                                p, h1, h2, h3, h4, span, div, td, a, li {{
                                     word-break: break-word !important; 
                                     overflow-wrap: break-word !important;
                                     white-space: normal !important;
