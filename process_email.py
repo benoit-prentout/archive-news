@@ -624,17 +624,57 @@ def process_emails():
                             // --- INJECTION CSS INTELLIGENTE ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                body {{ margin: 0 !important; padding: 10px !important; width: auto !important; background-color: white; overflow-x: hidden; font-family: sans-serif; }} 
+                                /* 1. RESET GLOBAL & BOITE */
+                                * {
+                                    box-sizing: border-box !important;
+                                }
+
+                                /* 2. BODY FULL BLEED (Plein écran sans marges blanches) */
+                                body { 
+                                    margin: 0 !important; 
+                                    padding: 0 !important; /* Enlève le "jour" autour du téléphone */
+                                    width: 100% !important; 
+                                    min-width: 0 !important;
+                                    background-color: white; 
+                                    font-family: sans-serif;
+                                    overflow-x: hidden; /* Empêche le scroll horizontal forcé */
+                                } 
+
+                                /* 3. CONTRAINTE DES TABLES & IMAGES (Mobile Friendly) */
+                                table, tbody, tr, td { 
+                                    max-width: 100% !important; 
+                                    height: auto !important; 
+                                    width: 100% !important; /* Force l'adaptation à la largeur dispo */
+                                    min-width: 0 !important; /* Écrase les min-width: 600px nuisibles */
+                                    display: block !important; /* Technique radicale pour transformer les tables en blocs empilés si nécessaire */
+                                }
                                 
-                                /* PRESERVE LES COLONNES MAIS EMPECHE LE DEBORDEMENT */
-                                table {{ max-width: 100% !important; height: auto !important; }}
-                                img {{ max-width: 100% !important; height: auto !important; display: inline-block; }}
-                                
-                                /* DARK MODE INTERNE */
-                                html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
+                                /* On remet display:table pour les structures internes simples pour ne pas tout casser */
+                                table[width], table[style*="width"] {
+                                   display: table !important;
+                                   width: 100% !important;
+                                }
+
+                                img { 
+                                    max-width: 100% !important; 
+                                    height: auto !important; 
+                                    display: block; /* Évite les espaces sous les images */
+                                    margin: 0 auto;
+                                }
+
+                                /* 4. GESTION DU TEXTE QUI DEBORDE */
+                                p, h1, h2, h3, h4, span, div, td, a {
+                                    word-break: break-word !important; /* Casse les mots trop longs */
+                                    overflow-wrap: break-word !important;
+                                    white-space: normal !important;
+                                    max-width: 100% !important;
+                                }
+
+                                /* 5. DARK MODE INTERNE */
+                                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
                                 html.dark-mode-internal img, 
                                 html.dark-mode-internal video, 
-                                html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
+                                html.dark-mode-internal [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
                             `;
                             frame.contentDocument.head.appendChild(style);
 
