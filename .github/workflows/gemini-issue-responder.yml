@@ -1,4 +1,4 @@
-name: Gemini Issue Responder
+name: Gemini Auto-Detect Responder
 
 on:
   issues:
@@ -9,7 +9,7 @@ permissions:
   issues: write
 
 jobs:
-  respond:
+  auto_respond:
     if: github.event.label.name == 'question-gemini'
     runs-on: ubuntu-latest
 
@@ -17,57 +17,81 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Call Gemini 1.5 Pro API
+      - name: 🕵️ Detect Valid Model & Generate
         id: gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
-          # 1. Construction du JSON
+          # 1. Récupérer la liste de TOUS les modèles disponibles pour ta clé
+          echo ">>> Recherche des modèles disponibles..."
+          MODELS_JSON=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models?key=$GEMINI_API_KEY")
+          
+          # 2. Filtrer pour trouver un modèle qui accepte "generateContent"
+          # On extrait la liste des noms valides via jq
+          VALID_MODELS=$(echo "$MODELS_JSON" | jq -r '.models[] | select(.supportedGenerationMethods[]? | contains("generateContent")) | .name')
+          
+          if [ -z "$VALID_MODELS" ]; then
+            echo "❌ AUCUN modèle compatible trouvé. Vérifie ta clé API."
+            echo "ANSWER=❌ Erreur critique : Aucun modèle Gemini disponible pour cette clé." >> $GITHUB_ENV
+            exit 0
+          fi
+
+          # 3. Stratégie de sélection : On préfère 1.5 Flash, sinon 1.5 Pro, sinon le premier qui vient
+          SELECTED_MODEL=$(echo "$VALID_MODELS" | grep "1.5-flash" | head -n 1)
+          
+          if [ -z "$SELECTED_MODEL" ]; then
+             SELECTED_MODEL=$(echo "$VALID_MODELS" | grep "1.5-pro" | head -n 1)
+          fi
+          
+          if [ -z "$SELECTED_MODEL" ]; then
+             SELECTED_MODEL=$(echo "$VALID_MODELS" | head -n 1)
+          fi
+
+          echo ">>> ✅ Modèle sélectionné : $SELECTED_MODEL"
+
+          # 4. Préparation du prompt
           jq -n \
             --arg title "$ISSUE_TITLE" \
             --arg body "$ISSUE_BODY" \
             '{
               contents: [{
                 parts: [{
-                  text: ("Tu es un expert Senior Developer. Analyse cette issue GitHub : " + $title + ".\n\nDescription :\n" + $body + "\n\n1. Analyse la cause potentielle (Front-end/CSS/Rendering).\n2. Propose une solution technique précise.\n3. Si pertinent, donne un exemple de code.")
+                  text: ("Tu es un expert développeur. Analyse cette issue GitHub : " + $title + ".\n\nDescription :\n" + $body + "\n\nDonne une solution technique concrète et concise.")
                 }]
               }]
             }' > payload.json
 
-          # 2. Appel API vers GEMINI 1.5 PRO
-          # CORRECTION : Utilisation du nom strict "gemini-1.5-pro" sans "latest"
+          # 5. Appel API avec le modèle DYNAMIQUE trouvé
+          # Note : SELECTED_MODEL contient déjà le préfixe "models/" (ex: models/gemini-1.5-flash)
           curl -s \
             -H "Content-Type: application/json" \
             -d @payload.json \
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=$GEMINI_API_KEY" > response.json
+            "https://generativelanguage.googleapis.com/v1beta/$SELECTED_MODEL:generateContent?key=$GEMINI_API_KEY" > response.json
           
-          # 3. DEBUG : Afficher la réponse brute (en cas de nouvelle erreur)
-          echo "--- DEBUG: RAW API RESPONSE ---"
-          cat response.json
-          echo "-------------------------------"
-
-          # 4. Extraction de la réponse
+          # 6. Extraction de la réponse
           ANSWER=$(cat response.json | jq -r '.candidates[0].content.parts[0].text')
           
-          # Gestion d'erreur
+          # Gestion d'erreur ultime
           if [ "$ANSWER" == "null" ]; then
-            ERROR_MSG=$(cat response.json | jq -r '.error.message // "Erreur inconnue"')
-            ANSWER="❌ **Erreur Gemini :** $ERROR_MSG"
+             ERR=$(cat response.json | jq -r '.error.message')
+             ANSWER="❌ Erreur avec le modèle $SELECTED_MODEL : $ERR"
           fi
 
-          # 5. Sauvegarde environment
+          # Passage de la variable à l'étape suivante (multiligne)
           echo "ANSWER<<EOF" >> $GITHUB_ENV
           echo "$ANSWER" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+          echo "USED_MODEL=$SELECTED_MODEL" >> $GITHUB_ENV
 
-      - name: Post Comment on Issue
+      - name: Post Comment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           AI_RESPONSE: ${{ env.ANSWER }}
+          MODEL_NAME: ${{ env.USED_MODEL }}
         run: |
-          gh issue comment "$ISSUE_NUMBER" --body "🧠 **Analyse Gemini 1.5 Pro :**
+          gh issue comment "$ISSUE_NUMBER" --body "🤖 **Réponse de Gemini** (via $MODEL_NAME) :
           
           $AI_RESPONSE"
