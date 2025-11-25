@@ -24,6 +24,14 @@ An automated DevOps solution that captures incoming newsletters from Gmail, sani
 
 ---
 
+## 💉 Manual Injector (Streamlit)
+
+A web interface to manually archive newsletters by pasting their HTML content directly, bypassing Gmail filters and avoiding "Forward" headers.
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
+
+---
+
 ## 🛠️ Tech Stack
 
 * **Core:** ![Python](https://img.shields.io/badge/Python-3.9-3776AB?style=flat&logo=python&logoColor=white)
