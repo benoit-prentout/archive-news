@@ -1,38 +1,84 @@
-name: Check Newsletter
+name: Gemini Debugger
 
 on:
-  schedule:
-    - cron: '*/30 * * * *'
-  workflow_dispatch:
+  issues:
+    types: [labeled]
 
 permissions:
-  contents: write
+  contents: read
+  issues: write
 
 jobs:
-  process-email:
+  debug_and_respond:
+    if: github.event.label.name == 'question-gemini'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run Email Processor
+      - name: 🔍 STEP 1 - LIST AVAILABLE MODELS
+        id: list_models
         env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
-        run: python process_email.py
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          echo ">>> Interrogation de l'API pour connaître les modèles disponibles..."
+          
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models?key=$GEMINI_API_KEY" > models_list.json
+          
+          echo ">>> VOICI LA LISTE DES MODÈLES DISPONIBLES POUR TA CLÉ :"
+          cat models_list.json
+          echo ">>> FIN DE LA LISTE"
 
-      - name: Commit and Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Mise à jour archives newsletters"
-          file_pattern: 'docs/*'
-          add_options: '-A'
+      - name: 🧪 STEP 2 - TEST GENERATION (Gemini 1.5 Flash)
+        id: test_gen
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Construction du JSON
+          jq -n \
+            --arg title "$ISSUE_TITLE" \
+            --arg body "$ISSUE_BODY" \
+            '{
+              contents: [{
+                parts: [{
+                  text: ("Analisis technique de l issue : " + $title + ". " + $body)
+                }]
+              }]
+            }' > payload.json
+
+          echo ">>> Envoi de la requête au modèle 'models/gemini-1.5-flash'..."
+
+          # On utilise le nom "models/gemini-1.5-flash" qui est souvent requis formellement
+          curl -s \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" > response.json
+          
+          echo ">>> RÉPONSE BRUTE DE L'API :"
+          cat response.json
+          
+          # Extraction propre
+          ANSWER=$(cat response.json | jq -r '.candidates[0].content.parts[0].text')
+          
+          # Gestion d'erreur pour le commentaire
+          if [ "$ANSWER" == "null" ]; then
+            ERROR_MSG=$(cat response.json | jq -r '.error.message // "Erreur inconnue"')
+            ANSWER="❌ **ECHEC DEBUG** : $ERROR_MSG"
+          fi
+          
+          echo "ANSWER<<EOF" >> $GITHUB_ENV
+          echo "$ANSWER" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Post Result
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          AI_RESPONSE: ${{ env.ANSWER }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body "🛠️ **Résultat du Debug :**
+          
+          $AI_RESPONSE"
