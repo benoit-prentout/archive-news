@@ -37,22 +37,27 @@ jobs:
             }' > payload.json
 
           # 2. Appel API vers GEMINI 1.5 PRO
-          # Note le changement dans l'URL : gemini-1.5-pro-latest
+          # CORRECTION : Utilisation du nom strict "gemini-1.5-pro" sans "latest"
           curl -s \
             -H "Content-Type: application/json" \
             -d @payload.json \
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$GEMINI_API_KEY" > response.json
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=$GEMINI_API_KEY" > response.json
           
-          # 3. Extraction de la réponse
+          # 3. DEBUG : Afficher la réponse brute (en cas de nouvelle erreur)
+          echo "--- DEBUG: RAW API RESPONSE ---"
+          cat response.json
+          echo "-------------------------------"
+
+          # 4. Extraction de la réponse
           ANSWER=$(cat response.json | jq -r '.candidates[0].content.parts[0].text')
           
-          # Gestion d'erreur si le modèle n'est pas trouvé ou erreur serveur
+          # Gestion d'erreur
           if [ "$ANSWER" == "null" ]; then
             ERROR_MSG=$(cat response.json | jq -r '.error.message // "Erreur inconnue"')
-            ANSWER="❌ **Erreur Gemini Pro :** $ERROR_MSG"
+            ANSWER="❌ **Erreur Gemini :** $ERROR_MSG"
           fi
 
-          # 4. Sauvegarde environment
+          # 5. Sauvegarde environment
           echo "ANSWER<<EOF" >> $GITHUB_ENV
           echo "$ANSWER" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
