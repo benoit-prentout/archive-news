@@ -1,0 +1,60 @@
+name: Gemini Issue Responder
+
+# Le workflow se déclenche quand on ajoute un label à une issue
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write # Nécessaire pour poster un commentaire
+
+jobs:
+  respond:
+    # On ne lance le job que si le label est 'question-gemini'
+    if: github.event.label.name == 'question-gemini'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Call Gemini API
+        id: gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # On prépare le JSON pour l'API Gemini (model: gemini-1.5-flash pour la rapidité)
+          # On échappe les guillemets pour éviter les erreurs JSON
+          ESCAPED_BODY=$(echo "$ISSUE_BODY" | jq -Rsa .)
+          ESCAPED_TITLE=$(echo "$ISSUE_TITLE" | jq -Rsa .)
+          
+          # Construction du prompt
+          PROMPT="Tu es un expert technique assistant sur GitHub. Voici une issue intitulée $ESCAPED_TITLE. Contenu: $ESCAPED_BODY. Peux-tu proposer une solution ou une réponse utile ?"
+          
+          # Appel API via cURL
+          RESPONSE=$(curl -s \
+            -H "Content-Type: application/json" \
+            -d "{ \"contents\": [{ \"parts\": [{ \"text\": $PROMPT }] }] }" \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY")
+          
+          # Extraction de la réponse (texte) depuis le JSON retourné par Google
+          ANSWER=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text')
+          
+          # On sauvegarde la réponse pour l'étape suivante (gestion multiligne sécurisée)
+          echo "ANSWER<<EOF" >> $GITHUB_ENV
+          echo "$ANSWER" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Post Comment on Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          AI_RESPONSE: ${{ env.ANSWER }}
+        run: |
+          # Utilisation de GitHub CLI (gh) préinstallé pour commenter
+          gh issue comment "$ISSUE_NUMBER" --body "🤖 **Réponse de Gemini :**
+          
+          $AI_RESPONSE"
