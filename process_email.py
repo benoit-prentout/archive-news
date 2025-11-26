@@ -511,6 +511,13 @@ def process_emails():
                             img_counter += 1
                         except: pass
 
+                    # WRAPPING (Pour centrage global mais non-destructif)
+                    if soup.body:
+                        wrapper = soup.new_tag("div", id="email-container")
+                        for content in list(soup.body.contents):
+                            wrapper.append(content.extract())
+                        soup.body.append(wrapper)
+
                     # VIEWER
                     safe_html = json.dumps(str(soup))
                     nb_links = len(links)
@@ -526,7 +533,7 @@ def process_emails():
                         <meta name="archiving_date" content="{datetime.datetime.now().strftime('%Y-%m-%d')}">
                         <title>{subject}</title>
                         <style>
-                            body {{ margin: 0; padding: 0; background: #eef2f5; font-family: system-ui, sans-serif; overflow: hidden; }}
+                            body {{ margin: 0; padding: 0; background: #eef2f5; font-family: Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }}
                             
                             .header {{ position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }}
                             .title {{ font-size: 16px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; }}
@@ -536,26 +543,23 @@ def process_emails():
                             .btn.active {{ background: #0070f3; color: white; border-color: #0070f3; }}
                             .btn svg {{ display: block; }}
                             
-                            .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: center; background: #eef2f5; overflow: hidden; }}
+                            .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: flex-start; background: #eef2f5; overflow: hidden; padding-top: 20px; }}
                             
-                            /* STYLE DU CONTENEUR DESKTOP */
+                            /* STYLE DU CONTENEUR */
                             .iframe-wrapper {{ 
-                                width: 1200px; max-width: 95%; height: 90%;
-                                transition: all 0.3s ease; 
-                                background: white; box-shadow: 0 5px 30px rgba(0,0,0,0.1); border-radius: 8px;
+                                width: 1000px; max-width: 95%; height: 90%;
+                                transition: width 0.3s ease; 
+                                background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 4px;
                             }}
                             
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             
-                            /* STYLE MOBILE : Ratio et dimensions fixes type iPhone X */
+                            /* STYLE MOBILE */
                             body.mobile-mode .iframe-wrapper {{ 
-                                width: 375px;
-                                height: 812px; 
-                                max-height: 90vh; /* Pour ne pas dépasser sur les petits écrans */
-                                max-width: 100%;
-                                border-radius: 0; /* Suppression des coins arrondis comme demandé */
+                                width: 375px; height: 812px; 
+                                max-height: 85vh; 
                                 border: none; 
-                                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                                box-shadow: 0 10px 40px rgba(0,0,0,0.15);
                             }}
                             
                             .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }}
@@ -605,56 +609,75 @@ def process_emails():
                             
                             frame.contentDocument.open();
                             frame.contentDocument.write(emailContent);
+                            
+                            const meta = frame.contentDocument.createElement('meta');
+                            meta.name = 'viewport';
+                            meta.content = 'width=device-width, initial-scale=1.0';
+                            frame.contentDocument.head.appendChild(meta);
+                            
+                            const base = frame.contentDocument.createElement('base');
+                            base.target = '_blank';
+                            frame.contentDocument.head.appendChild(base);
+
                             frame.contentDocument.close();
                             
-                            // --- CSS INJECTÉ DANS L'IFRAME ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                * {{ box-sizing: border-box !important; }}
-
-                                /* CACHER LA SCROLLBAR mais garder le scroll */
-                                html {{ scrollbar-width: none; }} /* Firefox */
-                                body::-webkit-scrollbar {{ display: none; }} /* Chrome/Safari */
+                                /* SCROLLBAR CACHÉE (Mais scroll actif) */
+                                html {{ 
+                                    -ms-overflow-style: none; 
+                                    scrollbar-width: none; 
+                                }}
+                                html::-webkit-scrollbar {{ display: none; }}
+                                body::-webkit-scrollbar {{ display: none; width: 0; }}
                                 
-                                /* CORRECTION DESKTOP : Contrainte stricte */
                                 body {{ 
-                                    margin: 0 auto !important; 
-                                    padding: 10px !important;
-                                    width: 100% !important;
-                                    max-width: 800px !important; /* Force la largeur max du contenu texte */
-                                    background-color: white; 
-                                    font-family: sans-serif;
-                                    overflow-x: hidden; /* Coupe ce qui dépasse horizontalement */
+                                    margin: 0 !important; 
+                                    padding: 0 !important;
+                                    font-family: Roboto, Helvetica, Arial, sans-serif;
+                                    color: #222;
+                                    line-height: 1.5;
+                                    overflow-wrap: break-word;
+                                    overflow-x: auto !important; /* IMPORTANT: Permet le scroll horizontal si ça dépasse */
                                 }}
                                 
-                                /* Force TOUS les éléments à ne pas dépasser */
-                                div, table, p, span, pre, code {{ 
-                                    max-width: 100% !important;
+                                #email-container {{
+                                    width: 100%;
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    padding: 20px 10px;
+                                    box-sizing: border-box; 
                                 }}
 
-                                table, tbody, tr, td {{ 
-                                    height: auto !important; 
+                                /* FORCE RESPONSIVE */
+                                table, tbody, tr, td, div {{
+                                    max-width: 100% !important;
+                                    box-sizing: border-box;
                                 }}
-                                
-                                /* Permet le redimensionnement fluide */
-                                table {{ min-width: 0 !important; }}
-                                td {{ min-width: 0 !important; }}
+                                /* ECRASE LES LARGEURS FIXES DES TABLES */
+                                table[width], td[width] {{
+                                    min-width: 0 !important; /* Permet aux cellules de rétrécir */
+                                    /* width: 100% !important; <-- Parfois trop agressif, on préfère max-width */
+                                    height: auto !important;
+                                }}
 
                                 img {{ 
                                     max-width: 100% !important; 
                                     height: auto !important; 
-                                    display: inline-block; 
+                                    vertical-align: middle;
+                                    border: 0;
                                 }}
 
-                                /* CÉSURE VIOLENTE pour les URL ou mots longs qui dépassent */
-                                p, h1, h2, h3, h4, span, div, td, a, li {{
-                                    word-break: break-word !important; 
-                                    overflow-wrap: break-word !important;
-                                    white-space: normal !important;
-                                    max-width: 100% !important;
+                                img[style*="display: block"], img[style*="display:block"] {{
+                                    margin-left: auto !important;
+                                    margin-right: auto !important;
                                 }}
 
-                                /* DARK MODE */
+                                a, .link-text {{ 
+                                    word-break: break-all; 
+                                    color: #1a0dab; 
+                                }}
+                                
                                 html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, 
                                 html.dark-mode-internal video, 
