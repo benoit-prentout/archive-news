@@ -11,6 +11,7 @@ import datetime
 import hashlib
 import shutil
 import json
+import html
 
 # --- CONFIGURATION ---
 GMAIL_USER = os.environ["GMAIL_USER"]
@@ -28,6 +29,7 @@ ICON_MOON = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColo
 ICON_SUN = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
 ICON_MOBILE = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>'
 ICON_LINK = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>'
+ICON_INFO = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
 
 def clean_subject_prefixes(subject):
     if not subject: return "Sans titre"
@@ -85,6 +87,7 @@ def get_page_metadata(filepath):
     date_str = None
     archiving_date_str = None
     sender = "Expéditeur Inconnu"
+    preheader = ""
     
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -103,6 +106,10 @@ def get_page_metadata(filepath):
             meta_sender = soup.find("meta", attrs={"name": "sender"})
             if meta_sender and meta_sender.get("content"):
                 sender = meta_sender["content"]
+
+            meta_preheader = soup.find("meta", attrs={"name": "preheader"})
+            if meta_preheader and meta_preheader.get("content"):
+                preheader = meta_preheader["content"]
     except Exception:
         pass
 
@@ -116,7 +123,7 @@ def get_page_metadata(filepath):
     if not archiving_date_str:
         archiving_date_str = date_str
 
-    return title, date_str, sender, archiving_date_str
+    return title, date_str, sender, archiving_date_str, preheader
 
 def format_date_fr(date_iso):
     try:
@@ -138,12 +145,13 @@ def generate_index():
         index_file_path = os.path.join(folder, "index.html")
         if not os.path.exists(index_file_path): continue
 
-        full_title, date_rec_str, sender, date_arch_str = get_page_metadata(index_file_path)
+        full_title, date_rec_str, sender, date_arch_str, preheader = get_page_metadata(index_file_path)
         
         pages_data.append({
             "folder": folder_name,
             "title": full_title,
             "sender": sender,
+            "preheader": preheader,
             "date_rec": format_date_fr(date_rec_str),
             "date_arch": format_date_fr(date_arch_str),
             "sort_key": date_rec_str
@@ -159,6 +167,7 @@ def generate_index():
                 <div class="info-col">
                     <span class="sender">{page['sender']}</span>
                     <span class="title">{page['title']}</span>
+                    <span class="preheader-preview">{page['preheader']}</span>
                 </div>
                 <div class="date-col">
                     <span class="date" title="Date de réception">📩 {page['date_rec']}</span>
@@ -212,7 +221,8 @@ def generate_index():
             
             .info-col {{ display: flex; flex-direction: column; flex: 1; min-width: 0; margin-right: 15px; }}
             .sender {{ font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }}
-            .title {{ font-weight: 500; font-size: 1rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .title {{ font-weight: 500; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }}
+            .preheader-preview {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }}
             
             .date-col {{ display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; margin-left: 10px; }}
             .date {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }}
@@ -464,11 +474,11 @@ def process_emails():
                     # PARSING
                     soup = BeautifulSoup(html_content, "html.parser")
                     
-                    # NETTOYAGE LEGER (Uniquement scripts/meta dangereux)
+                    # Nettoyage léger
                     for s in soup(["script", "iframe", "object", "meta"]): 
                         s.extract()
 
-                    # GESTION DES BLOCS DE TRANSFERT GMAIL
+                    # Gestion des blocs de transfert Gmail
                     for div in soup.find_all("div"):
                         if any(k in div.get_text() for k in ["Forwarded message", "Message transféré"]) and "-----" in div.get_text():
                             new_body = soup.new_tag("body")
@@ -477,8 +487,11 @@ def process_emails():
                                 soup.body.replace_with(new_body)
                             break
                     
-                    # --- NOTE: On NE modifie PLUS les attributs width/height du HTML ici ---
-                    # --- On laisse le CSS gérer l'adaptation mobile ---
+                    # EXTRACTION PREHEADER (Texte brut, 160 chars)
+                    raw_text = soup.get_text(separator=" ", strip=True)
+                    preheader_txt = raw_text[:160] + "..." if len(raw_text) > 160 else raw_text
+                    # Echappement pour le HTML attribute
+                    safe_preheader_attr = html.escape(preheader_txt, quote=True)
 
                     links = []
                     for a in soup.find_all('a', href=True):
@@ -516,12 +529,10 @@ def process_emails():
                             img_counter += 1
                         except: pass
 
-                    # --- NOTE: ON NE WRAP PLUS LE CONTENU DANS UN DIV ---
-                    # Cela préserve les attributs du body original (bgcolor, align, etc.)
-
-                    # VIEWER GENERATION
+                    # VIEWER
                     safe_html = json.dumps(str(soup))
                     nb_links = len(links)
+                    date_arch_str = datetime.datetime.now().strftime('%Y-%m-%d')
                     
                     viewer_content = f"""
                     <!DOCTYPE html>
@@ -531,7 +542,8 @@ def process_emails():
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <meta name="creation_date" content="{email_date_str}">
                         <meta name="sender" content="{sender_name}">
-                        <meta name="archiving_date" content="{datetime.datetime.now().strftime('%Y-%m-%d')}">
+                        <meta name="archiving_date" content="{date_arch_str}">
+                        <meta name="preheader" content="{safe_preheader_attr}">
                         <title>{subject}</title>
                         <style>
                             body {{ margin: 0; padding: 0; background: #eef2f5; font-family: Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }}
@@ -555,7 +567,7 @@ def process_emails():
                             
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             
-                            /* STYLE MOBILE (C'est la fenêtre qui change, pas l'email à l'intérieur pour l'instant) */
+                            /* STYLE MOBILE */
                             body.mobile-mode .iframe-wrapper {{ 
                                 width: 375px; height: 812px; 
                                 max-height: 85vh; 
@@ -563,22 +575,42 @@ def process_emails():
                                 box-shadow: 0 10px 40px rgba(0,0,0,0.15);
                             }}
                             
-                            .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; }}
+                            .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }}
                             .sidebar.open {{ right: 0; }}
-                            .sidebar h3 {{ margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
-                            .sidebar ul {{ list-style: none; padding: 0; }}
+                            .sidebar-section {{ }}
+                            .sidebar h3 {{ margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }}
+                            
+                            /* Métadonnées */
+                            .meta-item {{ margin-bottom: 12px; font-size: 13px; color: #555; }}
+                            .meta-label {{ font-weight: 600; display: block; margin-bottom: 3px; color: #333; }}
+                            .meta-val {{ word-break: break-word; line-height: 1.4; }}
+                            .preheader-box {{ background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }}
+
+                            /* Liste Liens */
+                            .sidebar ul {{ list-style: none; padding: 0; margin: 0; }}
                             .sidebar li {{ margin-bottom: 15px; word-break: break-all; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }}
                             .sidebar a {{ text-decoration: none; color: inherit; font-size: 12px; }}
                             .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 4px; }}
                             .link-url {{ color: #666; }}
                             
+                            /* DARK MODE */
                             body.dark-mode .main-view {{ background: #121212; }}
                             body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
                             body.dark-mode .title {{ color: #e0e0e0; }}
                             body.dark-mode .btn {{ background: #2c2c2c; border-color: #444; color: #ccc; }}
                             body.dark-mode .btn.active {{ background: #0070f3; color: white; }}
+                            
+                            /* Ombre lumineuse plus marquée en dark mode */
+                            body.dark-mode .iframe-wrapper {{ 
+                                box-shadow: 0 0 25px rgba(255, 255, 255, 0.15); 
+                                border: 1px solid #333;
+                            }}
+                            
                             body.dark-mode .sidebar {{ background: #1e1e1e; border-left-color: #333; }}
                             body.dark-mode .sidebar h3 {{ color: #fff; border-bottom-color: #333; }}
+                            body.dark-mode .meta-label {{ color: #ccc; }}
+                            body.dark-mode .meta-item {{ color: #aaa; }}
+                            body.dark-mode .preheader-box {{ background: #252525; border-color: #333; color: #aaa; }}
                             body.dark-mode .link-txt {{ color: #4da3ff; }}
                             body.dark-mode .link-url {{ color: #aaa; }}
                         </style>
@@ -587,7 +619,7 @@ def process_emails():
                         <header class="header">
                             <div class="title">{subject}</div>
                             <div class="controls">
-                                <button class="btn" onclick="toggleLinks()" id="btn-links"><span>{ICON_LINK}</span>&nbsp;Liens ({nb_links})</button>
+                                <button class="btn" onclick="toggleLinks()" id="btn-links"><span>{ICON_INFO}</span>&nbsp;Infos</button>
                                 <button class="btn" onclick="toggleMobile()" id="btn-mobile"><span>{ICON_MOBILE}</span>&nbsp;Mobile</button>
                                 <button class="btn" onclick="toggleDark()" id="btn-dark"><span>{ICON_MOON}</span>&nbsp;Sombre</button>
                             </div>
@@ -600,8 +632,26 @@ def process_emails():
                         </div>
                         
                         <div class="sidebar" id="sidebar">
-                            <h3>Liens détectés</h3>
-                            <ul>{links_html}</ul>
+                            <div class="sidebar-section">
+                                <h3>{ICON_INFO} Métadonnées</h3>
+                                <div class="meta-item">
+                                    <span class="meta-label">📅 Date d'envoi</span>
+                                    <span class="meta-val">{format_date_fr(email_date_str)}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">🗄️ Date d'archivage</span>
+                                    <span class="meta-val">{format_date_fr(date_arch_str)}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">👀 Pré-header (Aperçu)</span>
+                                    <div class="preheader-box">{safe_preheader_attr}</div>
+                                </div>
+                            </div>
+
+                            <div class="sidebar-section">
+                                <h3>{ICON_LINK} Liens détectés ({nb_links})</h3>
+                                <ul>{links_html}</ul>
+                            </div>
                         </div>
 
                         <script>
@@ -611,92 +661,40 @@ def process_emails():
                             frame.contentDocument.open();
                             frame.contentDocument.write(emailContent);
                             
-                            // 1. INJECTION DU VIEWPORT
                             const meta = frame.contentDocument.createElement('meta');
                             meta.name = 'viewport';
                             meta.content = 'width=device-width, initial-scale=1.0';
                             frame.contentDocument.head.appendChild(meta);
                             
-                            // 2. INJECTION BASE TARGET
                             const base = frame.contentDocument.createElement('base');
                             base.target = '_blank';
                             frame.contentDocument.head.appendChild(base);
 
                             frame.contentDocument.close();
                             
-                            // --- CSS INTELLIGENT ---
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
-                                /* --- 1. RESET GLOBAL --- */
-                                html {{ 
-                                    -ms-overflow-style: none; 
-                                    scrollbar-width: none; 
-                                }}
+                                html {{ -ms-overflow-style: none; scrollbar-width: none; }}
                                 html::-webkit-scrollbar {{ display: none; }}
                                 body::-webkit-scrollbar {{ display: none; width: 0; }}
-                                
                                 body {{ 
-                                    margin: 0; 
-                                    padding: 0;
-                                    font-family: Roboto, Helvetica, Arial, sans-serif;
-                                    color: #222;
-                                    line-height: 1.5;
-                                    overflow-wrap: break-word; 
-                                    /* background-color: transparent !important; /* Laisse voir le fond blanc du container */
+                                    margin: 0; padding: 0; font-family: Roboto, Helvetica, Arial, sans-serif;
+                                    color: #222; line-height: 1.5; overflow-wrap: break-word; 
                                 }}
-                                
-                                table {{
-                                    border-spacing: 0;
-                                    border-collapse: collapse;
-                                }}
-                                
-                                img {{ 
-                                    height: auto !important; 
-                                    vertical-align: middle; 
-                                    border: 0;
-                                }}
-
-                                /* Si l'email force explicitement le bloc, on centre l'image */
-                                img[style*="display: block"], img[style*="display:block"] {{
-                                    margin-left: auto !important;
-                                    margin-right: auto !important;
-                                }}
-
-                                a, .link-text {{ 
-                                    color: #1a0dab; 
-                                }}
-                                
-                                /* --- 2. DARK MODE --- */
+                                table {{ border-spacing: 0; border-collapse: collapse; }}
+                                img {{ height: auto !important; vertical-align: middle; border: 0; }}
+                                img[style*="display: block"], img[style*="display:block"] {{ margin-left: auto !important; margin-right: auto !important; }}
+                                a, .link-text {{ color: #1a0dab; }}
                                 html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
-                                html.dark-mode-internal img, 
-                                html.dark-mode-internal video, 
-                                html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
-
-                                /* --- 3. FIX MOBILE SPECIFIQUE --- */
-                                /* Ces règles ne s'appliquent que si le parent (viewer) a activé le mode mobile */
+                                html.dark-mode-internal img, html.dark-mode-internal video, html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
                                 @media screen and (max-width: 600px) {{
-                                    table, tbody, tr, td {{
-                                        width: 100% !important;
-                                        min-width: 0 !important;
-                                        box-sizing: border-box !important;
-                                        height: auto !important;
-                                    }}
-                                    
-                                    /* Pour éviter que des conteneurs fixes ne débordent */
-                                    div[style*="width"] {{
-                                        width: 100% !important;
-                                        max-width: 100% !important;
-                                    }}
-                                    
-                                    img {{
-                                        width: auto !important;
-                                        max-width: 100% !important;
-                                    }}
+                                    table, tbody, tr, td {{ width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; height: auto !important; }}
+                                    div[style*="width"] {{ width: 100% !important; max-width: 100% !important; }}
+                                    img {{ width: auto !important; max-width: 100% !important; }}
                                 }}
                             `;
                             frame.contentDocument.head.appendChild(style);
 
-                            // Communication Parent <-> Iframe pour le mode mobile
                             function toggleMobile() {{
                                 document.body.classList.toggle('mobile-mode');
                                 document.getElementById('btn-mobile').classList.toggle('active');
