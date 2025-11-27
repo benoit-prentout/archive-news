@@ -30,9 +30,104 @@ ICON_SUN = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor
 ICON_MOBILE = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>'
 ICON_LINK = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>'
 ICON_INFO = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+ICON_CLOCK = '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+ICON_LANG = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
+
+# --- DICTIONNAIRE DE TRADUCTION ---
+TRANSLATIONS = {
+    "en": {
+        "page_title": "Newsletter Archive",
+        "search_placeholder": "Search by title, sender or date...",
+        "btn_infos": "Infos",
+        "btn_mobile": "Mobile",
+        "btn_dark": "Dark",
+        "meta_section": "Metadata",
+        "label_sent": "Sent Date",
+        "label_archived": "Archived Date",
+        "label_reading": "Reading Time",
+        "label_preheader": "Preheader",
+        "links_section": "Detected Links",
+        "legal_summary": "Legal Notice",
+        "legal_publisher": "Publisher",
+        "legal_hosting": "Hosting",
+        "legal_text": "This site is a personal archive.",
+        "tooltip_sent": "Received Date",
+        "tooltip_archived": "Archived Date"
+    },
+    "fr": {
+        "page_title": "Archives Newsletters",
+        "search_placeholder": "Rechercher par titre, expéditeur ou date...",
+        "btn_infos": "Infos",
+        "btn_mobile": "Mobile",
+        "btn_dark": "Sombre",
+        "meta_section": "Métadonnées",
+        "label_sent": "Date d'envoi",
+        "label_archived": "Date d'archivage",
+        "label_reading": "Temps de lecture",
+        "label_preheader": "Pré-header",
+        "links_section": "Liens détectés",
+        "legal_summary": "Mentions Légales",
+        "legal_publisher": "Éditeur",
+        "legal_hosting": "Hébergement",
+        "legal_text": "Ce site est une archive personnelle.",
+        "tooltip_sent": "Date de réception",
+        "tooltip_archived": "Date d'archivage"
+    }
+}
+
+JS_TRANSLATION_LOGIC = f"""
+const TRANSLATIONS = {json.dumps(TRANSLATIONS)};
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function updateLanguage(lang) {{
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    const t = TRANSLATIONS[lang];
+    
+    // Update simple text elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {{
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+    }});
+    
+    // Update placeholders
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && t['search_placeholder']) searchInput.placeholder = t['search_placeholder'];
+    
+    // Update tooltips (titles)
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {{
+        const key = el.getAttribute('data-i18n-title');
+        if (t[key]) el.title = t[key];
+    }});
+
+    // Update button text content with icon preservation
+    document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {{
+        const key = el.getAttribute('data-i18n-btn');
+        if (t[key]) {{
+            // Keep the SVG icon (first child) and update text node
+            const icon = el.firstElementChild;
+            el.innerHTML = ''; 
+            el.appendChild(icon);
+            el.appendChild(document.createTextNode(' ' + t[key]));
+        }}
+    }});
+    
+    // Update Lang Button State
+    const langBtn = document.getElementById('lang-toggle');
+    if(langBtn) langBtn.innerHTML = `<span>{ICON_LANG}</span>&nbsp;${{lang === 'en' ? 'FR' : 'EN'}}`;
+}}
+
+function toggleLanguage() {{
+    const newLang = currentLang === 'en' ? 'fr' : 'en';
+    updateLanguage(newLang);
+}}
+
+// Init
+updateLanguage(currentLang);
+"""
 
 def clean_subject_prefixes(subject):
-    if not subject: return "Sans titre"
+    if not subject: return "Untitled"
     pattern = r'^\s*\[?(?:Fwd|Fw|Tr|Re|Aw|Wg)\s*:\s*\]?\s*'
     cleaned = subject
     while re.match(pattern, cleaned, re.IGNORECASE):
@@ -57,7 +152,7 @@ def get_email_date(msg):
 def get_clean_sender(msg):
     try:
         from_header = msg["From"]
-        if not from_header: return "Inconnu"
+        if not from_header: return "Unknown"
         decoded_header = ""
         for part, encoding in decode_header(from_header):
             if isinstance(part, bytes):
@@ -66,13 +161,13 @@ def get_clean_sender(msg):
                 decoded_header += str(part)
         realname, email_addr = parseaddr(decoded_header)
         sender = realname if realname else email_addr
-        return sender.strip() if sender else "Expéditeur Inconnu"
+        return sender.strip() if sender else "Unknown Sender"
     except:
-        return "Expéditeur Inconnu"
+        return "Unknown Sender"
 
 def get_decoded_email_subject(msg):
     subject_header = msg["Subject"]
-    if not subject_header: return "Sans Titre"
+    if not subject_header: return "Untitled"
     decoded_list = decode_header(subject_header)
     full_subject = ""
     for part, encoding in decoded_list:
@@ -83,11 +178,12 @@ def get_decoded_email_subject(msg):
     return full_subject.strip()
 
 def get_page_metadata(filepath):
-    title = "Sans titre"
+    title = "Untitled"
     date_str = None
     archiving_date_str = None
-    sender = "Expéditeur Inconnu"
+    sender = "Unknown Sender"
     preheader = ""
+    reading_time = "1 min"
     
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -110,6 +206,11 @@ def get_page_metadata(filepath):
             meta_preheader = soup.find("meta", attrs={"name": "preheader"})
             if meta_preheader and meta_preheader.get("content"):
                 preheader = meta_preheader["content"]
+            
+            meta_rt = soup.find("meta", attrs={"name": "reading_time"})
+            if meta_rt and meta_rt.get("content"):
+                reading_time = meta_rt["content"]
+
     except Exception:
         pass
 
@@ -123,7 +224,7 @@ def get_page_metadata(filepath):
     if not archiving_date_str:
         archiving_date_str = date_str
 
-    return title, date_str, sender, archiving_date_str, preheader
+    return title, date_str, sender, archiving_date_str, preheader, reading_time
 
 def format_date_fr(date_iso):
     try:
@@ -145,13 +246,14 @@ def generate_index():
         index_file_path = os.path.join(folder, "index.html")
         if not os.path.exists(index_file_path): continue
 
-        full_title, date_rec_str, sender, date_arch_str, preheader = get_page_metadata(index_file_path)
+        full_title, date_rec_str, sender, date_arch_str, preheader, reading_time = get_page_metadata(index_file_path)
         
         pages_data.append({
             "folder": folder_name,
             "title": full_title,
             "sender": sender,
             "preheader": preheader,
+            "reading_time": reading_time,
             "date_rec": format_date_fr(date_rec_str),
             "date_arch": format_date_fr(date_arch_str),
             "sort_key": date_rec_str
@@ -161,6 +263,7 @@ def generate_index():
 
     links_html = ""
     for page in pages_data:
+        # Note: Pas de reading_time ici selon votre demande
         links_html += f'''
         <li class="news-item">
             <a href="{page['folder']}/index.html" class="item-link">
@@ -170,8 +273,8 @@ def generate_index():
                     <span class="preheader-preview">{page['preheader']}</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 {page['date_rec']}</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ {page['date_arch']}</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 {page['date_rec']}</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ {page['date_arch']}</span>
                 </div>
             </a>
         </li>
@@ -181,11 +284,11 @@ def generate_index():
 
     index_content = f"""
     <!DOCTYPE html>
-    <html lang="fr">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Archives Newsletters - Benoît Prentout</title>
+        <title>Newsletter Archive</title>
         <meta name="robots" content="noindex, nofollow">
         <style>
             :root {{
@@ -200,9 +303,10 @@ def generate_index():
             .container {{ max-width: 800px; width: 100%; margin: 0 auto; background: var(--bg-card); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); flex: 1; position: relative; }}
             .header-row {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; }}
             h1 {{ text-align: center; color: var(--text-main); margin: 0; font-size: 1.8rem; flex-grow: 1; }}
-            
-            #theme-toggle {{ background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-main); }}
-            #theme-toggle:hover {{ background-color: var(--hover-bg); border-color: var(--accent-color); }}
+            .controls {{ display: flex; gap: 10px; }}
+
+            #theme-toggle, #lang-toggle {{ background: none; border: 1px solid var(--border-color); border-radius: 6px; padding: 0 10px; height: 40px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-main); }}
+            #theme-toggle:hover, #lang-toggle:hover {{ background-color: var(--hover-bg); border-color: var(--accent-color); }}
             
             .icon-moon {{ display: block; }}
             .icon-sun {{ display: none; }}
@@ -244,14 +348,19 @@ def generate_index():
     <body>
         <div class="container">
             <div class="header-row">
-                <div style="width: 40px;"></div>
-                <h1>📬 Archives Newsletters</h1>
-                <button id="theme-toggle" title="Changer le thème">
-                    <span class="icon-moon">{ICON_MOON}</span>
-                    <span class="icon-sun">{ICON_SUN}</span>
-                </button>
+                <div style="width: 80px;"></div>
+                <h1 data-i18n="page_title">Newsletter Archive</h1>
+                <div class="controls">
+                    <button id="lang-toggle" onclick="toggleLanguage()" title="Switch Language">
+                        <span>{ICON_LANG}</span>&nbsp;FR
+                    </button>
+                    <button id="theme-toggle" title="Toggle Theme">
+                        <span class="icon-moon">{ICON_MOON}</span>
+                        <span class="icon-sun">{ICON_SUN}</span>
+                    </button>
+                </div>
             </div>
-            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher par titre, expéditeur ou date...">
+            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search by title, sender or date...">
             <ul id="newsList">
                 {links_html}
             </ul>
@@ -259,12 +368,18 @@ def generate_index():
             <footer>
                 <p class="copyright">&copy; {current_year} <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>.</p>
                 <details>
-                    <summary>Mentions Légales</summary>
-                    <p style="margin-top:10px;"><strong>Éditeur :</strong> Benoît Prentout<br><strong>Hébergement :</strong> GitHub Inc.<br>Ce site est une archive personnelle.</p>
+                    <summary data-i18n="legal_summary">Legal Notice</summary>
+                    <p style="margin-top:10px;">
+                        <strong data-i18n="legal_publisher">Publisher</strong> : Benoît Prentout<br>
+                        <strong data-i18n="legal_hosting">Hosting</strong> : GitHub Inc.<br>
+                        <span data-i18n="legal_text">This site is a personal archive.</span>
+                    </p>
                 </details>
             </footer>
         </div>
         <script>
+        {JS_TRANSLATION_LOGIC}
+
         const toggleBtn = document.getElementById('theme-toggle');
         const root = document.documentElement;
         const savedTheme = localStorage.getItem('theme');
@@ -487,11 +602,15 @@ def process_emails():
                                 soup.body.replace_with(new_body)
                             break
                     
-                    # EXTRACTION PREHEADER (Texte brut, 160 chars)
+                    # EXTRACTION PREHEADER
                     raw_text = soup.get_text(separator=" ", strip=True)
                     preheader_txt = raw_text[:160] + "..." if len(raw_text) > 160 else raw_text
-                    # Echappement pour le HTML attribute
                     safe_preheader_attr = html.escape(preheader_txt, quote=True)
+
+                    # CALCUL DU TEMPS DE LECTURE
+                    word_count = len(raw_text.split())
+                    reading_time_min = max(1, round(word_count / 200))
+                    reading_time_str = f"{reading_time_min} min"
 
                     links = []
                     for a in soup.find_all('a', href=True):
@@ -536,7 +655,7 @@ def process_emails():
                     
                     viewer_content = f"""
                     <!DOCTYPE html>
-                    <html lang="fr">
+                    <html lang="en">
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -544,6 +663,7 @@ def process_emails():
                         <meta name="sender" content="{sender_name}">
                         <meta name="archiving_date" content="{date_arch_str}">
                         <meta name="preheader" content="{safe_preheader_attr}">
+                        <meta name="reading_time" content="{reading_time_str}">
                         <title>{subject}</title>
                         <style>
                             body {{ margin: 0; padding: 0; background: #eef2f5; font-family: Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }}
@@ -619,9 +739,18 @@ def process_emails():
                         <header class="header">
                             <div class="title">{subject}</div>
                             <div class="controls">
-                                <button class="btn" onclick="toggleLinks()" id="btn-links"><span>{ICON_INFO}</span>&nbsp;Infos</button>
-                                <button class="btn" onclick="toggleMobile()" id="btn-mobile"><span>{ICON_MOBILE}</span>&nbsp;Mobile</button>
-                                <button class="btn" onclick="toggleDark()" id="btn-dark"><span>{ICON_MOON}</span>&nbsp;Sombre</button>
+                                <button class="btn" onclick="toggleLanguage()" id="lang-toggle" title="Switch Language">
+                                    <span>{ICON_LANG}</span>&nbsp;FR
+                                </button>
+                                <button class="btn" onclick="toggleLinks()" id="btn-links" data-i18n-btn="btn_infos">
+                                    <span>{ICON_INFO}</span>&nbsp;Infos
+                                </button>
+                                <button class="btn" onclick="toggleMobile()" id="btn-mobile" data-i18n-btn="btn_mobile">
+                                    <span>{ICON_MOBILE}</span>&nbsp;Mobile
+                                </button>
+                                <button class="btn" onclick="toggleDark()" id="btn-dark" data-i18n-btn="btn_dark">
+                                    <span>{ICON_MOON}</span>&nbsp;Dark
+                                </button>
                             </div>
                         </header>
                         
@@ -633,28 +762,34 @@ def process_emails():
                         
                         <div class="sidebar" id="sidebar">
                             <div class="sidebar-section">
-                                <h3>{ICON_INFO} Métadonnées</h3>
+                                <h3 data-i18n="meta_section">{ICON_INFO} Metadata</h3>
                                 <div class="meta-item">
-                                    <span class="meta-label">📅 Date d'envoi</span>
+                                    <span class="meta-label" data-i18n="label_sent">📅 Sent Date</span>
                                     <span class="meta-val">{format_date_fr(email_date_str)}</span>
                                 </div>
                                 <div class="meta-item">
-                                    <span class="meta-label">🗄️ Date d'archivage</span>
+                                    <span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span>
                                     <span class="meta-val">{format_date_fr(date_arch_str)}</span>
                                 </div>
                                 <div class="meta-item">
-                                    <span class="meta-label">👀 Pré-header (Aperçu)</span>
+                                    <span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span>
+                                    <span class="meta-val">{reading_time_str}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span>
                                     <div class="preheader-box">{safe_preheader_attr}</div>
                                 </div>
                             </div>
 
                             <div class="sidebar-section">
-                                <h3>{ICON_LINK} Liens détectés ({nb_links})</h3>
+                                <h3 data-i18n="links_section">{ICON_LINK} Detected Links ({nb_links})</h3>
                                 <ul>{links_html}</ul>
                             </div>
                         </div>
 
                         <script>
+                            {JS_TRANSLATION_LOGIC}
+
                             const emailContent = {safe_html};
                             const frame = document.getElementById('emailFrame');
                             
