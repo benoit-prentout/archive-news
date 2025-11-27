@@ -1,10 +1,10 @@
 
     <!DOCTYPE html>
-    <html lang="fr">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Archives Newsletters - Benoît Prentout</title>
+        <title>Newsletter Archive</title>
         <meta name="robots" content="noindex, nofollow">
         <style>
             :root {
@@ -19,9 +19,10 @@
             .container { max-width: 800px; width: 100%; margin: 0 auto; background: var(--bg-card); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); flex: 1; position: relative; }
             .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; }
             h1 { text-align: center; color: var(--text-main); margin: 0; font-size: 1.8rem; flex-grow: 1; }
-            
-            #theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-main); }
-            #theme-toggle:hover { background-color: var(--hover-bg); border-color: var(--accent-color); }
+            .controls { display: flex; gap: 10px; }
+
+            #theme-toggle, #lang-toggle { background: none; border: 1px solid var(--border-color); border-radius: 6px; padding: 0 10px; height: 40px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-main); }
+            #theme-toggle:hover, #lang-toggle:hover { background-color: var(--hover-bg); border-color: var(--accent-color); }
             
             .icon-moon { display: block; }
             .icon-sun { display: none; }
@@ -63,14 +64,19 @@
     <body>
         <div class="container">
             <div class="header-row">
-                <div style="width: 40px;"></div>
-                <h1>📬 Archives Newsletters</h1>
-                <button id="theme-toggle" title="Changer le thème">
-                    <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
-                    <span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
-                </button>
+                <div style="width: 80px;"></div>
+                <h1 data-i18n="page_title">Newsletter Archive</h1>
+                <div class="controls">
+                    <button id="lang-toggle" onclick="toggleLanguage()" title="Switch Language">
+                        <span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;FR
+                    </button>
+                    <button id="theme-toggle" title="Toggle Theme">
+                        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+                        <span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+                    </button>
+                </div>
             </div>
-            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Rechercher par titre, expéditeur ou date...">
+            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search by title, sender or date...">
             <ul id="newsList">
                 
         <li class="news-item">
@@ -82,8 +88,8 @@
  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 26/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -96,8 +102,8 @@
                     <span class="preheader-preview">Téléchargez l’app Wash, rechargez votre compte et faites des économies ! Version en ligne ‌ EN EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS * sur l’appl...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 26/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -110,8 +116,8 @@
                     <span class="preheader-preview">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l'aide de votre employeur ! Je réserve ma place Vous ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 26/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -124,8 +130,8 @@
                     <span class="preheader-preview">Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 26/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -138,8 +144,8 @@
                     <span class="preheader-preview">Promis, on peut tout vous expliquer ! ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 24/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -152,8 +158,8 @@
                     <span class="preheader-preview">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 24/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -166,8 +172,8 @@
                     <span class="preheader-preview">Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 24/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -180,8 +186,8 @@
                     <span class="preheader-preview">En association avec Petits Frères des Pauvres 👴👵💓 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 20/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 20/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -194,8 +200,8 @@
                     <span class="preheader-preview">Besoin d'un mode de garde pour bébé ? Découvrez Babilou, notre coup de cœur pour accompagner les familles au quotidien.‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 17/11/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 17/11/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -208,8 +214,8 @@
                     <span class="preheader-preview">On a une offre (-20%!!!) Maison Lemahieu pour vous 🤗 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Date de réception">📩 19/09/2025</span>
-                    <span class="date-arch" title="Date d'archivage">🗄️ 27/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 19/09/2025</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 27/11/2025</span>
                 </div>
             </a>
         </li>
@@ -219,12 +225,67 @@
             <footer>
                 <p class="copyright">&copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>.</p>
                 <details>
-                    <summary>Mentions Légales</summary>
-                    <p style="margin-top:10px;"><strong>Éditeur :</strong> Benoît Prentout<br><strong>Hébergement :</strong> GitHub Inc.<br>Ce site est une archive personnelle.</p>
+                    <summary data-i18n="legal_summary">Legal Notice</summary>
+                    <p style="margin-top:10px;">
+                        <strong data-i18n="legal_publisher">Publisher</strong> : Benoît Prentout<br>
+                        <strong data-i18n="legal_hosting">Hosting</strong> : GitHub Inc.<br>
+                        <span data-i18n="legal_text">This site is a personal archive.</span>
+                    </p>
                 </details>
             </footer>
         </div>
         <script>
+        
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "meta_section": "Metadata", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "meta_section": "M\u00e9tadonn\u00e9es", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function updateLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    const t = TRANSLATIONS[lang];
+    
+    // Update simple text elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+    });
+    
+    // Update placeholders
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && t['search_placeholder']) searchInput.placeholder = t['search_placeholder'];
+    
+    // Update tooltips (titles)
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (t[key]) el.title = t[key];
+    });
+
+    // Update button text content with icon preservation
+    document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {
+        const key = el.getAttribute('data-i18n-btn');
+        if (t[key]) {
+            // Keep the SVG icon (first child) and update text node
+            const icon = el.firstElementChild;
+            el.innerHTML = ''; 
+            el.appendChild(icon);
+            el.appendChild(document.createTextNode(' ' + t[key]));
+        }
+    });
+    
+    // Update Lang Button State
+    const langBtn = document.getElementById('lang-toggle');
+    if(langBtn) langBtn.innerHTML = `<span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;${lang === 'en' ? 'FR' : 'EN'}`;
+}
+
+function toggleLanguage() {
+    const newLang = currentLang === 'en' ? 'fr' : 'en';
+    updateLanguage(newLang);
+}
+
+// Init
+updateLanguage(currentLang);
+
+
         const toggleBtn = document.getElementById('theme-toggle');
         const root = document.documentElement;
         const savedTheme = localStorage.getItem('theme');
