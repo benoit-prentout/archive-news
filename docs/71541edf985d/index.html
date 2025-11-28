@@ -23,7 +23,6 @@
                             
                             .main-view { margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: flex-start; background: #eef2f5; overflow: hidden; padding-top: 20px; }
                             
-                            /* STYLE DU CONTENEUR */
                             .iframe-wrapper { 
                                 width: 1000px; max-width: 95%; height: 90%;
                                 transition: width 0.3s ease; 
@@ -32,7 +31,6 @@
                             
                             iframe { width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }
                             
-                            /* STYLE MOBILE */
                             body.mobile-mode .iframe-wrapper { 
                                 width: 375px; height: 812px; 
                                 max-height: 85vh; 
@@ -45,53 +43,49 @@
                             .sidebar-section { }
                             .sidebar h3 { margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
                             
-                            /* Métadonnées */
                             .meta-item { margin-bottom: 12px; font-size: 13px; color: #555; }
                             .meta-label { font-weight: 600; display: block; margin-bottom: 3px; color: #333; }
                             .meta-val { word-break: break-word; line-height: 1.4; }
                             .preheader-box { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }
 
-                            /* Pixel Tracking Styles */
+                            /* Pixel Styles */
                             .status-badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
                             .status-badge.ok { color: green; }
                             .status-badge.warn { color: orange; }
-                            .status-badge.miss { color: red; }
-                            .pixel-box { display: flex; align-items: flex-start; background: #f8f9fa; border: 1px solid #eee; border-radius: 4px; overflow: hidden; }
-                            .pixel-code { flex: 1; font-family: monospace; font-size: 11px; padding: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: #666; max-height: 80px; overflow-y: auto; }
                             
-                            /* Boutons d'action */
+                            .pixel-list { list-style: none; padding: 0; margin: 0; background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 4px; }
+                            .pixel-li { padding: 8px; border-bottom: 1px solid #c3e6cb; }
+                            .pixel-li:last-child { border-bottom: none; }
+                            .pixel-row { display: flex; align-items: center; gap: 6px; color: #155724; font-size: 11px; }
+                            .pixel-url { word-break: break-all; font-family: monospace; }
+                            
                             .btn-copy, .btn-action { border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }
                             .btn-copy:hover, .btn-action:hover { color: #0070f3; background: #eee; }
                             
-                            /* Liste Liens */
-                            .sidebar ul { list-style: none; padding: 0; margin: 0; }
-                            .sidebar li { margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
+                            .sidebar ul:not(.pixel-list) { list-style: none; padding: 0; margin: 0; }
+                            .sidebar li:not(.pixel-li) { margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
                             .link-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
                             .link-data { text-decoration: none; color: inherit; font-size: 12px; flex: 1; min-width: 0; }
                             .link-txt { font-weight: bold; color: #0070f3; margin-bottom: 4px; }
                             .link-url { color: #666; word-break: break-all; font-family: monospace; font-size: 11px; }
                             .link-actions { display: flex; gap: 2px; flex-shrink: 0; }
                             
-                            /* DARK MODE */
                             body.dark-mode .main-view { background: #121212; }
                             body.dark-mode .header { background: #1e1e1e; border-bottom-color: #333; }
                             body.dark-mode .title { color: #e0e0e0; }
                             body.dark-mode .btn { background: #2c2c2c; border-color: #444; color: #ccc; }
                             body.dark-mode .btn.active { background: #0070f3; color: white; }
-                            
-                            /* Ombre lumineuse plus marquée en dark mode */
-                            body.dark-mode .iframe-wrapper { 
-                                box-shadow: 0 0 25px rgba(255, 255, 255, 0.15); 
-                                border: 1px solid #333;
-                            }
-                            
+                            body.dark-mode .iframe-wrapper { box-shadow: 0 0 25px rgba(255, 255, 255, 0.15); border: 1px solid #333; }
                             body.dark-mode .sidebar { background: #1e1e1e; border-left-color: #333; }
                             body.dark-mode .sidebar h3 { color: #fff; border-bottom-color: #333; }
                             body.dark-mode .meta-label { color: #ccc; }
                             body.dark-mode .meta-item { color: #aaa; }
                             body.dark-mode .preheader-box { background: #252525; border-color: #333; color: #aaa; }
-                            body.dark-mode .pixel-box { background: #252525; border-color: #333; }
-                            body.dark-mode .pixel-code { color: #aaa; }
+                            
+                            body.dark-mode .pixel-list { background: #1e2e1e; border-color: #2b4c2b; }
+                            body.dark-mode .pixel-li { border-bottom-color: #2b4c2b; }
+                            body.dark-mode .pixel-row { color: #90cea1; }
+                            
                             body.dark-mode .link-txt { color: #4da3ff; }
                             body.dark-mode .link-url { color: #aaa; }
                             body.dark-mode .btn-copy, body.dark-mode .btn-action { color: #666; }
@@ -129,11 +123,10 @@
                         <div class="sidebar" id="sidebar">
                             
                             <div class="sidebar-section">
-                                <h3 data-i18n="pixel_section">Tracking Pixel</h3>
+                                <h3 data-i18n="pixel_section"><svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Tracking Pixels</h3>
                                 
                         <div class="meta-item">
-                            <span class="meta-label" data-i18n="label_pixel_status">Status</span>
-                            <span class="status-badge miss"><span class="icon-status"><svg viewBox="0 0 24 24" width="14" height="14" stroke="red" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></span> <span data-i18n="status_miss">Not Found</span></span>
+                            <span class="status-badge warn"><span class="icon-status"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span> <span data-i18n="no_pixels">No trackers detected</span></span>
                         </div>
                         
                             </div>
@@ -506,7 +499,7 @@
 
                         <script>
                             
-const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Status", "label_pixel_code": "Pixel Code", "status_ok": "Integrated (End of Body)", "status_warn": "Found (Misplaced)", "status_miss": "Not Found", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date", "copy_msg": "Copied!"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "Statut", "label_pixel_code": "Code du Pixel", "status_ok": "Bien int\u00e9gr\u00e9 (Fin du Body)", "status_warn": "Trouv\u00e9 (Mal plac\u00e9)", "status_miss": "Non trouv\u00e9", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage", "copy_msg": "Copi\u00e9 !"}};
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixels", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "Active (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixels de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "Actif (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
 let currentLang = localStorage.getItem('lang') || 'en';
 
 function updateLanguage(lang) {
@@ -582,7 +575,7 @@ updateLanguage(currentLang);
                                 html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
                                 html.dark-mode-internal img, html.dark-mode-internal video, html.dark-mode-internal [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
                                 
-                                /* Highlight Class */
+                                /* Highlight Class - TEXT LINKS */
                                 body.highlight-links a {
                                     border: 2px solid red !important;
                                     background-color: yellow !important;
@@ -591,9 +584,17 @@ updateLanguage(currentLang);
                                     z-index: 9999;
                                     box-shadow: 0 0 5px rgba(255,0,0,0.5);
                                     animation: flash 1s infinite alternate;
+                                    display: inline-block;
+                                }
+
+                                /* Highlight Class - IMAGES INSIDE LINKS */
+                                body.highlight-links a img {
+                                    outline: 4px solid #ff0000 !important;
+                                    outline-offset: -2px;
+                                    opacity: 0.8;
+                                    filter: grayscale(50%);
                                 }
                                 
-                                /* Target specific link class */
                                 a.flash-target {
                                     outline: 4px solid #0070f3 !important;
                                     background-color: rgba(0, 112, 243, 0.2) !important;
@@ -644,7 +645,6 @@ updateLanguage(currentLang);
 
                             function copyToClipboard(text) {
                                 navigator.clipboard.writeText(text).then(() => {
-                                    // Feedback optionnel
                                 }).catch(err => {
                                     console.error('Failed to copy: ', err);
                                 });
@@ -654,7 +654,6 @@ updateLanguage(currentLang);
                                 const el = frame.contentDocument.getElementById(id);
                                 if(el) {
                                     el.scrollIntoView({behavior: 'smooth', block: 'center'});
-                                    // Effet visuel temporaire
                                     el.classList.add('flash-target');
                                     setTimeout(() => el.classList.remove('flash-target'), 2000);
                                 } else {
