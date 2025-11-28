@@ -109,11 +109,11 @@
         </li>
         
         <li class="news-item">
-            <a href="9022c78b4b57/index.html" class="item-link">
+            <a href="74f1556c7ff6/index.html" class="item-link">
                 <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Ultra Premium Direct | Les croquettes de Noël 🐶</span>
-                    <span class="preheader-preview">-25%* avec le code REDOUTE25 -25%* avec le code REDOUTE25 ! Faites vivre un Noël gourmand à votre animal avec Ultra Premium Direct et leurs croquettes fabriquée...</span>
+                    <span class="sender">The Bradery</span>
+                    <span class="title">Agenda Club 💚</span>
+                    <span class="preheader-preview">On profite de la vente archive Drôle de Monsieur, on savoure un cocktail chez Super Fine puis on danse à la Fête du Cornichon avant de visiter la Maisonde Victo...</span>
                 </div>
                 <div class="date-col">
                     <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
@@ -264,7 +264,7 @@
         </div>
         <script>
         
-const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "meta_section": "Metadata", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "meta_section": "M\u00e9tadonn\u00e9es", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Status", "label_pixel_code": "Pixel Code", "status_ok": "Integrated (End of Body)", "status_warn": "Found (Misplaced)", "status_miss": "Not Found", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date", "copy_msg": "Copied!"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "Statut", "label_pixel_code": "Code du Pixel", "status_ok": "Bien int\u00e9gr\u00e9 (Fin du Body)", "status_warn": "Trouv\u00e9 (Mal plac\u00e9)", "status_miss": "Non trouv\u00e9", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage", "copy_msg": "Copi\u00e9 !"}};
 let currentLang = localStorage.getItem('lang') || 'en';
 
 function updateLanguage(lang) {
@@ -272,27 +272,22 @@ function updateLanguage(lang) {
     localStorage.setItem('lang', lang);
     const t = TRANSLATIONS[lang];
     
-    // Update simple text elements
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (t[key]) el.textContent = t[key];
     });
     
-    // Update placeholders
     const searchInput = document.getElementById('searchInput');
     if (searchInput && t['search_placeholder']) searchInput.placeholder = t['search_placeholder'];
     
-    // Update tooltips (titles)
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
         const key = el.getAttribute('data-i18n-title');
         if (t[key]) el.title = t[key];
     });
 
-    // Update button text content with icon preservation
     document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {
         const key = el.getAttribute('data-i18n-btn');
         if (t[key]) {
-            // Keep the SVG icon (first child) and update text node
             const icon = el.firstElementChild;
             el.innerHTML = ''; 
             el.appendChild(icon);
@@ -300,7 +295,6 @@ function updateLanguage(lang) {
         }
     });
     
-    // Update Lang Button State
     const langBtn = document.getElementById('lang-toggle');
     if(langBtn) langBtn.innerHTML = `<span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;${lang === 'en' ? 'FR' : 'EN'}`;
 }
@@ -310,7 +304,6 @@ function toggleLanguage() {
     updateLanguage(newLang);
 }
 
-// Init
 updateLanguage(currentLang);
 
 

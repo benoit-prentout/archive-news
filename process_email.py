@@ -1,5 +1,3 @@
---- START OF FILE process_email.py ---
-
 import imaplib
 import email
 from email.header import decode_header

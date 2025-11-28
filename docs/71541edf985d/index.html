@@ -1,0 +1,667 @@
+
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <meta name="creation_date" content="2025-11-24">
+                        <meta name="sender" content="benoit@getinside.fr">
+                        <meta name="archiving_date" content="2025-11-28">
+                        <meta name="preheader" content="Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...">
+                        <meta name="reading_time" content="2 min">
+                        <title>🎁 95€ offerts + un bonus savoureux</title>
+                        <style>
+                            body { margin: 0; padding: 0; background: #eef2f5; font-family: Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+                            
+                            .header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+                            .title { font-size: 16px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; }
+                            .controls { display: flex; gap: 10px; flex-shrink: 0; }
+                            .btn { padding: 6px 12px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.2s; color: #333; }
+                            .btn:hover { background: #eee; }
+                            .btn.active { background: #0070f3; color: white; border-color: #0070f3; }
+                            .btn svg { display: block; }
+                            
+                            .main-view { margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: flex-start; background: #eef2f5; overflow: hidden; padding-top: 20px; }
+                            
+                            /* STYLE DU CONTENEUR */
+                            .iframe-wrapper { 
+                                width: 1000px; max-width: 95%; height: 90%;
+                                transition: width 0.3s ease; 
+                                background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 4px;
+                            }
+                            
+                            iframe { width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }
+                            
+                            /* STYLE MOBILE */
+                            body.mobile-mode .iframe-wrapper { 
+                                width: 375px; height: 812px; 
+                                max-height: 85vh; 
+                                border: none; 
+                                box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+                            }
+                            
+                            .sidebar { position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
+                            .sidebar.open { right: 0; }
+                            .sidebar-section { }
+                            .sidebar h3 { margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+                            
+                            /* Métadonnées */
+                            .meta-item { margin-bottom: 12px; font-size: 13px; color: #555; }
+                            .meta-label { font-weight: 600; display: block; margin-bottom: 3px; color: #333; }
+                            .meta-val { word-break: break-word; line-height: 1.4; }
+                            .preheader-box { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }
+
+                            /* Pixel Tracking Styles */
+                            .status-badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
+                            .status-badge.ok { color: green; }
+                            .status-badge.warn { color: orange; }
+                            .status-badge.miss { color: red; }
+                            .pixel-box { display: flex; align-items: flex-start; background: #f8f9fa; border: 1px solid #eee; border-radius: 4px; overflow: hidden; }
+                            .pixel-code { flex: 1; font-family: monospace; font-size: 11px; padding: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: #666; max-height: 80px; overflow-y: auto; }
+                            
+                            /* Boutons d'action */
+                            .btn-copy, .btn-action { border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }
+                            .btn-copy:hover, .btn-action:hover { color: #0070f3; background: #eee; }
+                            
+                            /* Liste Liens */
+                            .sidebar ul { list-style: none; padding: 0; margin: 0; }
+                            .sidebar li { margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
+                            .link-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+                            .link-data { text-decoration: none; color: inherit; font-size: 12px; flex: 1; min-width: 0; }
+                            .link-txt { font-weight: bold; color: #0070f3; margin-bottom: 4px; }
+                            .link-url { color: #666; word-break: break-all; font-family: monospace; font-size: 11px; }
+                            .link-actions { display: flex; gap: 2px; flex-shrink: 0; }
+                            
+                            /* DARK MODE */
+                            body.dark-mode .main-view { background: #121212; }
+                            body.dark-mode .header { background: #1e1e1e; border-bottom-color: #333; }
+                            body.dark-mode .title { color: #e0e0e0; }
+                            body.dark-mode .btn { background: #2c2c2c; border-color: #444; color: #ccc; }
+                            body.dark-mode .btn.active { background: #0070f3; color: white; }
+                            
+                            /* Ombre lumineuse plus marquée en dark mode */
+                            body.dark-mode .iframe-wrapper { 
+                                box-shadow: 0 0 25px rgba(255, 255, 255, 0.15); 
+                                border: 1px solid #333;
+                            }
+                            
+                            body.dark-mode .sidebar { background: #1e1e1e; border-left-color: #333; }
+                            body.dark-mode .sidebar h3 { color: #fff; border-bottom-color: #333; }
+                            body.dark-mode .meta-label { color: #ccc; }
+                            body.dark-mode .meta-item { color: #aaa; }
+                            body.dark-mode .preheader-box { background: #252525; border-color: #333; color: #aaa; }
+                            body.dark-mode .pixel-box { background: #252525; border-color: #333; }
+                            body.dark-mode .pixel-code { color: #aaa; }
+                            body.dark-mode .link-txt { color: #4da3ff; }
+                            body.dark-mode .link-url { color: #aaa; }
+                            body.dark-mode .btn-copy, body.dark-mode .btn-action { color: #666; }
+                            body.dark-mode .btn-copy:hover, body.dark-mode .btn-action:hover { color: #4da3ff; background: #333; }
+                        </style>
+                    </head>
+                    <body>
+                        <header class="header">
+                            <div class="title">🎁 95€ offerts + un bonus savoureux</div>
+                            <div class="controls">
+                                <button class="btn" onclick="toggleLanguage()" id="lang-toggle" title="Switch Language">
+                                    <span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;FR
+                                </button>
+                                <button class="btn" onclick="toggleHighlight()" id="btn-highlight" data-i18n-btn="btn_highlight">
+                                    <span><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg></span>&nbsp;Highlight
+                                </button>
+                                <button class="btn" onclick="toggleLinks()" id="btn-links" data-i18n-btn="btn_infos">
+                                    <span><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span>&nbsp;Infos
+                                </button>
+                                <button class="btn" onclick="toggleMobile()" id="btn-mobile" data-i18n-btn="btn_mobile">
+                                    <span><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg></span>&nbsp;Mobile
+                                </button>
+                                <button class="btn" onclick="toggleDark()" id="btn-dark" data-i18n-btn="btn_dark">
+                                    <span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>&nbsp;Dark
+                                </button>
+                            </div>
+                        </header>
+                        
+                        <div class="main-view">
+                            <div class="iframe-wrapper">
+                                <iframe id="emailFrame"></iframe>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar" id="sidebar">
+                            
+                            <div class="sidebar-section">
+                                <h3 data-i18n="pixel_section">Tracking Pixel</h3>
+                                
+                        <div class="meta-item">
+                            <span class="meta-label" data-i18n="label_pixel_status">Status</span>
+                            <span class="status-badge miss"><span class="icon-status"><svg viewBox="0 0 24 24" width="14" height="14" stroke="red" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></span> <span data-i18n="status_miss">Not Found</span></span>
+                        </div>
+                        
+                            </div>
+
+                            <div class="sidebar-section">
+                                <h3 data-i18n="meta_section"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Metadata</h3>
+                                <div class="meta-item">
+                                    <span class="meta-label" data-i18n="label_sent">📅 Sent Date</span>
+                                    <span class="meta-val">24/11/2025</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span>
+                                    <span class="meta-val">28/11/2025</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span>
+                                    <span class="meta-val">2 min</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span>
+                                    <div class="preheader-box">Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...</div>
+                                </div>
+                            </div>
+
+                            <div class="sidebar-section">
+                                <h3 data-i18n="links_section"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Detected Links (20)</h3>
+                                <ul>
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/mr/sh/7xYEvjyWS1dhUHp3TVE7pSQbY1YU1sF/roNTxIIB1_bI" target="_blank" class="link-data">
+                                    <div class="link-txt">Afficher dans le navigateur</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/mr/sh/7xYEvjyWS1dhUHp3TVE7pSQbY1YU1sF/roNTxIIB1_bI</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-0')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/mr/sh/7xYEvjyWS1dhUHp3TVE7pSQbY1YU1sF/roNTxIIB1_bI')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrNvBcdBhVw5Ooi6yHXa9sl/r-EqQU9d05Za" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrNvBcdBhVw5Ooi6yHXa9sl/r-EqQU9d05Za</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-1')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrNvBcdBhVw5Ooi6yHXa9sl/r-EqQU9d05Za')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrPoB98Ug5AXRB1v8e2MtpH/n5e3NJx9LxUL" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrPoB98Ug5AXRB1v8e2MtpH/n5e3NJx9LxUL</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-2')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrPoB98Ug5AXRB1v8e2MtpH/n5e3NJx9LxUL')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrRhAfdneeOzTXLjJ0X9dln/T8R5gWTayWZH" target="_blank" class="link-data">
+                                    <div class="link-txt">JE DÉCOUVRE  ►</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrRhAfdneeOzTXLjJ0X9dln/T8R5gWTayWZH</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-3')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrRhAfdneeOzTXLjJ0X9dln/T8R5gWTayWZH')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrTaAC96dDdRVtfXTN1wNiJ/nr2unSgL9zgx" target="_blank" class="link-data">
+                                    <div class="link-txt">J'EN PROFITE  ►</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrTaAC96dDdRVtfXTN1wNiJ/nr2unSgL9zgx</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-4')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrTaAC96dDdRVtfXTN1wNiJ/nr2unSgL9zgx')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrVT9iePbmrtYFzLdjWj7ep/okvfMN546q-v" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrVT9iePbmrtYFzLdjWj7ep/okvfMN546q-v</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-5')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrVT9iePbmrtYFzLdjWj7ep/okvfMN546q-v')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrXM9F9iaM6LacJ9o61VrbL/JbhSewumr12J" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrXM9F9iaM6LacJ9o61VrbL/JbhSewumr12J</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-6')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrXM9F9iaM6LacJ9o61VrbL/JbhSewumr12J')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrZF8lf1YvKncycxySWIbXr/gFfXColJbnt_" target="_blank" class="link-data">
+                                    <div class="link-txt">JE COMMANDE  ►</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrZF8lf1YvKncycxySWIbXr/gFfXColJbnt_</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-7')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrZF8lf1YvKncycxySWIbXr/gFfXColJbnt_')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prb88IAKXUZFfKwm8p15LUN/pGSEPCoyUdkV" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prb88IAKXUZFfKwm8p15LUN/pGSEPCoyUdkV</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-8')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prb88IAKXUZFfKwm8p15LUN/pGSEPCoyUdkV')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prd17ofdW3nhhhGaJBVs5Qt/AacWJ2l7hM8f" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prd17ofdW3nhhhGaJBVs5Qt/AacWJ2l7hM8f</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-9')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prd17ofdW3nhhhGaJBVs5Qt/AacWJ2l7hM8f')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Preu7LAwUd29k3aOTY0epNP/019tGSHk0jND" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Preu7LAwUd29k3aOTY0epNP/019tGSHk0jND</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-10')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Preu7LAwUd29k3aOTY0epNP/019tGSHk0jND')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmRCR1cNhA9rFMX5AxiWEOnf/io5j8p_ebTKx" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmRCR1cNhA9rFMX5AxiWEOnf/io5j8p_ebTKx</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-11')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmRCR1cNhA9rFMX5AxiWEOnf/io5j8p_ebTKx')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmYzV3pe3FdX16gsJkbdU6Pn/TLQyKZP0BxnU" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmYzV3pe3FdX16gsJkbdU6Pn/TLQyKZP0BxnU</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-12')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmYzV3pe3FdX16gsJkbdU6Pn/TLQyKZP0BxnU')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmgmZ62uPL7CmqqfSXUkjo1v/dmfAXfETSV2r" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmgmZ62uPL7CmqqfSXUkjo1v/dmfAXfETSV2r</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-13')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmgmZ62uPL7CmqqfSXUkjo1v/dmfAXfETSV2r')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmoZd8GAlQasYb0SbKNrzVe3/J4vg_9TRpjKd" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmoZd8GAlQasYb0SbKNrzVe3/J4vg_9TRpjKd</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-14')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmoZd8GAlQasYb0SbKNrzVe3/J4vg_9TRpjKd')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmwMhATR7W4YKLAFk7GzFDGB/p-eVsPH030Tr" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmwMhATR7W4YKLAFk7GzFDGB/p-eVsPH030Tr</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-15')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmwMhATR7W4YKLAFk7GzFDGB/p-eVsPH030Tr')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEn49lCghTbYE65K2suA6UusJ/UXX206Aj8q-D" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEn49lCghTbYE65K2suA6UusJ/UXX206Aj8q-D</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-16')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEn49lCghTbYE65K2suA6UusJ/UXX206Aj8q-D')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnBwpEtxph1trpTq1h3DkcUR/oLurr0DVdEDP" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnBwpEtxph1trpTq1h3DkcUR/oLurr0DVdEDP</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-17')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnBwpEtxph1trpTq1h3DkcUR/oLurr0DVdEDP')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnJjtH7EBmVZdZddATwL0K6Z/7TQ137YojCPV" target="_blank" class="link-data">
+                                    <div class="link-txt">[Image/Vide]</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnJjtH7EBmVZdZddATwL0K6Z/7TQ137YojCPV</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-18')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnJjtH7EBmVZdZddATwL0K6Z/7TQ137YojCPV')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="link-row">
+                                <a href="http://r.newsletter.megara.fr/mk/un/v2/sh/7xYEvk0fHl1ZgYvAXZXaGYqMmSVYTUV/Lj2GS2lRfQ2S" target="_blank" class="link-data">
+                                    <div class="link-txt">Se désinscrire</div>
+                                    <div class="link-url">http://r.newsletter.megara.fr/mk/un/v2/sh/7xYEvk0fHl1ZgYvAXZXaGYqMmSVYTUV/Lj2GS2lRfQ2S</div>
+                                </a>
+                                <div class="link-actions">
+                                    <button class="btn-action" onclick="scrollToLink('detected-link-19')" title="Locate in Email">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-action" onclick="copyToClipboard('http://r.newsletter.megara.fr/mk/un/v2/sh/7xYEvk0fHl1ZgYvAXZXaGYqMmSVYTUV/Lj2GS2lRfQ2S')" title="Copy URL">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        </ul>
+                            </div>
+                        </div>
+
+                        <script>
+                            
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Status", "label_pixel_code": "Pixel Code", "status_ok": "Integrated (End of Body)", "status_warn": "Found (Misplaced)", "status_miss": "Not Found", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date", "copy_msg": "Copied!"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "Statut", "label_pixel_code": "Code du Pixel", "status_ok": "Bien int\u00e9gr\u00e9 (Fin du Body)", "status_warn": "Trouv\u00e9 (Mal plac\u00e9)", "status_miss": "Non trouv\u00e9", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage", "copy_msg": "Copi\u00e9 !"}};
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function updateLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    const t = TRANSLATIONS[lang];
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+    });
+    
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && t['search_placeholder']) searchInput.placeholder = t['search_placeholder'];
+    
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (t[key]) el.title = t[key];
+    });
+
+    document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {
+        const key = el.getAttribute('data-i18n-btn');
+        if (t[key]) {
+            const icon = el.firstElementChild;
+            el.innerHTML = ''; 
+            el.appendChild(icon);
+            el.appendChild(document.createTextNode(' ' + t[key]));
+        }
+    });
+    
+    const langBtn = document.getElementById('lang-toggle');
+    if(langBtn) langBtn.innerHTML = `<span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;${lang === 'en' ? 'FR' : 'EN'}`;
+}
+
+function toggleLanguage() {
+    const newLang = currentLang === 'en' ? 'fr' : 'en';
+    updateLanguage(newLang);
+}
+
+updateLanguage(currentLang);
+
+
+                            const emailContent = "<div class=\"a3s aiL\" id=\":24a\"><div id=\"avWBGd-5425\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background-color:#ffffff;width:100%\" width=\"100%\"><tbody><tr><td> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:transparent\" valign=\"top\"> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed\" width=\"600\"><tbody><tr><td style=\"padding-bottom:5px;padding-top:5px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"color:#3b3f44;font-family:Roboto,arial;font-size:16px;word-break:break-word;line-height:16px;padding-left:30px;padding-right:30px;text-align:center\"> <div><p style=\"margin:0\"><a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/mr/sh/7xYEvjyWS1dhUHp3TVE7pSQbY1YU1sF/roNTxIIB1_bI&amp;source=gmail&amp;ust=1764076752881000&amp;usg=AOvVaw22SJHHn3IB9L9fg2J74QTi\" href=\"http://r.newsletter.megara.fr/mk/mr/sh/7xYEvjyWS1dhUHp3TVE7pSQbY1YU1sF/roNTxIIB1_bI\" id=\"detected-link-0\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"><span style=\"color:#858588;font-family:arial,helvetica,sans-serif;font-size:12px\"><u>Afficher dans le navigateur</u></span></a></p></div> </td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:600px\" width=\"600\"><tbody><tr><td style=\"background-color:#ffffff\" valign=\"top\"> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff;color:#3b3f44;font-family:Roboto;font-size:16px;padding-bottom:10px;padding-top:20px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:Roboto;font-size:16px;padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:504px\" width=\"504\"><tbody><tr><td style=\"color:#3b3f44;font-family:Roboto;font-size:0px;line-height:0px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrNvBcdBhVw5Ooi6yHXa9sl/r-EqQU9d05Za&amp;source=gmail&amp;ust=1764076752881000&amp;usg=AOvVaw3Re7ozgIBr4tsbaeTwt-TG\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrNvBcdBhVw5Ooi6yHXa9sl/r-EqQU9d05Za\" id=\"detected-link-1\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_0.png\" style=\"display:block;width:100%\" title=\"berceaumagique.com\" width=\"504\"/></a> </td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;line-height:0px\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_1.png\" style=\"display:block;width:100%\" width=\"570\"/></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background-color:#ffffff;table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:600px\" width=\"600\"><tbody><tr><td> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrPoB98Ug5AXRB1v8e2MtpH/n5e3NJx9LxUL&amp;source=gmail&amp;ust=1764076752881000&amp;usg=AOvVaw0vo957X2cdzgbwtz3cpRcP\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrPoB98Ug5AXRB1v8e2MtpH/n5e3NJx9LxUL\" id=\"detected-link-2\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img alt=\"couverture\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_2.png\" style=\"display:block;width:100%\" title=\"Hello Fresh\" width=\"600\"/></a> </td> </tr></tbody></table></th> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff;padding-bottom:20px;padding-top:20px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"left\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"color:#3b3f44;font-family:Roboto,arial;font-size:16px;line-height:1.5;word-break:break-word;text-align:center\" valign=\"top\"> <div><h2 style=\"color:#1f2d3d;font-family:arial,helvetica,sans-serif;font-size:32px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;letter-spacing:normal;margin:0px;text-decoration-style:initial;text-indent:0px;text-transform:none;white-space:normal;word-break:break-word;word-spacing:0px\">Votre alli\u00e9 repas au quotidien <strong><img alt=\"\ud83d\udc9a\" aria-label=\"\ud83d\udc9a\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_3.png\"/></strong></h2></div> </td> </tr></tbody></table></td> </tr><tr><td align=\"left\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border:none;display:none;float:none;font-size:0;height:0;line-height:0;max-height:0;overflow:hidden;table-layout:fixed;width:0\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"color:#3b3f44;font-family:Roboto,arial;font-size:16px;line-height:1.5;word-break:break-word;padding-top:15px;text-align:center\" valign=\"top\"> <div><h2 style=\"color:#1f2d3d;font-family:arial,helvetica,sans-serif;font-size:32px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;letter-spacing:normal;margin:0px;text-decoration-style:initial;text-indent:0px;text-transform:none;white-space:normal;word-break:break-word;word-spacing:0px\"><span style=\"color:#3b3f44;font-family:'Arial black',helvetica,sans-serif,arial;font-size:20px\"><strong>Votre alli\u00e9 repas au quotidien <img alt=\"\ud83d\udc9a\" aria-label=\"\ud83d\udc9a\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_4.png\"/></strong></span></h2></div> </td> </tr></tbody></table></td> </tr><tr><td align=\"left\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"color:#3b3f44;font-family:Roboto,arial;font-size:16px;line-height:1.5;word-break:break-word;padding-bottom:15px;padding-top:15px;text-align:center\" valign=\"top\"> <div><p style=\"margin:0\">HelloFresh, c\u2019est le service de <strong>box repas \u00e0 cuisiner</strong> qui vous simplifie la vie. Chaque semaine, vous choisissez vos recettes parmi une s\u00e9lection vari\u00e9e et \u00e9quilibr\u00e9e, puis vous recevez <strong>tous les ingr\u00e9dients frais</strong> <strong>directement chez vous</strong>.</p></div> </td> </tr></tbody></table></td> </tr><tr><td align=\"center\" style=\"padding-bottom:15px;padding-top:15px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background-color:#067b46;border-collapse:separate;border-color:#d1b578;border-radius:4px;border-style:solid;border-width:0px;table-layout:fixed;width:228px\" width=\"228\"><tbody><tr><td align=\"center\" height=\"18\" style=\"word-break:break-word;background-color:#067b46;border-radius:4px;color:#000000;font-family:Roboto,arial;font-size:16px;font-style:normal;line-height:1.15;padding-bottom:12px;padding-top:12px;text-align:center\" valign=\"top\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrRhAfdneeOzTXLjJ0X9dln/T8R5gWTayWZH&amp;source=gmail&amp;ust=1764076752881000&amp;usg=AOvVaw0KS6D0_TT-1uj-Evr9Ad_0\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrRhAfdneeOzTXLjJ0X9dln/T8R5gWTayWZH\" id=\"detected-link-3\" style=\"font-style:normal;font-weight:normal;line-height:1.15;text-decoration:none;word-break:break-word;word-wrap:break-word;display:block;color:#000000;font-family:Roboto,arial;font-size:16px\" target=\"_blank\" title=\"Je d\u00e9couvre\"> <span><span><strong>JE D\u00c9COUVRE \u00a0\u25ba</strong></span></span></a> </td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff;padding-bottom:15px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;line-height:0px\"> <img border=\"0\" class=\"CToWUd a6T\" data-bit=\"iit\" loading=\"lazy\" src=\"img_5.png\" style=\"display:block;width:100%\" tabindex=\"0\" width=\"570\"/><div class=\"a6S\" dir=\"ltr\" style=\"opacity: 0.01; left: 794px; top: 1639.39px;\"><span class=\"a5q\" data-is-tooltip-wrapper=\"true\" jsaction=\"JIbuQc:.CLIENT\"><button aria-label=\"T\u00e9l\u00e9charger la pi\u00e8ce jointe \" class=\"VYBDae-JX-I VYBDae-JX-I-ql-ay5-ays CgzRE\" data-idom-class=\"CgzRE\" data-tooltip-classes=\"AZPksf\" data-tooltip-enabled=\"true\" data-tooltip-id=\"tt-c1901\" data-use-native-focus-logic=\"true\" id=\"\" jsaction=\"click:h5M12e;clickmod:h5M12e;pointerdown:FEiYhc;pointerup:mF5Elf;pointerenter:EX0mI;pointerleave:vpvbp;pointercancel:xyn4sd;contextmenu:xexox;focus:h06R8; blur:zjh6rb;mlnRJb:fLiPzd;\" jscontroller=\"PIVayb\" jslog=\"91252; u014N:cOuCgd,Kr2w4b,xr6bB; 4:WyIjbXNnLWY6MTg0OTY3Nzk0NzA1ODU2NzE5NSJd; 43:WyJpbWFnZS9qcGVnIl0.\" jsname=\"hRZeKc\"><span class=\"XjoK4b VYBDae-JX-UHGRz\"></span><span class=\"UTNHae\" jscontroller=\"LBaJxb\" jsname=\"m9ZlFb\" soy-skip=\"\" ssk=\"6:RWVI5c\"></span><span aria-hidden=\"true\" class=\"VYBDae-JX-ank-Rtc0Jf\" jsname=\"S5tZuc\"><span aria-hidden=\"true\" class=\"notranslate bzc-ank\"><svg class=\"aoH\" focusable=\"false\" height=\"20\" viewbox=\"0 -960 960 960\" width=\"20\"><path d=\"M480-336L288-528l51-51L444-474V-816h72v342L621-579l51,51L480-336ZM263.72-192Q234-192 213-213.15T192-264v-72h72v72H696v-72h72v72q0,29.7-21.16,50.85T695.96-192H263.72Z\"></path></svg></span></span><div class=\"VYBDae-JX-ano\"></div></button><div aria-hidden=\"true\" class=\"ne2Ple-oshW8e-J9\" id=\"tt-c1901\" role=\"tooltip\">T\u00e9l\u00e9charger</div></span></div><div dir=\"ltr\" style=\"opacity:0.01\"><span><button aria-label=\"T\u00e9l\u00e9charger la pi\u00e8ce jointe \" id=\"m_-7983847067453042545\"><span></span><span></span><span aria-hidden=\"true\"><span aria-hidden=\"true\" class=\"notranslate\"><u></u><u></u><u></u><u></u></span></span><div></div></button><div aria-hidden=\"true\" id=\"m_-7983847067453042545tt-c768\" role=\"tooltip\">T\u00e9l\u00e9charger</div></span></div></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"left\" style=\"color:#3b3f44;font-family:Roboto,arial;font-size:16px;line-height:1.5;word-break:break-word;padding-bottom:15px;padding-top:15px;text-align:left\"> <div><p style=\"margin:0;text-align:center\"><span style=\"color:#3b3f44\">Jusqu'\u00e0 -95\u20ac et avec l'offre fromages offerts c'est aussi <strong>un fromage offert</strong> \u00e0 chaque commande pendant <strong>2 mois*.</strong></span></p><p style=\"margin:0;text-align:center\">\u00a0</p><p style=\"margin:0;text-align:center\"><span style=\"color:#3b3f44\">Choisissez parmi du <strong>Brie, du Camembert, du Comt\u00e9 ou encore de l\u2019Ossau Iraty ou de la Burrata</strong> ! Au total c\u2019est <strong>plus de 10 fromages diff\u00e9rents</strong> qui attendent d\u2019\u00eatre go\u00fbt\u00e9s !\u00a0La s\u00e9lection change toutes les semaines donc soyez \u00e0 l\u2019aff\u00fbt !</span></p><p style=\"margin:0;text-align:center\">\u00a0</p><p style=\"margin:0;text-align:center\"><span style=\"color:#3b3f44\">Profitez en, \u00e7a se passe <strong>en ce moment uniquement !</strong></span></p></div> </td> </tr><tr><td align=\"center\" style=\"padding-bottom:15px;padding-top:25px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background-color:#067b46;border-collapse:separate;border-color:#d1b578;border-radius:4px;border-style:solid;border-width:0px;table-layout:fixed;width:228px\" width=\"228\"><tbody><tr><td align=\"center\" height=\"18\" style=\"word-break:break-word;background-color:#067b46;border-radius:4px;color:#000000;font-family:Roboto,arial;font-size:16px;font-style:normal;line-height:1.15;padding-bottom:12px;padding-top:12px;text-align:center\" valign=\"top\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrTaAC96dDdRVtfXTN1wNiJ/nr2unSgL9zgx&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw3pwavq9y0jIEU4hxhkmKz6\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrTaAC96dDdRVtfXTN1wNiJ/nr2unSgL9zgx\" id=\"detected-link-4\" style=\"font-style:normal;font-weight:normal;line-height:1.15;text-decoration:none;word-break:break-word;word-wrap:break-word;display:block;color:#000000;font-family:Roboto,arial;font-size:16px\" target=\"_blank\" title=\"J'en profite\"> <span><span style=\"color:#ffffff\"><strong>J'EN PROFITE \u00a0\u25ba</strong></span></span></a> </td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;line-height:0px;padding-bottom:15px;padding-top:15px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrVT9iePbmrtYFzLdjWj7ep/okvfMN546q-v&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw0SyDx-5sPIhDxTuCw_mRQU\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrVT9iePbmrtYFzLdjWj7ep/okvfMN546q-v\" id=\"detected-link-5\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_6.png\" style=\"display:block;width:100%\" width=\"570\"/></a> </td> </tr><tr><td align=\"center\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border:none;display:none;float:none;font-size:0;height:0;line-height:0;max-height:0;overflow:hidden;table-layout:fixed;width:0\" width=\"570\"><tbody><tr><td style=\"font-size:0px;line-height:0px;padding-bottom:15px;padding-top:15px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrXM9F9iaM6LacJ9o61VrbL/JbhSewumr12J&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw0ec4RoIgnQZa865ps76ug-\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrXM9F9iaM6LacJ9o61VrbL/JbhSewumr12J\" id=\"detected-link-6\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_7.png\" style=\"border:none;float:none;font-size:0;height:0;line-height:0;max-height:0;overflow:hidden;table-layout:fixed;display:block;width:100%\" width=\"570\"/></a> </td> </tr></tbody></table></td> </tr><tr><td align=\"center\" style=\"padding-bottom:15px;padding-top:25px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background-color:#067b46;border-collapse:separate;border-color:#d1b578;border-radius:4px;border-style:solid;border-width:0px;table-layout:fixed;width:228px\" width=\"228\"><tbody><tr><td align=\"center\" height=\"18\" style=\"word-break:break-word;background-color:#067b46;border-radius:4px;color:#000000;font-family:Roboto,arial;font-size:16px;font-style:normal;line-height:1.15;padding-bottom:12px;padding-top:12px;text-align:center\" valign=\"top\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrZF8lf1YvKncycxySWIbXr/gFfXColJbnt_&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw1PzA93qlN1QYH_8eLn68aX\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4PrZF8lf1YvKncycxySWIbXr/gFfXColJbnt_\" id=\"detected-link-7\" style=\"font-style:normal;font-weight:normal;line-height:1.15;text-decoration:none;word-break:break-word;word-wrap:break-word;display:block;color:#000000;font-family:Roboto,arial;font-size:16px\" target=\"_blank\" title=\"J'en profite\"> <span><span style=\"color:#ffffff\"><strong>JE COMMANDE \u00a0\u25ba</strong></span></span></a> </td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:570px\" width=\"570\"><tbody><tr><td height=\"10\" style=\"font-size:10px;line-height:10px\">\u00ad</td> </tr><tr><td style=\"font-size:0px;line-height:0px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prb88IAKXUZFfKwm8p15LUN/pGSEPCoyUdkV&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw0aziDlyyM3awBbI-PFMf9j\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prb88IAKXUZFfKwm8p15LUN/pGSEPCoyUdkV\" id=\"detected-link-8\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_8.png\" style=\"display:block;width:100%\" width=\"570\"/></a> </td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#ffffff;padding-bottom:20px;padding-top:20px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"1\" role=\"presentation\" style=\"border-top-style:solid;background-clip:border-box;border-top-color:#4a4a4a;border-top-width:1px;font-size:1px;line-height:1px\" width=\"100%\"><tbody><tr><td height=\"0\" style=\"font-size:0px;line-height:0px\">\u00ad</td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"background-color:#f2f2f2;color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:16px;padding-bottom:20px;padding-top:20px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" valign=\"top\" width=\"100%\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:16px;padding-left:15px;padding-right:15px\" valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:266px\" width=\"266\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:0px;line-height:0px\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_9.png\" style=\"display:block;width:100%\" width=\"266\"/></td> </tr></tbody></table></td> </tr><tr><td align=\"left\" style=\"word-break:break-word;color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:16px;line-height:1;padding-top:15px;text-align:left\"> <div><p style=\"margin:0;text-align:center\"><span style=\"font-family:'Times new roman',times,serif,arial;font-size:15px\">Rejoignez- nous sur les r\u00e9seaux et partagez vos photos avec #berceaumagique</span></p></div> </td> </tr><tr><td align=\"center\"> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:570px\" width=\"570\"><tbody><tr><td valign=\"top\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"display:inline-block\"> <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:570px\" width=\"570\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:16px;padding-bottom:15px;padding-left:71px;padding-right:71px;padding-top:15px\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prd17ofdW3nhhhGaJBVs5Qt/AacWJ2l7hM8f&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw28WWyqzId-QAnWAZAnT0Qu\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Prd17ofdW3nhhhGaJBVs5Qt/AacWJ2l7hM8f\" id=\"detected-link-9\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_10.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Preu7LAwUd29k3aOTY0epNP/019tGSHk0jND&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw356opwFE75Gyy1Mb4cdI-7\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/1vWzjx4Preu7LAwUd29k3aOTY0epNP/019tGSHk0jND\" id=\"detected-link-10\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_11.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmRCR1cNhA9rFMX5AxiWEOnf/io5j8p_ebTKx&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw0GbxzBCBUBR4ZRmD9WWdSu\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmRCR1cNhA9rFMX5AxiWEOnf/io5j8p_ebTKx\" id=\"detected-link-11\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_12.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmYzV3pe3FdX16gsJkbdU6Pn/TLQyKZP0BxnU&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw2ELvWGv6-qBvjX9S3nwtZ6\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmYzV3pe3FdX16gsJkbdU6Pn/TLQyKZP0BxnU\" id=\"detected-link-12\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_13.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmgmZ62uPL7CmqqfSXUkjo1v/dmfAXfETSV2r&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw2jCcWbF9U5jpgarIPGxUFW\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmgmZ62uPL7CmqqfSXUkjo1v/dmfAXfETSV2r\" id=\"detected-link-13\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_14.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmoZd8GAlQasYb0SbKNrzVe3/J4vg_9TRpjKd&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw2M4_v4mGutBq2vhPUXmSAw\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmoZd8GAlQasYb0SbKNrzVe3/J4vg_9TRpjKd\" id=\"detected-link-14\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_15.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmwMhATR7W4YKLAFk7GzFDGB/p-eVsPH030Tr&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw0B0u8ZqEabHbvpNQwhNf1m\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEmwMhATR7W4YKLAFk7GzFDGB/p-eVsPH030Tr\" id=\"detected-link-15\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_16.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEn49lCghTbYE65K2suA6UusJ/UXX206Aj8q-D&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw3V87Ca2zJDBbnWq5G3OseP\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEn49lCghTbYE65K2suA6UusJ/UXX206Aj8q-D\" id=\"detected-link-16\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_17.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"44\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnBwpEtxph1trpTq1h3DkcUR/oLurr0DVdEDP&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw2A8KqNqLLLQ4ColkAbqVSx\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnBwpEtxph1trpTq1h3DkcUR/oLurr0DVdEDP\" id=\"detected-link-17\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_18.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> <td style=\"font-size:0px;line-height:1px\" width=\"12\">\u00ad </td> </tr></tbody></table></th> <th style=\"font-weight:normal\" width=\"32\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td style=\"font-size:0px;line-height:0px;padding-bottom:5px;padding-top:5px\"> <a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnJjtH7EBmVZdZddATwL0K6Z/7TQ137YojCPV&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw05icxvJz_drczOtud1VZEr\" href=\"http://r.newsletter.megara.fr/mk/cl/f/sh/7xYEvjuEnJjtH7EBmVZdZddATwL0K6Z/7TQ137YojCPV\" id=\"detected-link-18\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"> <img border=\"0\" class=\"CToWUd\" data-bit=\"iit\" loading=\"lazy\" src=\"img_19.png\" style=\"display:block;width:100%\" width=\"32\"/></a> </td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></td> </tr><tr><td style=\"line-height:1.5;word-break:break-word;color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:16px;padding-bottom:15px;padding-top:15px\"> <p style=\"margin:0;font-family:'open sans','helvetica neue',helvetica,arial,sans-serif;line-height:15px;color:#333333;font-size:10px;text-align:center\"> <strong>*Conditions du code HELLOMAGIQUE95 et de l'offre :</strong> Pour toute souscription d\u2019un abonnement HelloFresh, jusqu\u2019\u00e0 95\u20ac de r\u00e9duction sur vos 5 premi\u00e8res Box (minimum 17\u20ac offerts incluant les frais de livraison pour la Box 1, 10\u20ac pour la Box 2 et la Box 3, et 5\u20ac pour la Box 4 et la Box 5), valable \u00e0 condition de commander vos 5 premi\u00e8res Box dans les 9 semaines qui suivent la souscription de votre abonnement. Frais de livraison offerts pour la premi\u00e8re Box uniquement. Le montant de la r\u00e9duction d\u00e9pend de la taille de la Box. Cette offre comprend \u00e9galement un extra de notre March\u00e9 HelloFresh offert chaque semaine parmi une s\u00e9lection de produits, pendant 8 semaines cons\u00e9cutives \u00e0 compter de la souscription de votre abonnement et tant que celui-ci n\u2019est pas r\u00e9sili\u00e9. L\u2019ajout de cet extra doit \u00eatre effectu\u00e9 par vos soins au moment du choix des recettes. HelloFresh se r\u00e9serve le droit de remplacer le produit choisi si celui-ci n\u2019est plus disponible.<br/><br/>Offre devant \u00eatre activ\u00e9e <strong>avant le 14/12/2025</strong>, r\u00e9serv\u00e9e aux nouveaux clients et aux anciens clients ayant r\u00e9sili\u00e9 leur abonnement depuis plus de 52 semaines, non cumulable avec d\u2019autres offres, limit\u00e9e \u00e0 une par foyer et ne donnant droit \u00e0 aucun \u00e9change, ni remboursement du montant de la r\u00e9duction.<br/><br/><strong>Protection des donn\u00e9es :</strong> Conform\u00e9ment \u00e0 la loi Informatique et Libert\u00e9s du 6 janvier 1978, vous disposez d'un droit d'acc\u00e8s et de rectification des donn\u00e9es vous concernant, vous pouvez exercer en nous \u00e9crivant. <span>Berceau Magique</span> M\u00e9gara, 108 rue d'Ollioules, 83140 - Six-Fours-les-Plages - France.</p><p style=\"margin:0;font-family:'open sans','helvetica neue',helvetica,arial,sans-serif;line-height:15px;color:#333333;font-size:10px;text-align:center\"></p> </td> </tr><tr><td align=\"left\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"table-layout:fixed;width:100%\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"word-break:break-word;color:#3b3f44;font-family:arial,helvetica,sans-serif;font-size:18px;line-height:1.5;padding-bottom:10px;padding-top:5px;text-align:center\" valign=\"top\"> <div><p style=\"margin:0;font-size:14px\"><a data-saferedirecturl=\"https://www.google.com/url?q=http://r.newsletter.megara.fr/mk/un/v2/sh/7xYEvk0fHl1ZgYvAXZXaGYqMmSVYTUV/Lj2GS2lRfQ2S&amp;source=gmail&amp;ust=1764076752882000&amp;usg=AOvVaw2adQwsDE_APq0WjXy0jLJV\" href=\"http://r.newsletter.megara.fr/mk/un/v2/sh/7xYEvk0fHl1ZgYvAXZXaGYqMmSVYTUV/Lj2GS2lRfQ2S\" id=\"detected-link-19\" style=\"color:#d1b578;text-decoration:none\" target=\"_blank\"><span style=\"color:#3b3f44;font-size:11px\"><u>Se d\u00e9sinscrire</u></span></a></p></div> </td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></th> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></td> </tr></tbody></table></div></div>";
+                            const frame = document.getElementById('emailFrame');
+                            
+                            frame.contentDocument.open();
+                            frame.contentDocument.write(emailContent);
+                            
+                            const meta = frame.contentDocument.createElement('meta');
+                            meta.name = 'viewport';
+                            meta.content = 'width=device-width, initial-scale=1.0';
+                            frame.contentDocument.head.appendChild(meta);
+                            
+                            const base = frame.contentDocument.createElement('base');
+                            base.target = '_blank';
+                            frame.contentDocument.head.appendChild(base);
+
+                            frame.contentDocument.close();
+                            
+                            const style = frame.contentDocument.createElement('style');
+                            style.textContent = `
+                                html { -ms-overflow-style: none; scrollbar-width: none; }
+                                html::-webkit-scrollbar { display: none; }
+                                body::-webkit-scrollbar { display: none; width: 0; }
+                                body { 
+                                    margin: 0; padding: 0; font-family: Roboto, Helvetica, Arial, sans-serif;
+                                    color: #222; line-height: 1.5; overflow-wrap: break-word; 
+                                }
+                                table { border-spacing: 0; border-collapse: collapse; }
+                                img { height: auto !important; vertical-align: middle; border: 0; }
+                                img[style*="display: block"], img[style*="display:block"] { margin-left: auto !important; margin-right: auto !important; }
+                                a, .link-text { color: #1a0dab; }
+                                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
+                                html.dark-mode-internal img, html.dark-mode-internal video, html.dark-mode-internal [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
+                                
+                                /* Highlight Class */
+                                body.highlight-links a {
+                                    border: 2px solid red !important;
+                                    background-color: yellow !important;
+                                    color: black !important;
+                                    position: relative;
+                                    z-index: 9999;
+                                    box-shadow: 0 0 5px rgba(255,0,0,0.5);
+                                    animation: flash 1s infinite alternate;
+                                }
+                                
+                                /* Target specific link class */
+                                a.flash-target {
+                                    outline: 4px solid #0070f3 !important;
+                                    background-color: rgba(0, 112, 243, 0.2) !important;
+                                    transition: all 0.5s;
+                                    animation: target-pulse 0.5s 3;
+                                }
+                                
+                                @keyframes flash { from { opacity: 1; } to { opacity: 0.7; } }
+                                @keyframes target-pulse { 
+                                    0% { outline-offset: 0px; } 
+                                    50% { outline-offset: 4px; } 
+                                    100% { outline-offset: 0px; } 
+                                }
+
+                                @media screen and (max-width: 600px) {
+                                    table, tbody, tr, td { width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; height: auto !important; }
+                                    div[style*="width"] { width: 100% !important; max-width: 100% !important; }
+                                    img { width: auto !important; max-width: 100% !important; }
+                                }
+                            `;
+                            frame.contentDocument.head.appendChild(style);
+
+                            function toggleMobile() {
+                                document.body.classList.toggle('mobile-mode');
+                                document.getElementById('btn-mobile').classList.toggle('active');
+                            }
+                            
+                            function toggleDark() {
+                                document.body.classList.toggle('dark-mode');
+                                document.getElementById('btn-dark').classList.toggle('active');
+                                if(frame.contentDocument.documentElement) {
+                                    frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
+                                }
+                            }
+                            
+                            function toggleLinks() {
+                                document.getElementById('sidebar').classList.toggle('open');
+                                document.getElementById('btn-links').classList.toggle('active');
+                            }
+
+                            function toggleHighlight() {
+                                const btn = document.getElementById('btn-highlight');
+                                btn.classList.toggle('active');
+                                if(frame.contentDocument.body) {
+                                    frame.contentDocument.body.classList.toggle('highlight-links');
+                                }
+                            }
+
+                            function copyToClipboard(text) {
+                                navigator.clipboard.writeText(text).then(() => {
+                                    // Feedback optionnel
+                                }).catch(err => {
+                                    console.error('Failed to copy: ', err);
+                                });
+                            }
+
+                            function scrollToLink(id) {
+                                const el = frame.contentDocument.getElementById(id);
+                                if(el) {
+                                    el.scrollIntoView({behavior: 'smooth', block: 'center'});
+                                    // Effet visuel temporaire
+                                    el.classList.add('flash-target');
+                                    setTimeout(() => el.classList.remove('flash-target'), 2000);
+                                } else {
+                                    console.warn('Link not found in iframe:', id);
+                                }
+                            }
+                        </script>
+                    </body>
+                    </html>
+                    
