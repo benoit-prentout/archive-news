@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Newsletter Archive</title>
+        <title data-i18n="page_title">Newsletter Archive</title>
         <meta name="robots" content="noindex, nofollow">
         <style>
             :root {
@@ -70,184 +70,14 @@
                     <button id="lang-toggle" onclick="toggleLanguage()" title="Switch Language">
                         <span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;FR
                     </button>
-                    <button id="theme-toggle" title="Toggle Theme">
-                        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
-                        <span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+                    <button id="theme-toggle" onclick="toggleDark()" title="Toggle Theme" data-i18n-btn="btn_dark">
+                        <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span><span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>&nbsp;Dark
                     </button>
                 </div>
             </div>
             <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search by title, sender or date...">
             <ul id="newsList">
                 
-        <li class="news-item">
-            <a href="6cb8df889936/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">PeintureVoiture.fr</span>
-                    <span class="title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</span>
-                    <span class="preheader-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble,
- ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="e4303f6835dc/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">MonJardinBio.com</span>
-                    <span class="title">[TEST] Offrez un colis deNoël pour un aîné isolé et illuminez sonréveillon !</span>
-                    <span class="preheader-preview">Chère Madame, Cher Monsieur, Aujourd’hui en France, plus de 2 millions de personnes âgées sont isolées au quotidien , pire encore, 750 000 ne voient jamais pers...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="9022c78b4b57/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Ultra Premium Direct | Les croquettes de Noël 🐶</span>
-                    <span class="preheader-preview">-25%* avec le code REDOUTE25 -25%* avec le code REDOUTE25 ! Faites vivre un Noël gourmand à votre animal avec Ultra Premium Direct et leurs croquettes fabriquée...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="8f1e9097ee95/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS</span>
-                    <span class="preheader-preview">Téléchargez l’app Wash, rechargez votre compte et faites des économies ! Version en ligne ‌ EN EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS * sur l’appl...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 27/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="fb1b5ee2d9fd/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Avec Babilou, trouvez votre place en crèche pour la rentrée !</span>
-                    <span class="preheader-preview">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l'aide de votre employeur ! Je réserve ma place Vous ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="9450d133daba/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...</span>
-                    <span class="preheader-preview">Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="fb0907efa715/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">On a un cadeau pour votre chat 🐱</span>
-                    <span class="preheader-preview">Promis, on peut tout vous expliquer ! ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="2efc3f2b022e/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
-                    <span class="preheader-preview">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="71541edf985d/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">🎁 95€ offerts + un bonus savoureux</span>
-                    <span class="preheader-preview">Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="2191e5f5452c/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Atelier Loupiote | Lampes artisanales françaises</span>
-                    <span class="title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</span>
-                    <span class="preheader-preview">En association avec Petits Frères des Pauvres 👴👵💓 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 20/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="587358578e2a/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Fanny de Yooji</span>
-                    <span class="title">Besoin d'un mode de garde pour bébé ?</span>
-                    <span class="preheader-preview">Besoin d'un mode de garde pour bébé ? Découvrez Babilou, notre coup de cœur pour accompagner les familles au quotidien.‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 17/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="c0f9d79ce3d2/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">Atelier Loupiote | Lampes artisanales françaises</span>
-                    <span class="title">🌱 🇫🇷 👕  Envie d'unintérieur ET d'une garde robe saine ?</span>
-                    <span class="preheader-preview">On a une offre (-20%!!!) Maison Lemahieu pour vous 🤗 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 19/09/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 28/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
             </ul>
             <div id="pagination" class="pagination"></div>
             <footer>
@@ -264,7 +94,7 @@
         </div>
         <script>
         
-const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "meta_section": "Metadata", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "meta_section": "M\u00e9tadonn\u00e9es", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "meta_section": "Metadata", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date", "pixel_check": "Tracking Pixel Check", "pixel_url": "Pixel URL", "pixel_status_ok": "\u2705 Integrated & Functional", "pixel_status_ko": "\u274c Integrated, but position is incorrect", "pixel_status_none": "\u2705 Not found (OK)", "redirect_chain": "Redirection Chain", "copy_url": "Copy URL", "show_location": "Show Location", "track_warning": "Warning: HTTP tracing is simulated/unavailable. The chain below is based on URL parsing only."}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "meta_section": "M\u00e9tadonn\u00e9es", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage", "pixel_check": "V\u00e9rification Pixel de Tracking", "pixel_url": "URL du Pixel", "pixel_status_ok": "\u2705 Int\u00e9gr\u00e9 & Fonctionnel", "pixel_status_ko": "\u274c Int\u00e9gr\u00e9, mais position incorrecte", "pixel_status_none": "\u2705 Non trouv\u00e9 (OK)", "redirect_chain": "Cha\u00eene de Redirection", "copy_url": "Copier l'URL", "show_location": "Voir l'emplacement", "track_warning": "Attention : Le suivi HTTP est simul\u00e9/non disponible. La cha\u00eene ci-dessous est bas\u00e9e sur le parsing d'URL uniquement."}};
 let currentLang = localStorage.getItem('lang') || 'en';
 
 function updateLanguage(lang) {
@@ -292,15 +122,14 @@ function updateLanguage(lang) {
     document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {
         const key = el.getAttribute('data-i18n-btn');
         if (t[key]) {
-            // Keep the SVG icon (first child) and update text node
             const icon = el.firstElementChild;
             el.innerHTML = ''; 
-            el.appendChild(icon);
+            if (icon) el.appendChild(icon);
             el.appendChild(document.createTextNode(' ' + t[key]));
         }
     });
     
-    // Update Lang Button State
+    // Update Lang Button Text
     const langBtn = document.getElementById('lang-toggle');
     if(langBtn) langBtn.innerHTML = `<span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;${lang === 'en' ? 'FR' : 'EN'}`;
 }
