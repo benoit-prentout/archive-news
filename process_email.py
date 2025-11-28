@@ -25,7 +25,6 @@ HEADERS = {
 }
 
 # --- LISTE DES MOTIFS DE TRACKING ---
-# Tout URL contenant l'un de ces termes sera considérée comme un pixel et neutralisée
 TRACKING_PATTERNS = [
     "api.getinside.media", # La Redoute / CRM
     "google-analytics.com",
@@ -36,11 +35,12 @@ TRACKING_PATTERNS = [
     "pixel.gif",
     "analytics",
     "tracking",
-    "open.aspx", # Souvent utilisé pour le tracking d'ouverture
-    "shim.gif"
+    "open.aspx",
+    "shim.gif",
+    "ad.doubleclick"
 ]
 
-# --- ICONS SVG (Inchangés) ---
+# --- ICONS SVG ---
 ICON_MOON = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
 ICON_SUN = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
 ICON_MOBILE = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>'
@@ -50,8 +50,9 @@ ICON_LANG = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColo
 ICON_TARGET = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>'
 ICON_COPY = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'
 ICON_EYE = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
+ICON_CHECK = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="green" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
 ICON_WARN = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
-ICON_BUG = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="red" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+ICON_BUG = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
 
 # --- DICTIONNAIRE DE TRADUCTION ---
 TRANSLATIONS = {
@@ -63,13 +64,14 @@ TRANSLATIONS = {
         "btn_dark": "Dark",
         "btn_highlight": "Highlight",
         "meta_section": "Metadata",
-        "pixel_section": "Detected Trackers",
+        "pixel_section": "Tracking Pixels",
         "label_sent": "Sent Date",
         "label_archived": "Archived Date",
         "label_reading": "Reading Time",
         "label_preheader": "Preheader",
+        "label_pixel_status": "Summary",
         "no_pixels": "No trackers detected",
-        "pixel_blocked": "Blocked in Archive",
+        "pixel_active_msg": "Active (Will be counted)",
         "links_section": "Detected Links",
         "legal_summary": "Legal Notice",
         "legal_publisher": "Publisher",
@@ -86,13 +88,14 @@ TRANSLATIONS = {
         "btn_dark": "Sombre",
         "btn_highlight": "Surligner",
         "meta_section": "Métadonnées",
-        "pixel_section": "Traceurs Détectés",
+        "pixel_section": "Pixels de Tracking",
         "label_sent": "Date d'envoi",
         "label_archived": "Date d'archivage",
         "label_reading": "Temps de lecture",
         "label_preheader": "Pré-header",
+        "label_pixel_status": "Résumé",
         "no_pixels": "Aucun traceur détecté",
-        "pixel_blocked": "Bloqué dans l'archive",
+        "pixel_active_msg": "Actif (Sera pris en compte)",
         "links_section": "Liens détectés",
         "legal_summary": "Mentions Légales",
         "legal_publisher": "Éditeur",
@@ -610,7 +613,6 @@ def process_emails():
                     soup = BeautifulSoup(html_content, "html.parser")
                     
                     # --- DETECTION PIXEL ---
-                    # ### MODIFICATION: Liste complète + Neutralisation
                     detected_pixels_list = []
                     
                     # On scanne toutes les images
@@ -619,7 +621,8 @@ def process_emails():
                         # Si l'image correspond à un pattern de tracking
                         if any(pattern in src for pattern in TRACKING_PATTERNS):
                             detected_pixels_list.append(src)
-                            # On NEUTRALISE le pixel dans le HTML
+                            # On NEUTRALISE le pixel dans le HTML de l'archive (protection vie privée)
+                            # Mais on le garde dans la liste pour le rapport
                             img['src'] = "" 
                             img['alt'] = "[TRACKING PIXEL REMOVED]"
                             img['style'] = "display:none !important;"
@@ -685,7 +688,6 @@ def process_emails():
                         '''
 
                     # --- IMAGES LOCALES (AMÉLIORÉ) ---
-                    # ### MODIFICATION: Intégration de la version "intelligente" donnée précédemment
                     img_counter = 0
                     
                     # 1. Gestion des balises <img> (avec support Lazy Loading)
@@ -732,7 +734,6 @@ def process_emails():
                                 img['loading'] = 'lazy'
                                 img_counter += 1
                         except Exception as e:
-                            # print(f"Erreur IMG {src}: {e}")
                             pass
 
                     # 2. Gestion des images de fond (CSS inline)
@@ -778,17 +779,17 @@ def process_emails():
                     nb_links = len(links)
                     date_arch_str = datetime.datetime.now().strftime('%Y-%m-%d')
                     
-                    # ### MODIFICATION: Génération HTML liste des pixels
+                    # Bloc Pixel HTML (Mise à jour pour liste complète)
                     pixel_html_block = ""
                     if detected_pixels_list:
                         pixels_li = ""
                         for p_url in detected_pixels_list:
                             # On coupe l'URL pour l'affichage si trop longue
-                            display_url = p_url[:60] + "..." if len(p_url) > 60 else p_url
+                            display_url = p_url[:55] + "..." if len(p_url) > 55 else p_url
                             pixels_li += f"""
                             <li class="pixel-li">
                                 <div class="pixel-row">
-                                    <span class="icon-bug">{ICON_BUG}</span>
+                                    <span class="icon-bug" style="color:green;">{ICON_CHECK}</span>
                                     <span class="pixel-url" title="{html.escape(p_url)}">{html.escape(display_url)}</span>
                                 </div>
                             </li>
@@ -796,8 +797,8 @@ def process_emails():
                         
                         pixel_html_block = f"""
                         <div class="meta-item">
-                            <span class="meta-label" data-i18n="label_pixel_status">Status</span>
-                            <span class="status-badge warn"><span data-i18n="pixel_blocked">Blocked in Archive</span> ({len(detected_pixels_list)})</span>
+                            <span class="meta-label" data-i18n="label_pixel_status">Summary</span>
+                            <span class="status-badge ok"><span class="icon-status">{ICON_CHECK}</span> <span data-i18n="pixel_active_msg">Active (Will be counted)</span> ({len(detected_pixels_list)})</span>
                         </div>
                         <ul class="pixel-list">
                             {pixels_li}
@@ -806,7 +807,7 @@ def process_emails():
                     else:
                          pixel_html_block = f"""
                         <div class="meta-item">
-                            <span class="status-badge ok"><span class="icon-status">{ICON_INFO}</span> <span data-i18n="no_pixels">No trackers detected</span></span>
+                            <span class="status-badge warn"><span class="icon-status">{ICON_INFO}</span> <span data-i18n="no_pixels">No trackers detected</span></span>
                         </div>
                         """
 
@@ -865,10 +866,10 @@ def process_emails():
                             .status-badge.ok {{ color: green; }}
                             .status-badge.warn {{ color: orange; }}
                             
-                            .pixel-list {{ list-style: none; padding: 0; margin: 0; background: #fff0f0; border: 1px solid #ffcccc; border-radius: 4px; }}
-                            .pixel-li {{ padding: 8px; border-bottom: 1px solid #ffcccc; }}
+                            .pixel-list {{ list-style: none; padding: 0; margin: 0; background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 4px; }}
+                            .pixel-li {{ padding: 8px; border-bottom: 1px solid #c3e6cb; }}
                             .pixel-li:last-child {{ border-bottom: none; }}
-                            .pixel-row {{ display: flex; align-items: center; gap: 6px; color: #d32f2f; font-size: 11px; }}
+                            .pixel-row {{ display: flex; align-items: center; gap: 6px; color: #155724; font-size: 11px; }}
                             .pixel-url {{ word-break: break-all; font-family: monospace; }}
                             
                             .btn-copy, .btn-action {{ border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }}
@@ -893,9 +894,11 @@ def process_emails():
                             body.dark-mode .meta-label {{ color: #ccc; }}
                             body.dark-mode .meta-item {{ color: #aaa; }}
                             body.dark-mode .preheader-box {{ background: #252525; border-color: #333; color: #aaa; }}
-                            body.dark-mode .pixel-list {{ background: #3e1e1e; border-color: #5c2b2b; }}
-                            body.dark-mode .pixel-li {{ border-bottom-color: #5c2b2b; }}
-                            body.dark-mode .pixel-row {{ color: #ff6b6b; }}
+                            
+                            body.dark-mode .pixel-list {{ background: #1e2e1e; border-color: #2b4c2b; }}
+                            body.dark-mode .pixel-li {{ border-bottom-color: #2b4c2b; }}
+                            body.dark-mode .pixel-row {{ color: #90cea1; }}
+                            
                             body.dark-mode .link-txt {{ color: #4da3ff; }}
                             body.dark-mode .link-url {{ color: #aaa; }}
                             body.dark-mode .btn-copy, body.dark-mode .btn-action {{ color: #666; }}
@@ -933,7 +936,7 @@ def process_emails():
                         <div class="sidebar" id="sidebar">
                             
                             <div class="sidebar-section">
-                                <h3 data-i18n="pixel_section">{ICON_WARN} Detected Trackers</h3>
+                                <h3 data-i18n="pixel_section">{ICON_WARN} Tracking Pixels</h3>
                                 {pixel_html_block}
                             </div>
 
@@ -984,7 +987,6 @@ def process_emails():
                             frame.contentDocument.close();
                             
                             const style = frame.contentDocument.createElement('style');
-                            // ### MODIFICATION CSS : Surlignage des images
                             style.textContent = `
                                 html {{ -ms-overflow-style: none; scrollbar-width: none; }}
                                 html::-webkit-scrollbar {{ display: none; }}
@@ -1009,7 +1011,7 @@ def process_emails():
                                     z-index: 9999;
                                     box-shadow: 0 0 5px rgba(255,0,0,0.5);
                                     animation: flash 1s infinite alternate;
-                                    display: inline-block; /* Ensure borders show on empty anchors */
+                                    display: inline-block;
                                 }}
 
                                 /* Highlight Class - IMAGES INSIDE LINKS */
@@ -1020,7 +1022,6 @@ def process_emails():
                                     filter: grayscale(50%);
                                 }}
                                 
-                                /* Target specific link class */
                                 a.flash-target {{
                                     outline: 4px solid #0070f3 !important;
                                     background-color: rgba(0, 112, 243, 0.2) !important;
@@ -1071,7 +1072,6 @@ def process_emails():
 
                             function copyToClipboard(text) {{
                                 navigator.clipboard.writeText(text).then(() => {{
-                                    // Feedback optionnel
                                 }}).catch(err => {{
                                     console.error('Failed to copy: ', err);
                                 }});
@@ -1081,7 +1081,6 @@ def process_emails():
                                 const el = frame.contentDocument.getElementById(id);
                                 if(el) {{
                                     el.scrollIntoView({{behavior: 'smooth', block: 'center'}});
-                                    // Effet visuel temporaire
                                     el.classList.add('flash-target');
                                     setTimeout(() => el.classList.remove('flash-target'), 2000);
                                 }} else {{
