@@ -7,11 +7,13 @@ import os
 import re
 import mimetypes
 import requests
+from urllib.parse import urljoin
 import datetime
 import hashlib
 import shutil
 import json
 import html
+import time
 
 # --- CONFIGURATION ---
 GMAIL_USER = os.environ["GMAIL_USER"]
@@ -26,7 +28,7 @@ HEADERS = {
 
 # --- LISTE DES MOTIFS DE TRACKING ---
 TRACKING_PATTERNS = [
-    "api.getinside.media", # La Redoute / CRM
+    "api.getinside.media",
     "google-analytics.com",
     "doubleclick.net",
     "facebook.com/tr",
@@ -53,6 +55,7 @@ ICON_EYE = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor
 ICON_CHECK = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="green" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
 ICON_WARN = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
 ICON_BUG = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+ICON_CHAIN = '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>'
 
 # --- DICTIONNAIRE DE TRADUCTION ---
 TRANSLATIONS = {
@@ -149,6 +152,50 @@ function toggleLanguage() {{
 
 updateLanguage(currentLang);
 """
+
+# --- FONCTION DE REDIRECTION (Portage du Google Script) ---
+def resolve_redirect_chain(start_url, max_redirects=5):
+    """
+    Suit les redirections comme le script Google Apps Script.
+    Retourne (final_url, [liste_des_sauts])
+    """
+    if not start_url: return start_url, []
+    if start_url.startswith("mailto:") or start_url.startswith("tel:"): return start_url, []
+
+    chain = [start_url]
+    current_url = start_url
+    
+    # Session pour réutiliser la connexion (plus rapide)
+    session = requests.Session()
+    
+    for _ in range(max_redirects):
+        try:
+            # On utilise HEAD avec allow_redirects=False pour contrôler manuellement
+            # Timeout court pour ne pas ralentir le script si le lien est mort
+            resp = session.head(current_url, allow_redirects=False, headers=HEADERS, timeout=2.0)
+            
+            if 300 <= resp.status_code < 400:
+                location = resp.headers.get('Location') or resp.headers.get('location')
+                if location:
+                    # Gestion URL relative
+                    if not location.startswith('http'):
+                        location = urljoin(current_url, location)
+                    
+                    # Eviter les boucles
+                    if location in chain:
+                        break
+
+                    chain.append(location)
+                    current_url = location
+                else:
+                    break
+            else:
+                break # Ce n'est plus une redirection
+        except:
+            # En cas d'erreur (timeout, dns...), on s'arrête là
+            break
+            
+    return current_url, chain
 
 def clean_subject_prefixes(subject):
     if not subject: return "Untitled"
@@ -614,15 +661,10 @@ def process_emails():
                     
                     # --- DETECTION PIXEL ---
                     detected_pixels_list = []
-                    
-                    # On scanne toutes les images
                     for img in soup.find_all("img"):
                         src = img.get("src", "")
-                        # Si l'image correspond à un pattern de tracking
                         if any(pattern in src for pattern in TRACKING_PATTERNS):
                             detected_pixels_list.append(src)
-                            # On NEUTRALISE le pixel dans le HTML de l'archive (protection vie privée)
-                            # Mais on le garde dans la liste pour le rapport
                             img['src'] = "" 
                             img['alt'] = "[TRACKING PIXEL REMOVED]"
                             img['style'] = "display:none !important;"
@@ -650,36 +692,55 @@ def process_emails():
                     reading_time_min = max(1, round(word_count / 200))
                     reading_time_str = f"{reading_time_min} min"
 
-                    # TRAITEMENT DES LIENS
+                    # TRAITEMENT DES LIENS ET RÉSOLUTION DES REDIRECTIONS
                     links = []
                     link_idx = 0
-                    for a in soup.find_all('a', href=True):
+                    
+                    # On ne traite que les 50 premiers liens pour ne pas exploser le temps de traitement
+                    all_links = soup.find_all('a', href=True)
+                    print(f"   -> Résolution de {len(all_links)} liens...")
+                    
+                    for a in all_links:
                         txt = a.get_text(strip=True) or "[Image/Vide]"
                         link_id = f"detected-link-{link_idx}"
-                        a['id'] = link_id # Injection de l'ID dans le HTML de l'email
+                        a['id'] = link_id
+                        
+                        original_url = a['href']
+                        # Résolution de la chaîne de redirection
+                        final_dest, chain = resolve_redirect_chain(original_url)
+                        
+                        # Construction du texte de la chaîne pour le tooltip
+                        chain_text = " > ".join(chain)
                         
                         links.append({
                             'id': link_id,
                             'txt': txt[:50] + "..." if len(txt)>50 else txt, 
-                            'url': a['href']
+                            'original_url': original_url,
+                            'final_url': final_dest,
+                            'chain_text': chain_text
                         })
                         link_idx += 1
                     
-                    # Génération HTML des liens avec bouton Copier et bouton Locate
+                    # Génération HTML des liens (Mise à jour pour afficher l'URL finale)
                     links_html = ""
                     for l in links:
                         links_html += f'''
                         <li>
                             <div class="link-row">
-                                <a href="{l["url"]}" target="_blank" class="link-data">
+                                <a href="{l["final_url"]}" target="_blank" class="link-data">
                                     <div class="link-txt">{l["txt"]}</div>
-                                    <div class="link-url">{l["url"]}</div>
+                                    <div class="link-final" title="Final Destination">{l["final_url"]}</div>
+                                    <div class="link-orig" title="Original Tracking Link">Original: {l["original_url"]}</div>
                                 </a>
                                 <div class="link-actions">
+                                    <div class="chain-tooltip-container">
+                                        <button class="btn-action" title="Show Redirect Path">{ICON_CHAIN}</button>
+                                        <div class="chain-tooltip">{l["chain_text"]}</div>
+                                    </div>
                                     <button class="btn-action" onclick="scrollToLink('{l["id"]}')" title="Locate in Email">
                                         {ICON_EYE}
                                     </button>
-                                    <button class="btn-action" onclick="copyToClipboard('{l["url"]}')" title="Copy URL">
+                                    <button class="btn-action" onclick="copyToClipboard('{l["final_url"]}')" title="Copy Final URL">
                                         {ICON_COPY}
                                     </button>
                                 </div>
@@ -687,12 +748,9 @@ def process_emails():
                         </li>
                         '''
 
-                    # --- IMAGES LOCALES (AMÉLIORÉ) ---
+                    # --- IMAGES LOCALES ---
                     img_counter = 0
-                    
-                    # 1. Gestion des balises <img> (avec support Lazy Loading)
                     for img in soup.find_all("img"):
-                        # Vérification des attributs Lazy Loading AVANT de lire le src
                         lazy_attrs = ['data-src', 'data-original', 'data-lazy', 'data-url']
                         for attr in lazy_attrs:
                             if img.get(attr):
@@ -709,14 +767,10 @@ def process_emails():
                             del img['srcset'] 
 
                         src = img.get("src")
-                        
-                        # Si vide (pixel neutralisé plus haut) ou data, on saute
                         if not src or src.startswith("data:") or src.startswith("cid:"): continue
                         
                         try:
                             if src.startswith("//"): src = "https:" + src
-                            
-                            # Téléchargement
                             r = requests.get(src, headers=HEADERS, timeout=10)
                             if r.status_code == 200:
                                 content_type = r.headers.get('content-type', '')
@@ -726,65 +780,48 @@ def process_emails():
 
                                 local_name = f"img_{img_counter}{ext}"
                                 local_path = os.path.join(newsletter_path, local_name)
-                                
-                                with open(local_path, "wb") as f: 
-                                    f.write(r.content)
-                                
+                                with open(local_path, "wb") as f: f.write(r.content)
                                 img['src'] = local_name
                                 img['loading'] = 'lazy'
                                 img_counter += 1
-                        except Exception as e:
-                            pass
+                        except Exception: pass
 
-                    # 2. Gestion des images de fond (CSS inline)
+                    # CSS inline images
                     css_url_pattern = re.compile(r'url\s*\((?:["\']?)(.*?)(?:["\']?)\)', re.IGNORECASE)
-                    
                     for tag in soup.find_all(style=True):
                         style = tag['style']
                         if 'url' in style:
                             matches = css_url_pattern.findall(style)
                             new_style = style
                             modified = False
-                            
                             for url in matches:
                                 original_url = url.strip()
-                                # Si c'est un tracker détecté ou data, on ignore
                                 if original_url.startswith("data:") or any(p in original_url for p in TRACKING_PATTERNS): continue
-                                
                                 target_url = original_url
                                 if target_url.startswith("//"): target_url = "https:" + target_url
-                                
                                 try:
                                     r = requests.get(target_url, headers=HEADERS, timeout=10)
                                     if r.status_code == 200:
                                         content_type = r.headers.get('content-type', '')
                                         ext = mimetypes.guess_extension(content_type) or ".jpg"
-                                        
                                         local_name = f"bg_{img_counter}{ext}"
                                         local_path = os.path.join(newsletter_path, local_name)
-                                        
-                                        with open(local_path, "wb") as f:
-                                            f.write(r.content)
-                                        
+                                        with open(local_path, "wb") as f: f.write(r.content)
                                         new_style = new_style.replace(original_url, local_name)
                                         img_counter += 1
                                         modified = True
                                 except: pass
-                            
-                            if modified:
-                                tag['style'] = new_style
+                            if modified: tag['style'] = new_style
 
                     # VIEWER
                     safe_html = json.dumps(str(soup))
                     nb_links = len(links)
                     date_arch_str = datetime.datetime.now().strftime('%Y-%m-%d')
                     
-                    # Bloc Pixel HTML (Mise à jour pour liste complète)
                     pixel_html_block = ""
                     if detected_pixels_list:
                         pixels_li = ""
                         for p_url in detected_pixels_list:
-                            # On coupe l'URL pour l'affichage si trop longue
                             display_url = p_url[:55] + "..." if len(p_url) > 55 else p_url
                             pixels_li += f"""
                             <li class="pixel-li">
@@ -794,7 +831,6 @@ def process_emails():
                                 </div>
                             </li>
                             """
-                        
                         pixel_html_block = f"""
                         <div class="meta-item">
                             <span class="meta-label" data-i18n="label_pixel_status">Summary</span>
@@ -825,7 +861,6 @@ def process_emails():
                         <title>{subject}</title>
                         <style>
                             body {{ margin: 0; padding: 0; background: #eef2f5; font-family: Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }}
-                            
                             .header {{ position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }}
                             .title {{ font-size: 16px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; }}
                             .controls {{ display: flex; gap: 10px; flex-shrink: 0; }}
@@ -833,56 +868,49 @@ def process_emails():
                             .btn:hover {{ background: #eee; }}
                             .btn.active {{ background: #0070f3; color: white; border-color: #0070f3; }}
                             .btn svg {{ display: block; }}
-                            
                             .main-view {{ margin-top: 60px; height: calc(100vh - 60px); display: flex; justify-content: center; align-items: flex-start; background: #eef2f5; overflow: hidden; padding-top: 20px; }}
-                            
-                            .iframe-wrapper {{ 
-                                width: 1000px; max-width: 95%; height: 90%;
-                                transition: width 0.3s ease; 
-                                background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 4px;
-                            }}
-                            
+                            .iframe-wrapper {{ width: 1000px; max-width: 95%; height: 90%; transition: width 0.3s ease; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 4px; }}
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
-                            
-                            body.mobile-mode .iframe-wrapper {{ 
-                                width: 375px; height: 812px; 
-                                max-height: 85vh; 
-                                border: none; 
-                                box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-                            }}
-                            
+                            body.mobile-mode .iframe-wrapper {{ width: 375px; height: 812px; max-height: 85vh; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }}
                             .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }}
                             .sidebar.open {{ right: 0; }}
-                            .sidebar-section {{ }}
                             .sidebar h3 {{ margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }}
-                            
                             .meta-item {{ margin-bottom: 12px; font-size: 13px; color: #555; }}
                             .meta-label {{ font-weight: 600; display: block; margin-bottom: 3px; color: #333; }}
                             .meta-val {{ word-break: break-word; line-height: 1.4; }}
                             .preheader-box {{ background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }}
-
-                            /* Pixel Styles */
                             .status-badge {{ display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }}
                             .status-badge.ok {{ color: green; }}
                             .status-badge.warn {{ color: orange; }}
-                            
                             .pixel-list {{ list-style: none; padding: 0; margin: 0; background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 4px; }}
                             .pixel-li {{ padding: 8px; border-bottom: 1px solid #c3e6cb; }}
                             .pixel-li:last-child {{ border-bottom: none; }}
                             .pixel-row {{ display: flex; align-items: center; gap: 6px; color: #155724; font-size: 11px; }}
                             .pixel-url {{ word-break: break-all; font-family: monospace; }}
-                            
                             .btn-copy, .btn-action {{ border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }}
                             .btn-copy:hover, .btn-action:hover {{ color: #0070f3; background: #eee; }}
                             
+                            /* Link Styles */
                             .sidebar ul:not(.pixel-list) {{ list-style: none; padding: 0; margin: 0; }}
                             .sidebar li:not(.pixel-li) {{ margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }}
                             .link-row {{ display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }}
                             .link-data {{ text-decoration: none; color: inherit; font-size: 12px; flex: 1; min-width: 0; }}
-                            .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 4px; }}
-                            .link-url {{ color: #666; word-break: break-all; font-family: monospace; font-size: 11px; }}
-                            .link-actions {{ display: flex; gap: 2px; flex-shrink: 0; }}
-                            
+                            .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 2px; }}
+                            .link-final {{ color: #222; font-weight: 600; word-break: break-all; font-size: 11px; margin-bottom: 2px; }}
+                            .link-orig {{ color: #999; word-break: break-all; font-family: monospace; font-size: 10px; }}
+                            .link-actions {{ display: flex; gap: 2px; flex-shrink: 0; align-items: center; }}
+
+                            /* Tooltip Redirect Chain */
+                            .chain-tooltip-container {{ position: relative; display: inline-block; }}
+                            .chain-tooltip {{ 
+                                visibility: hidden; width: 300px; background-color: #333; color: #fff; text-align: left; 
+                                border-radius: 6px; padding: 10px; position: absolute; z-index: 1000; 
+                                right: 100%; top: -5px; margin-right: 10px; font-size: 11px; line-height: 1.4;
+                                word-break: break-all; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s;
+                                white-space: pre-wrap;
+                            }}
+                            .chain-tooltip-container:hover .chain-tooltip {{ visibility: visible; opacity: 1; }}
+
                             body.dark-mode .main-view {{ background: #121212; }}
                             body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
                             body.dark-mode .title {{ color: #e0e0e0; }}
@@ -894,13 +922,12 @@ def process_emails():
                             body.dark-mode .meta-label {{ color: #ccc; }}
                             body.dark-mode .meta-item {{ color: #aaa; }}
                             body.dark-mode .preheader-box {{ background: #252525; border-color: #333; color: #aaa; }}
-                            
                             body.dark-mode .pixel-list {{ background: #1e2e1e; border-color: #2b4c2b; }}
                             body.dark-mode .pixel-li {{ border-bottom-color: #2b4c2b; }}
                             body.dark-mode .pixel-row {{ color: #90cea1; }}
-                            
                             body.dark-mode .link-txt {{ color: #4da3ff; }}
-                            body.dark-mode .link-url {{ color: #aaa; }}
+                            body.dark-mode .link-final {{ color: #ccc; }}
+                            body.dark-mode .link-orig {{ color: #666; }}
                             body.dark-mode .btn-copy, body.dark-mode .btn-action {{ color: #666; }}
                             body.dark-mode .btn-copy:hover, body.dark-mode .btn-action:hover {{ color: #4da3ff; background: #333; }}
                         </style>
@@ -926,167 +953,66 @@ def process_emails():
                                 </button>
                             </div>
                         </header>
-                        
                         <div class="main-view">
-                            <div class="iframe-wrapper">
-                                <iframe id="emailFrame"></iframe>
-                            </div>
+                            <div class="iframe-wrapper"><iframe id="emailFrame"></iframe></div>
                         </div>
-                        
                         <div class="sidebar" id="sidebar">
-                            
                             <div class="sidebar-section">
                                 <h3 data-i18n="pixel_section">{ICON_WARN} Tracking Pixels</h3>
                                 {pixel_html_block}
                             </div>
-
                             <div class="sidebar-section">
                                 <h3 data-i18n="meta_section">{ICON_INFO} Metadata</h3>
-                                <div class="meta-item">
-                                    <span class="meta-label" data-i18n="label_sent">📅 Sent Date</span>
-                                    <span class="meta-val">{format_date_fr(email_date_str)}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span>
-                                    <span class="meta-val">{format_date_fr(date_arch_str)}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span>
-                                    <span class="meta-val">{reading_time_str}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span>
-                                    <div class="preheader-box">{safe_preheader_attr}</div>
-                                </div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_sent">📅 Sent Date</span><span class="meta-val">{format_date_fr(email_date_str)}</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span><span class="meta-val">{format_date_fr(date_arch_str)}</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span><span class="meta-val">{reading_time_str}</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span><div class="preheader-box">{safe_preheader_attr}</div></div>
                             </div>
-
                             <div class="sidebar-section">
                                 <h3 data-i18n="links_section">{ICON_LINK} Detected Links ({nb_links})</h3>
                                 <ul>{links_html}</ul>
                             </div>
                         </div>
-
                         <script>
                             {JS_TRANSLATION_LOGIC}
-
                             const emailContent = {safe_html};
                             const frame = document.getElementById('emailFrame');
-                            
                             frame.contentDocument.open();
                             frame.contentDocument.write(emailContent);
-                            
                             const meta = frame.contentDocument.createElement('meta');
                             meta.name = 'viewport';
                             meta.content = 'width=device-width, initial-scale=1.0';
                             frame.contentDocument.head.appendChild(meta);
-                            
                             const base = frame.contentDocument.createElement('base');
                             base.target = '_blank';
                             frame.contentDocument.head.appendChild(base);
-
                             frame.contentDocument.close();
-                            
                             const style = frame.contentDocument.createElement('style');
                             style.textContent = `
                                 html {{ -ms-overflow-style: none; scrollbar-width: none; }}
                                 html::-webkit-scrollbar {{ display: none; }}
                                 body::-webkit-scrollbar {{ display: none; width: 0; }}
-                                body {{ 
-                                    margin: 0; padding: 0; font-family: Roboto, Helvetica, Arial, sans-serif;
-                                    color: #222; line-height: 1.5; overflow-wrap: break-word; 
-                                }}
+                                body {{ margin: 0; padding: 0; font-family: Roboto, Helvetica, Arial, sans-serif; color: #222; line-height: 1.5; overflow-wrap: break-word; }}
                                 table {{ border-spacing: 0; border-collapse: collapse; }}
                                 img {{ height: auto !important; vertical-align: middle; border: 0; }}
                                 img[style*="display: block"], img[style*="display:block"] {{ margin-left: auto !important; margin-right: auto !important; }}
                                 a, .link-text {{ color: #1a0dab; }}
                                 html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, html.dark-mode-internal video, html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
-                                
-                                /* Highlight Class - TEXT LINKS */
-                                body.highlight-links a {{
-                                    border: 2px solid red !important;
-                                    background-color: yellow !important;
-                                    color: black !important;
-                                    position: relative;
-                                    z-index: 9999;
-                                    box-shadow: 0 0 5px rgba(255,0,0,0.5);
-                                    animation: flash 1s infinite alternate;
-                                    display: inline-block;
-                                }}
-
-                                /* Highlight Class - IMAGES INSIDE LINKS */
-                                body.highlight-links a img {{
-                                    outline: 4px solid #ff0000 !important;
-                                    outline-offset: -2px;
-                                    opacity: 0.8;
-                                    filter: grayscale(50%);
-                                }}
-                                
-                                a.flash-target {{
-                                    outline: 4px solid #0070f3 !important;
-                                    background-color: rgba(0, 112, 243, 0.2) !important;
-                                    transition: all 0.5s;
-                                    animation: target-pulse 0.5s 3;
-                                }}
-                                
+                                body.highlight-links a {{ border: 2px solid red !important; background-color: yellow !important; color: black !important; position: relative; z-index: 9999; box-shadow: 0 0 5px rgba(255,0,0,0.5); animation: flash 1s infinite alternate; display: inline-block; }}
+                                body.highlight-links a img {{ outline: 4px solid #ff0000 !important; outline-offset: -2px; opacity: 0.8; filter: grayscale(50%); }}
+                                a.flash-target {{ outline: 4px solid #0070f3 !important; background-color: rgba(0, 112, 243, 0.2) !important; transition: all 0.5s; animation: target-pulse 0.5s 3; }}
                                 @keyframes flash {{ from {{ opacity: 1; }} to {{ opacity: 0.7; }} }}
-                                @keyframes target-pulse {{ 
-                                    0% {{ outline-offset: 0px; }} 
-                                    50% {{ outline-offset: 4px; }} 
-                                    100% {{ outline-offset: 0px; }} 
-                                }}
-
-                                @media screen and (max-width: 600px) {{
-                                    table, tbody, tr, td {{ width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; height: auto !important; }}
-                                    div[style*="width"] {{ width: 100% !important; max-width: 100% !important; }}
-                                    img {{ width: auto !important; max-width: 100% !important; }}
-                                }}
+                                @keyframes target-pulse {{ 0% {{ outline-offset: 0px; }} 50% {{ outline-offset: 4px; }} 100% {{ outline-offset: 0px; }} }}
+                                @media screen and (max-width: 600px) {{ table, tbody, tr, td {{ width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; height: auto !important; }} div[style*="width"] {{ width: 100% !important; max-width: 100% !important; }} img {{ width: auto !important; max-width: 100% !important; }} }}
                             `;
                             frame.contentDocument.head.appendChild(style);
-
-                            function toggleMobile() {{
-                                document.body.classList.toggle('mobile-mode');
-                                document.getElementById('btn-mobile').classList.toggle('active');
-                            }}
-                            
-                            function toggleDark() {{
-                                document.body.classList.toggle('dark-mode');
-                                document.getElementById('btn-dark').classList.toggle('active');
-                                if(frame.contentDocument.documentElement) {{
-                                    frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
-                                }}
-                            }}
-                            
-                            function toggleLinks() {{
-                                document.getElementById('sidebar').classList.toggle('open');
-                                document.getElementById('btn-links').classList.toggle('active');
-                            }}
-
-                            function toggleHighlight() {{
-                                const btn = document.getElementById('btn-highlight');
-                                btn.classList.toggle('active');
-                                if(frame.contentDocument.body) {{
-                                    frame.contentDocument.body.classList.toggle('highlight-links');
-                                }}
-                            }}
-
-                            function copyToClipboard(text) {{
-                                navigator.clipboard.writeText(text).then(() => {{
-                                }}).catch(err => {{
-                                    console.error('Failed to copy: ', err);
-                                }});
-                            }}
-
-                            function scrollToLink(id) {{
-                                const el = frame.contentDocument.getElementById(id);
-                                if(el) {{
-                                    el.scrollIntoView({{behavior: 'smooth', block: 'center'}});
-                                    el.classList.add('flash-target');
-                                    setTimeout(() => el.classList.remove('flash-target'), 2000);
-                                }} else {{
-                                    console.warn('Link not found in iframe:', id);
-                                }}
-                            }}
+                            function toggleMobile() {{ document.body.classList.toggle('mobile-mode'); document.getElementById('btn-mobile').classList.toggle('active'); }}
+                            function toggleDark() {{ document.body.classList.toggle('dark-mode'); document.getElementById('btn-dark').classList.toggle('active'); if(frame.contentDocument.documentElement) {{ frame.contentDocument.documentElement.classList.toggle('dark-mode-internal'); }} }}
+                            function toggleLinks() {{ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('btn-links').classList.toggle('active'); }}
+                            function toggleHighlight() {{ const btn = document.getElementById('btn-highlight'); btn.classList.toggle('active'); if(frame.contentDocument.body) {{ frame.contentDocument.body.classList.toggle('highlight-links'); }} }}
+                            function copyToClipboard(text) {{ navigator.clipboard.writeText(text).then(() => {{ }}).catch(err => {{ console.error('Failed to copy: ', err); }}); }}
+                            function scrollToLink(id) {{ const el = frame.contentDocument.getElementById(id); if(el) {{ el.scrollIntoView({{behavior: 'smooth', block: 'center'}}); el.classList.add('flash-target'); setTimeout(() => el.classList.remove('flash-target'), 2000); }} else {{ console.warn('Link not found in iframe:', id); }} }}
                         </script>
                     </body>
                     </html>
