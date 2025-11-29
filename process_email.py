@@ -687,7 +687,9 @@ def process_emails():
                         
                         original_url = a['href']
                         final_dest, chain = resolve_redirect_chain(original_url)
-                        chain_text = " > ".join(chain)
+                        
+                        # --- MODIF : SAUTS DE LIGNE VERTICAUX + FLÈCHE ---
+                        chain_text = "\n⬇\n".join(chain)
                         
                         links.append({
                             'id': link_id,
@@ -850,8 +852,11 @@ def process_emails():
                             .iframe-wrapper {{ width: 1000px; max-width: 95%; height: 90%; transition: width 0.3s ease; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 4px; }}
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             body.mobile-mode .iframe-wrapper {{ width: 375px; height: 812px; max-height: 85vh; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }}
-                            .sidebar {{ position: fixed; top: 60px; right: -350px; width: 350px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }}
+                            
+                            /* --- MODIF : SIDEBAR PLUS LARGE --- */
+                            .sidebar {{ position: fixed; top: 60px; right: -420px; width: 420px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }}
                             .sidebar.open {{ right: 0; }}
+                            
                             .sidebar h3 {{ margin-top: 0; font-size: 16px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }}
                             .meta-item {{ margin-bottom: 12px; font-size: 13px; color: #555; }}
                             .meta-label {{ font-weight: 600; display: block; margin-bottom: 3px; color: #333; }}
@@ -891,7 +896,7 @@ def process_emails():
                                 pointer-events: none;
                                 display: none;
                                 box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-                                white-space: pre-wrap;
+                                white-space: pre-wrap; /* Preserve newlines */
                                 word-break: break-all;
                                 line-height: 1.4;
                             }}
@@ -944,10 +949,8 @@ def process_emails():
                             <div class="iframe-wrapper"><iframe id="emailFrame"></iframe></div>
                         </div>
                         <div class="sidebar" id="sidebar">
-                            <div class="sidebar-section">
-                                <h3 data-i18n="pixel_section">{ICON_WARN} Tracking Pixels</h3>
-                                {pixel_html_block}
-                            </div>
+                            
+                            <!-- 1. METADATA (FIRST) -->
                             <div class="sidebar-section">
                                 <h3 data-i18n="meta_section">{ICON_INFO} Metadata</h3>
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_sent">📅 Sent Date</span><span class="meta-val">{format_date_fr(email_date_str)}</span></div>
@@ -955,6 +958,13 @@ def process_emails():
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span><span class="meta-val">{reading_time_str}</span></div>
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span><div class="preheader-box">{safe_preheader_attr}</div></div>
                             </div>
+                            
+                            <!-- 2. PIXELS (SECOND) -->
+                            <div class="sidebar-section">
+                                <h3 data-i18n="pixel_section">{ICON_WARN} Tracking Pixels</h3>
+                                {pixel_html_block}
+                            </div>
+                            
                             <div class="sidebar-section">
                                 <h3 data-i18n="links_section">{ICON_LINK} Detected Links ({nb_links})</h3>
                                 <ul>{links_html}</ul>
@@ -986,11 +996,25 @@ def process_emails():
                                 a, .link-text {{ color: #1a0dab; }}
                                 html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, html.dark-mode-internal video, html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
+                                
                                 body.highlight-links a {{ border: 2px solid red !important; background-color: yellow !important; color: black !important; position: relative; z-index: 9999; box-shadow: 0 0 5px rgba(255,0,0,0.5); animation: flash 1s infinite alternate; display: inline-block; }}
                                 body.highlight-links a img {{ outline: 4px solid #ff0000 !important; outline-offset: -2px; opacity: 0.8; filter: grayscale(50%); }}
-                                a.flash-target {{ outline: 4px solid #0070f3 !important; background-color: rgba(0, 112, 243, 0.2) !important; transition: all 0.5s; animation: target-pulse 0.5s 3; }}
-                                @keyframes flash {{ from {{ opacity: 1; }} to {{ opacity: 0.7; }} }}
-                                @keyframes target-pulse {{ 0% {{ outline-offset: 0px; }} 50% {{ outline-offset: 4px; }} 100% {{ outline-offset: 0px; }} }}
+                                
+                                /* --- MODIF : ANIMATION PUISSANTE --- */
+                                @keyframes target-pulse {{ 
+                                    0% {{ transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }}
+                                    50% {{ transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 0, 0, 0); }}
+                                    100% {{ transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }}
+                                }}
+                                a.flash-target {{
+                                    position: relative;
+                                    z-index: 99999;
+                                    outline: 10px solid #ff0000 !important;
+                                    background-color: rgba(255, 255, 0, 0.5) !important;
+                                    animation: target-pulse 0.5s ease-in-out 4; /* 4 pulses */
+                                    box-shadow: 0 0 50px rgba(255,0,0,1); /* Big glow */
+                                }}
+
                                 @media screen and (max-width: 600px) {{ table, tbody, tr, td {{ width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; height: auto !important; }} div[style*="width"] {{ width: 100% !important; max-width: 100% !important; }} img {{ width: auto !important; max-width: 100% !important; }} }}
                             `;
                             frame.contentDocument.head.appendChild(style);
@@ -1011,8 +1035,6 @@ def process_emails():
                                         tooltip.classList.add('visible');
                                         const rect = btn.getBoundingClientRect();
                                         tooltip.style.top = rect.top + 'px';
-                                        // Position to the left of the sidebar (button left position - tooltip estimated width)
-                                        // Simple calculation: align right edge of tooltip with left edge of button - 10px
                                         tooltip.style.right = (window.innerWidth - rect.left + 10) + 'px';
                                         tooltip.style.left = 'auto';
                                     }}
