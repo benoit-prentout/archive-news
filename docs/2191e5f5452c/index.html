@@ -4,9 +4,9 @@
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <meta name="creation_date" content="2025-11-20">
+                        <meta name="creation_date" content="2025-11-20 10:01">
                         <meta name="sender" content="Atelier Loupiote | Lampes artisanales françaises">
-                        <meta name="archiving_date" content="2025-11-29">
+                        <meta name="archiving_date" content="2025-11-29 14:57">
                         <meta name="preheader" content="En association avec Petits Frères des Pauvres 👴👵💓 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...">
                         <meta name="reading_time" content="3 min">
                         <title>Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</title>
@@ -24,7 +24,7 @@
                             iframe { width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }
                             body.mobile-mode .iframe-wrapper { width: 375px; height: 812px; max-height: 85vh; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
                             
-                            /* --- MODIF : SIDEBAR PLUS LARGE --- */
+                            /* --- SIDEBAR --- */
                             .sidebar { position: fixed; top: 60px; right: -420px; width: 420px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
                             .sidebar.open { right: 0; }
                             
@@ -33,43 +33,51 @@
                             .meta-label { font-weight: 600; display: block; margin-bottom: 3px; color: #333; }
                             .meta-val { word-break: break-word; line-height: 1.4; }
                             .preheader-box { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }
+                            
                             .status-badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
                             .status-badge.ok { color: green; }
                             .status-badge.warn { color: orange; }
+                            
+                            /* Pixel List Style */
                             .pixel-list { list-style: none; padding: 0; margin: 0; background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 4px; }
                             .pixel-li { padding: 8px; border-bottom: 1px solid #c3e6cb; }
                             .pixel-li:last-child { border-bottom: none; }
                             .pixel-row { display: flex; align-items: center; gap: 6px; color: #155724; font-size: 11px; }
                             .pixel-url { word-break: break-all; font-family: monospace; }
-                            .btn-copy, .btn-action { border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }
-                            .btn-copy:hover, .btn-action:hover { color: #0070f3; background: #eee; }
                             
-                            /* Link Styles */
-                            .sidebar ul:not(.pixel-list) { list-style: none; padding: 0; margin: 0; }
-                            .sidebar li:not(.pixel-li) { margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
-                            .link-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-                            .link-data { text-decoration: none; color: inherit; font-size: 12px; flex: 1; min-width: 0; }
-                            .link-txt { font-weight: bold; color: #0070f3; margin-bottom: 2px; }
-                            .link-final { color: #222; font-weight: 600; word-break: break-all; font-size: 11px; margin-bottom: 2px; }
-                            .link-orig { color: #999; word-break: break-all; font-family: monospace; font-size: 10px; }
-                            .link-actions { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
-
+                            /* --- NEW LINK CARD DESIGN --- */
+                            .sidebar ul { list-style: none; padding: 0; margin: 0; }
+                            .link-card {
+                                border: 1px solid #eee; border-radius: 8px; background: #fff; margin-bottom: 12px;
+                                box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+                            }
+                            .link-card-header {
+                                padding: 8px 12px; background: #fcfcfc; border-bottom: 1px solid #f0f0f0;
+                                font-weight: 600; color: #333; font-size: 12px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+                            }
+                            .link-card-body { padding: 10px 12px; }
+                            .link-line { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+                            .link-line:last-child { margin-bottom: 0; }
+                            .link-icon-box { width: 16px; text-align: center; display: flex; justify-content: center; }
+                            .link-url-text { font-family: monospace; font-size: 11px; word-break: break-all; line-height: 1.3; }
+                            .link-url-text.orig { color: #888; }
+                            .link-url-text.dest { color: #0070f3; font-weight: 600; }
+                            .link-arrow-sep { padding-left: 20px; color: #ccc; font-size: 10px; margin: 2px 0; }
+                            
+                            .link-card-footer {
+                                padding: 6px 12px; background: #fafafa; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; justify-content: flex-end;
+                            }
+                            .btn-action {
+                                border: none; background: transparent; padding: 4px 8px; cursor: pointer; color: #666;
+                                display: flex; align-items: center; gap: 4px; font-size: 11px; border-radius: 4px;
+                            }
+                            .btn-action:hover { background: #eaeaea; color: #0070f3; }
+                            
                             /* Global Tooltip Fixed */
                             .global-tooltip {
-                                position: fixed;
-                                background: #333;
-                                color: white;
-                                padding: 10px;
-                                border-radius: 6px;
-                                z-index: 10000;
-                                max-width: 300px;
-                                font-size: 11px;
-                                pointer-events: none;
-                                display: none;
-                                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-                                white-space: pre-wrap; /* Preserve newlines */
-                                word-break: break-all;
-                                line-height: 1.4;
+                                position: fixed; background: #333; color: white; padding: 10px; border-radius: 6px;
+                                z-index: 10000; max-width: 300px; font-size: 11px; pointer-events: none; display: none;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; line-height: 1.4;
                             }
                             .global-tooltip.visible { display: block; }
 
@@ -84,14 +92,17 @@
                             body.dark-mode .meta-label { color: #ccc; }
                             body.dark-mode .meta-item { color: #aaa; }
                             body.dark-mode .preheader-box { background: #252525; border-color: #333; color: #aaa; }
+                            
                             body.dark-mode .pixel-list { background: #1e2e1e; border-color: #2b4c2b; }
                             body.dark-mode .pixel-li { border-bottom-color: #2b4c2b; }
                             body.dark-mode .pixel-row { color: #90cea1; }
-                            body.dark-mode .link-txt { color: #4da3ff; }
-                            body.dark-mode .link-final { color: #ccc; }
-                            body.dark-mode .link-orig { color: #666; }
-                            body.dark-mode .btn-copy, body.dark-mode .btn-action { color: #666; }
-                            body.dark-mode .btn-copy:hover, body.dark-mode .btn-action:hover { color: #4da3ff; background: #333; }
+                            
+                            body.dark-mode .link-card { background: #252525; border-color: #333; }
+                            body.dark-mode .link-card-header { background: #2c2c2c; border-bottom-color: #333; color: #ddd; }
+                            body.dark-mode .link-card-footer { background: #2c2c2c; border-top-color: #333; }
+                            body.dark-mode .link-url-text.dest { color: #4da3ff; }
+                            body.dark-mode .btn-action { color: #aaa; }
+                            body.dark-mode .btn-action:hover { background: #333; color: #fff; }
                         </style>
                     </head>
                     <body>
@@ -124,19 +135,19 @@
                             <!-- 1. METADATA (FIRST) -->
                             <div class="sidebar-section">
                                 <h3 data-i18n="meta_section"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Metadata</h3>
-                                <div class="meta-item"><span class="meta-label" data-i18n="label_sent">📅 Sent Date</span><span class="meta-val">20/11/2025</span></div>
-                                <div class="meta-item"><span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span><span class="meta-val">29/11/2025</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_sent">📅 Sent Date</span><span class="meta-val">20/11/2025 à 10:01</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span><span class="meta-val">29/11/2025 à 14:57</span></div>
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span><span class="meta-val">3 min</span></div>
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span><div class="preheader-box">En association avec Petits Frères des Pauvres 👴👵💓 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</div></div>
                             </div>
                             
                             <!-- 2. PIXELS (SECOND) -->
                             <div class="sidebar-section">
-                                <h3 data-i18n="pixel_section"><svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Tracking Pixels</h3>
+                                <h3 data-i18n="pixel_section"><svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Tracking Pixel(s)</h3>
                                 
                         <div class="meta-item">
                             <span class="meta-label" data-i18n="label_pixel_status">Summary</span>
-                            <span class="status-badge ok"><span class="icon-status"><svg viewBox="0 0 24 24" width="14" height="14" stroke="green" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span> <span data-i18n="pixel_active_msg">Active (Will be counted)</span> (1)</span>
+                            <span class="status-badge ok"><span class="icon-status"><svg viewBox="0 0 24 24" width="14" height="14" stroke="green" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span> <span data-i18n="pixel_active_msg">active(s) (Will be counted)</span> (1)</span>
                         </div>
                         <ul class="pixel-list">
                             
@@ -154,205 +165,245 @@
                             <div class="sidebar-section">
                                 <h3 data-i18n="links_section"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Detected Links (8)</h3>
                                 <ul>
-                        <li>
-                            <div class="link-row">
-                                <a href="https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" target="_blank" class="link-data">
-                                    <div class="link-txt">[Image/Vide]</div>
-                                    <div class="link-final" title="Final Destination">https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCGCZ__-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO74QKQbGlb6LHhdxbQsBw83Mhi3J7nv8XfYBw4jln-2Br6dtCQs8IkuCw26wMlL4R7elCo9ukZx2meLe2JHUHuQzqdB60fRkLalsP9uV-2BfBgVJDuJG9oXIHPzR7Br6sb-2BiRfxo8jb9utr0Eb9yeSq9VBnuCulsQt2k6eZtUKFsnxgXV9HTO547IlT0TVQlHawcJQ-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCGCZ__-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO74QKQbGlb6LHhdxbQsBw83Mhi3J7nv8XfYBw4jln-2Br6dtCQs8IkuCw26wMlL4R7elCo9ukZx2meLe2JHUHuQzqdB60fRkLalsP9uV-2BfBgVJDuJG9oXIHPzR7Br6sb-2BiRfxo8jb9utr0Eb9yeSq9VBnuCulsQt2k6eZtUKFsnxgXV9HTO547IlT0TVQlHawcJQ-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">[Image/Vide]</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCGCZ__-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO74QKQbGlb6LHhdxbQsBw83Mhi3J7nv8XfYBw4jln-2Br6dtCQs8IkuCw26wMlL4R7elCo9ukZx2meLe2JHUHuQzqdB60fRkLalsP9uV-2BfBgVJDuJG9oXIHPzR7Br6sb-2BiRfxo8jb9utr0Eb9yeSq9VBnuCulsQt2k6eZtUKFsnxgXV9HTO547IlT0TVQlHawcJQ-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCGCZ__-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO74QKQbGlb6LHhdxbQsBw83Mhi3J7nv8XfYBw4jln-2Br6dtCQs8IkuCw26wMlL4R7elCo9ukZx2meLe2JHUHuQzqdB60fRkLalsP9uV-2BfBgVJDuJG9oXIHPzR7Br6sb-2BiRfxo8jb9utr0Eb9yeSq9VBnuCulsQt2k6eZtUKFsnxgXV9HTO547IlT0TVQlHawcJQ-3D-3D
 ⬇
 https://atelier-loupiote.fr/?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-0')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-0')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" target="_blank" class="link-data">
-                                    <div class="link-txt">[Image/Vide]</div>
-                                    <div class="link-final" title="Final Destination">https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCus6e_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO1tJUuuwsep3Vxp8WmStxktyxGdJgN-2BGU7ifejIusXIC-2F4IxgZSWdNf-2F5MPn0KUlwbcVFzCnK8hBy3V1wd06Bpbu8Dyj04RIWBBpHmyoEbwwm-2BmUhrw3YONw2oBzAZPIcvUKR0SBOiAp3G2DoTfKdcdLPmZwgEBNKp4Tmjx0RFKNKTBMOSsgzBS5tYcZWf-2FOjQ-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCus6e_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO1tJUuuwsep3Vxp8WmStxktyxGdJgN-2BGU7ifejIusXIC-2F4IxgZSWdNf-2F5MPn0KUlwbcVFzCnK8hBy3V1wd06Bpbu8Dyj04RIWBBpHmyoEbwwm-2BmUhrw3YONw2oBzAZPIcvUKR0SBOiAp3G2DoTfKdcdLPmZwgEBNKp4Tmjx0RFKNKTBMOSsgzBS5tYcZWf-2FOjQ-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">[Image/Vide]</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCus6e_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO1tJUuuwsep3Vxp8WmStxktyxGdJgN-2BGU7ifejIusXIC-2F4IxgZSWdNf-2F5MPn0KUlwbcVFzCnK8hBy3V1wd06Bpbu8Dyj04RIWBBpHmyoEbwwm-2BmUhrw3YONw2oBzAZPIcvUKR0SBOiAp3G2DoTfKdcdLPmZwgEBNKp4Tmjx0RFKNKTBMOSsgzBS5tYcZWf-2FOjQ-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLrT3SkUhGHJXHm-2FnvzlhCdjKTGWNBYGXn0y0T3yLGcCPVHODaqxViw6-2F7TcKAOe9lCV3ijNBvucYAo74leTSArCPfhN0ZzO6uDHYLk-2Bf2k6iWQ-2BcdOb-2BFBaDJ8xGzXl9xdgDmsyo5dY3dgWnKj-2FtALG5YAtsvq8klfP6Jm2mCLPklSTpSHm6OmxW0wJo6qNsOMJodAmq9gditCgdw-2Fa5TiMYh7rKFdPQNQ18du6KIZjPk4qzuHF5HM2h244Y6C91UUOe22geAlRzJ-2Fr4v4hHmPKhqyLbAdaV3xEC5EJgnboNkguRpKmADLwC64fbKQMHspPbN7r5DMirV8ocwo9iSJPDNfWXY0LIYIV4DJ8yoLCus6e_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO1tJUuuwsep3Vxp8WmStxktyxGdJgN-2BGU7ifejIusXIC-2F4IxgZSWdNf-2F5MPn0KUlwbcVFzCnK8hBy3V1wd06Bpbu8Dyj04RIWBBpHmyoEbwwm-2BmUhrw3YONw2oBzAZPIcvUKR0SBOiAp3G2DoTfKdcdLPmZwgEBNKp4Tmjx0RFKNKTBMOSsgzBS5tYcZWf-2FOjQ-3D-3D
 ⬇
 https://atelier-loupiote.fr/?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-1')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-1')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://atelier-loupiote.fr/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term=&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM" target="_blank" class="link-data">
-                                    <div class="link-txt">[Image/Vide]</div>
-                                    <div class="link-final" title="Final Destination">https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDHwzG_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaOwbgDFfJPicB-2FhY7QbcamHecPsSRUIk-2FM-2Bn8lAyrwOTQeLKj3qktzuJTufTJEkAOEgHlTyqrpqUGrbKtswNSZ-2BVkp30l2d3posN0qf32JcTWsfeyxMg3IqHYzMjs-2Fsi5Wl-2FxJbBQhcQo-2BO8PxNvgdN2mDM-2BdLdRRH2MT943Aw-2BHZ2bLGu5ELwQCKOvAIG8YAKw-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDHwzG_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaOwbgDFfJPicB-2FhY7QbcamHecPsSRUIk-2FM-2Bn8lAyrwOTQeLKj3qktzuJTufTJEkAOEgHlTyqrpqUGrbKtswNSZ-2BVkp30l2d3posN0qf32JcTWsfeyxMg3IqHYzMjs-2Fsi5Wl-2FxJbBQhcQo-2BO8PxNvgdN2mDM-2BdLdRRH2MT943Aw-2BHZ2bLGu5ELwQCKOvAIG8YAKw-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">[Image/Vide]</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDHwzG_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaOwbgDFfJPicB-2FhY7QbcamHecPsSRUIk-2FM-2Bn8lAyrwOTQeLKj3qktzuJTufTJEkAOEgHlTyqrpqUGrbKtswNSZ-2BVkp30l2d3posN0qf32JcTWsfeyxMg3IqHYzMjs-2Fsi5Wl-2FxJbBQhcQo-2BO8PxNvgdN2mDM-2BdLdRRH2MT943Aw-2BHZ2bLGu5ELwQCKOvAIG8YAKw-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDHwzG_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaOwbgDFfJPicB-2FhY7QbcamHecPsSRUIk-2FM-2Bn8lAyrwOTQeLKj3qktzuJTufTJEkAOEgHlTyqrpqUGrbKtswNSZ-2BVkp30l2d3posN0qf32JcTWsfeyxMg3IqHYzMjs-2Fsi5Wl-2FxJbBQhcQo-2BO8PxNvgdN2mDM-2BdLdRRH2MT943Aw-2BHZ2bLGu5ELwQCKOvAIG8YAKw-3D-3D
 ⬇
 https://gtinsi.de/6917534bcc411?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P
 ⬇
 https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-LOUPIOTE&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once
 ⬇
 https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-LOUPIOTE&amp;utm_medium=CPM" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-2')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-2')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM" target="_blank" class="link-data">
-                                    <div class="link-txt">J'offre un colis</div>
-                                    <div class="link-final" title="Final Destination">https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtD9fEJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO7aACus2acM5OJJDtMrvNJh6ele7xeuRsUzr-2BjD27NRoAmTfoUiRfJBvbmCvnirrM7P62raDwdUdLmS-2B1z0MWQdcU-2FUG68-2F5IuXt6GwCPNyOWryn8TPJX854ctMyBGZpcTZRTL1ABYpOlDhZpse6vk0RjhB1m9V-2FGVBF7zaqgbAo7XvFjQD-2FJsRv06UhREVJUg-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtD9fEJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO7aACus2acM5OJJDtMrvNJh6ele7xeuRsUzr-2BjD27NRoAmTfoUiRfJBvbmCvnirrM7P62raDwdUdLmS-2B1z0MWQdcU-2FUG68-2F5IuXt6GwCPNyOWryn8TPJX854ctMyBGZpcTZRTL1ABYpOlDhZpse6vk0RjhB1m9V-2FGVBF7zaqgbAo7XvFjQD-2FJsRv06UhREVJUg-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">J'offre un colis</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtD9fEJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO7aACus2acM5OJJDtMrvNJh6ele7xeuRsUzr-2BjD27NRoAmTfoUiRfJBvbmCvnirrM7P62raDwdUdLmS-2B1z0MWQdcU-2FUG68-2F5IuXt6GwCPNyOWryn8TPJX854ctMyBGZpcTZRTL1ABYpOlDhZpse6vk0RjhB1m9V-2FGVBF7zaqgbAo7XvFjQD-2FJsRv06UhREVJUg-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtD9fEJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO7aACus2acM5OJJDtMrvNJh6ele7xeuRsUzr-2BjD27NRoAmTfoUiRfJBvbmCvnirrM7P62raDwdUdLmS-2B1z0MWQdcU-2FUG68-2F5IuXt6GwCPNyOWryn8TPJX854ctMyBGZpcTZRTL1ABYpOlDhZpse6vk0RjhB1m9V-2FGVBF7zaqgbAo7XvFjQD-2FJsRv06UhREVJUg-3D-3D
 ⬇
 https://gtinsi.de/6917534bcc411?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P
 ⬇
 https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-LOUPIOTE&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once
 ⬇
 https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-LOUPIOTE&amp;utm_medium=CPM" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-3')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-3')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM" target="_blank" class="link-data">
-                                    <div class="link-txt">Je fais un don</div>
-                                    <div class="link-final" title="Final Destination">https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDrt7S_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO5SJ6NfE4TA9gQN1XwAgz7DJB-2Fl4Gzj16dYznm9iTp9Dh8GQ0-2FSRqdy70lMyH2oaNjZSkYcz-2FgAq7DDNImxhoaDLsEP85W1-2Bdb81Oe4xq25w4gPfLoo-2BFdnTCDdd0TvtppbgBiCoyqv5lQVDEd4S0udLz3DnjHF8aeClHU97RtW2CcinSYyFX-2F-2B5jDd268y3Dg-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDrt7S_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO5SJ6NfE4TA9gQN1XwAgz7DJB-2Fl4Gzj16dYznm9iTp9Dh8GQ0-2FSRqdy70lMyH2oaNjZSkYcz-2FgAq7DDNImxhoaDLsEP85W1-2Bdb81Oe4xq25w4gPfLoo-2BFdnTCDdd0TvtppbgBiCoyqv5lQVDEd4S0udLz3DnjHF8aeClHU97RtW2CcinSYyFX-2F-2B5jDd268y3Dg-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">Je fais un don</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDrt7S_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO5SJ6NfE4TA9gQN1XwAgz7DJB-2Fl4Gzj16dYznm9iTp9Dh8GQ0-2FSRqdy70lMyH2oaNjZSkYcz-2FgAq7DDNImxhoaDLsEP85W1-2Bdb81Oe4xq25w4gPfLoo-2BFdnTCDdd0TvtppbgBiCoyqv5lQVDEd4S0udLz3DnjHF8aeClHU97RtW2CcinSYyFX-2F-2B5jDd268y3Dg-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpLGaboMPEIhAvZLCWmC0sELb7RFNLyPeHZbFANLK208aLCrVs6ySby-2FJlZdWBswQ4V3q-2BxXhY8meV8sFMAKU7D-2Fz5Lm3IFMaly6YEwz8qejJi0chuF-2FUTFei3LjK1TutkFdA4B7E9TUMr6MRwjvXj8AFllov4k8etOA2aBwfv3HT2sbiKswrllhB7SqPX7b-2FboT-2Bj3yo1JSYJNhOAqaKWZGv2iborx3tqbVv8bB4oC2obUco2aJmVl-2Big5EAusRro3wYxEzKPGnYjNMaxlWCf18B1jY8kZFwrBvc5aOVOEfhNuDOS3lngkufGGg6DxkSIixfeRpitAOD2ASjFSzDSaQNp-2F9r-2BL11wyK3tF9BcTtDrt7S_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO5SJ6NfE4TA9gQN1XwAgz7DJB-2Fl4Gzj16dYznm9iTp9Dh8GQ0-2FSRqdy70lMyH2oaNjZSkYcz-2FgAq7DDNImxhoaDLsEP85W1-2Bdb81Oe4xq25w4gPfLoo-2BFdnTCDdd0TvtppbgBiCoyqv5lQVDEd4S0udLz3DnjHF8aeClHU97RtW2CcinSYyFX-2F-2B5jDd268y3Dg-3D-3D
 ⬇
 https://gtinsi.de/6917534bcc411?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P
 ⬇
 https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-LOUPIOTE&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once
 ⬇
 https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-LOUPIOTE&amp;utm_medium=CPM" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-4')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-4')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-LOUPIOTE&utm_medium=CPM')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.instagram.com/p/DRNF2tIDRBO/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" target="_blank" class="link-data">
-                                    <div class="link-txt">[Image/Vide]</div>
-                                    <div class="link-final" title="Final Destination">https://www.instagram.com/p/DRNF2tIDRBO/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAbagGbT-2BT3CN2zjjk-2FQHKvwq9nm9P-2BiDBFU8XwX1ZZV83Ie4XJ3b68FtrnWsnEvbFcSMOcGXTyuZK4UXUXeeEr1Ucv6ktP1qSP8W-2F1kwnN5ftBtd3WcTmqSSNBzZHLK1ckNJJZIynAqXRIttBmFj0P0aVAjwLx5a55MpFe9vMPJ5uXYuS5C-2B-2FKKwHqj3HK86yDqma33KkglOuYzAOiuBp-2FbWsqT6tJwbpFaZQPK7zNl8btS15ZF85NChekZinlxPQnbvhdfFg-2Bqq-2FVC6awpcoD-2Bnw48iIuB3YwbutbYhn-2FxxAdrNw-2BTWO0z4j2U4vb-2FOayV93WA2CJixxbfqOHzOLHtRX_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO71pWpofTLa9voKVZMqWqHDnpciAU8gvrq3-2BJvHs9csg4XV5-2BgN8cXLPQcGAubY0Z0OXo8eDNRMTo-2FaFHzPu9stvs2MFhAuLELy0qMlO5dZqO5VFLQd06PdR1GpvcgpDnOo-2BBniap4zllYKsvLgodQN4kKCPt-2FpQsHLh2k-2F3EgCJPy-2FWLjR7l1eW2HQEy2fKGA-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAbagGbT-2BT3CN2zjjk-2FQHKvwq9nm9P-2BiDBFU8XwX1ZZV83Ie4XJ3b68FtrnWsnEvbFcSMOcGXTyuZK4UXUXeeEr1Ucv6ktP1qSP8W-2F1kwnN5ftBtd3WcTmqSSNBzZHLK1ckNJJZIynAqXRIttBmFj0P0aVAjwLx5a55MpFe9vMPJ5uXYuS5C-2B-2FKKwHqj3HK86yDqma33KkglOuYzAOiuBp-2FbWsqT6tJwbpFaZQPK7zNl8btS15ZF85NChekZinlxPQnbvhdfFg-2Bqq-2FVC6awpcoD-2Bnw48iIuB3YwbutbYhn-2FxxAdrNw-2BTWO0z4j2U4vb-2FOayV93WA2CJixxbfqOHzOLHtRX_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO71pWpofTLa9voKVZMqWqHDnpciAU8gvrq3-2BJvHs9csg4XV5-2BgN8cXLPQcGAubY0Z0OXo8eDNRMTo-2FaFHzPu9stvs2MFhAuLELy0qMlO5dZqO5VFLQd06PdR1GpvcgpDnOo-2BBniap4zllYKsvLgodQN4kKCPt-2FpQsHLh2k-2F3EgCJPy-2FWLjR7l1eW2HQEy2fKGA-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">[Image/Vide]</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAbagGbT-2BT3CN2zjjk-2FQHKvwq9nm9P-2BiDBFU8XwX1ZZV83Ie4XJ3b68FtrnWsnEvbFcSMOcGXTyuZK4UXUXeeEr1Ucv6ktP1qSP8W-2F1kwnN5ftBtd3WcTmqSSNBzZHLK1ckNJJZIynAqXRIttBmFj0P0aVAjwLx5a55MpFe9vMPJ5uXYuS5C-2B-2FKKwHqj3HK86yDqma33KkglOuYzAOiuBp-2FbWsqT6tJwbpFaZQPK7zNl8btS15ZF85NChekZinlxPQnbvhdfFg-2Bqq-2FVC6awpcoD-2Bnw48iIuB3YwbutbYhn-2FxxAdrNw-2BTWO0z4j2U4vb-2FOayV93WA2CJixxbfqOHzOLHtRX_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO71pWpofTLa9voKVZMqWqHDnpciAU8gvrq3-2BJvHs9csg4XV5-2BgN8cXLPQcGAubY0Z0OXo8eDNRMTo-2FaFHzPu9stvs2MFhAuLELy0qMlO5dZqO5VFLQd06PdR1GpvcgpDnOo-2BBniap4zllYKsvLgodQN4kKCPt-2FpQsHLh2k-2F3EgCJPy-2FWLjR7l1eW2HQEy2fKGA-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.instagram.com/p/DRNF2tIDRBO/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAbagGbT-2BT3CN2zjjk-2FQHKvwq9nm9P-2BiDBFU8XwX1ZZV83Ie4XJ3b68FtrnWsnEvbFcSMOcGXTyuZK4UXUXeeEr1Ucv6ktP1qSP8W-2F1kwnN5ftBtd3WcTmqSSNBzZHLK1ckNJJZIynAqXRIttBmFj0P0aVAjwLx5a55MpFe9vMPJ5uXYuS5C-2B-2FKKwHqj3HK86yDqma33KkglOuYzAOiuBp-2FbWsqT6tJwbpFaZQPK7zNl8btS15ZF85NChekZinlxPQnbvhdfFg-2Bqq-2FVC6awpcoD-2Bnw48iIuB3YwbutbYhn-2FxxAdrNw-2BTWO0z4j2U4vb-2FOayV93WA2CJixxbfqOHzOLHtRX_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO71pWpofTLa9voKVZMqWqHDnpciAU8gvrq3-2BJvHs9csg4XV5-2BgN8cXLPQcGAubY0Z0OXo8eDNRMTo-2FaFHzPu9stvs2MFhAuLELy0qMlO5dZqO5VFLQd06PdR1GpvcgpDnOo-2BBniap4zllYKsvLgodQN4kKCPt-2FpQsHLh2k-2F3EgCJPy-2FWLjR7l1eW2HQEy2fKGA-3D-3D
 ⬇
 https://www.instagram.com/p/DRNF2tIDRBO?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P
 ⬇
 https://www.instagram.com/p/DRNF2tIDRBO/?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-5')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.instagram.com/p/DRNF2tIDRBO/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-5')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.instagram.com/p/DRNF2tIDRBO/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.instagram.com/p/DRHDq3Hj0Bz/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" target="_blank" class="link-data">
-                                    <div class="link-txt">[Image/Vide]</div>
-                                    <div class="link-final" title="Final Destination">https://www.instagram.com/p/DRHDq3Hj0Bz/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAyAKe-2FwAWo9w39m6K-2FnsszmxmwqJRQuJJLe4i9gQXM2WEbUCAIGx1Etd0b26OKMFojd1muw656vKptWzAPMX-2BCG6yJxDfwzecc8gp5EizeVSupRrFyGGnO8sHdNCYc9Ac0AWZLUeVHP-2FJE9LFndU-2FibsYoQf-2FHd9TrNLXE71Gwz-2FN0om5zgrNI0FTQGyEfyAKo5zevkLXJAP5K1i5DB0c8NHZxtpXPnY2u9O83neKxhiPDbOSEMfAYOvqOyrPS-2F435r6cGT1K0jFIVgxiZAdnDzTlKzF3rbMYUrrA5Fpf-2FwN6LvERcsO8eM6NO2WqKAAeeyxfBEtRbXU76vATqFfMJiHJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4hvNVH32H1-2FauR-2BngD02FpZ0NYtIc7xeMLaUrSIjE-2BjPhxE2Eq4kkekfv8CE2YoS0v5qIRPkn7oCwD5T-2BzFZkI-2BFqQ5onac2i0q7Dx2w9Aa-2FKQrvEzGlcy3FButIndxodmsYOt-2FqMKUzsan3RUAGvOJRFDoLiyISx-2BMPnOswr7L1DEr4m-2FynP5SC-2F501eXcKQ-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAyAKe-2FwAWo9w39m6K-2FnsszmxmwqJRQuJJLe4i9gQXM2WEbUCAIGx1Etd0b26OKMFojd1muw656vKptWzAPMX-2BCG6yJxDfwzecc8gp5EizeVSupRrFyGGnO8sHdNCYc9Ac0AWZLUeVHP-2FJE9LFndU-2FibsYoQf-2FHd9TrNLXE71Gwz-2FN0om5zgrNI0FTQGyEfyAKo5zevkLXJAP5K1i5DB0c8NHZxtpXPnY2u9O83neKxhiPDbOSEMfAYOvqOyrPS-2F435r6cGT1K0jFIVgxiZAdnDzTlKzF3rbMYUrrA5Fpf-2FwN6LvERcsO8eM6NO2WqKAAeeyxfBEtRbXU76vATqFfMJiHJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4hvNVH32H1-2FauR-2BngD02FpZ0NYtIc7xeMLaUrSIjE-2BjPhxE2Eq4kkekfv8CE2YoS0v5qIRPkn7oCwD5T-2BzFZkI-2BFqQ5onac2i0q7Dx2w9Aa-2FKQrvEzGlcy3FButIndxodmsYOt-2FqMKUzsan3RUAGvOJRFDoLiyISx-2BMPnOswr7L1DEr4m-2FynP5SC-2F501eXcKQ-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">[Image/Vide]</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAyAKe-2FwAWo9w39m6K-2FnsszmxmwqJRQuJJLe4i9gQXM2WEbUCAIGx1Etd0b26OKMFojd1muw656vKptWzAPMX-2BCG6yJxDfwzecc8gp5EizeVSupRrFyGGnO8sHdNCYc9Ac0AWZLUeVHP-2FJE9LFndU-2FibsYoQf-2FHd9TrNLXE71Gwz-2FN0om5zgrNI0FTQGyEfyAKo5zevkLXJAP5K1i5DB0c8NHZxtpXPnY2u9O83neKxhiPDbOSEMfAYOvqOyrPS-2F435r6cGT1K0jFIVgxiZAdnDzTlKzF3rbMYUrrA5Fpf-2FwN6LvERcsO8eM6NO2WqKAAeeyxfBEtRbXU76vATqFfMJiHJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4hvNVH32H1-2FauR-2BngD02FpZ0NYtIc7xeMLaUrSIjE-2BjPhxE2Eq4kkekfv8CE2YoS0v5qIRPkn7oCwD5T-2BzFZkI-2BFqQ5onac2i0q7Dx2w9Aa-2FKQrvEzGlcy3FButIndxodmsYOt-2FqMKUzsan3RUAGvOJRFDoLiyISx-2BMPnOswr7L1DEr4m-2FynP5SC-2F501eXcKQ-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.instagram.com/p/DRHDq3Hj0Bz/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.l45y8L4AWh1xQGPHRlhBpKbOpNnjErDt3X3ST1qb3tMAyAKe-2FwAWo9w39m6K-2FnsszmxmwqJRQuJJLe4i9gQXM2WEbUCAIGx1Etd0b26OKMFojd1muw656vKptWzAPMX-2BCG6yJxDfwzecc8gp5EizeVSupRrFyGGnO8sHdNCYc9Ac0AWZLUeVHP-2FJE9LFndU-2FibsYoQf-2FHd9TrNLXE71Gwz-2FN0om5zgrNI0FTQGyEfyAKo5zevkLXJAP5K1i5DB0c8NHZxtpXPnY2u9O83neKxhiPDbOSEMfAYOvqOyrPS-2F435r6cGT1K0jFIVgxiZAdnDzTlKzF3rbMYUrrA5Fpf-2FwN6LvERcsO8eM6NO2WqKAAeeyxfBEtRbXU76vATqFfMJiHJ_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4hvNVH32H1-2FauR-2BngD02FpZ0NYtIc7xeMLaUrSIjE-2BjPhxE2Eq4kkekfv8CE2YoS0v5qIRPkn7oCwD5T-2BzFZkI-2BFqQ5onac2i0q7Dx2w9Aa-2FKQrvEzGlcy3FButIndxodmsYOt-2FqMKUzsan3RUAGvOJRFDoLiyISx-2BMPnOswr7L1DEr4m-2FynP5SC-2F501eXcKQ-3D-3D
 ⬇
 https://www.instagram.com/p/DRHDq3Hj0Bz?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit%20Fr%C3%A8re%20des%20Pauvres%20-%20Getinside%20-%2020251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term=&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P
 ⬇
 https://www.instagram.com/p/DRHDq3Hj0Bz/?utm_source=Klaviyo&amp;utm_medium=email&amp;utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&amp;utm_id=01KABXCGH9H33HV5WP3V0GY0T9&amp;utm_term&amp;_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-6')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.instagram.com/p/DRHDq3Hj0Bz/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-6')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.instagram.com/p/DRHDq3Hj0Bz/?utm_source=Klaviyo&utm_medium=email&utm_campaign=Petit+Fr%C3%A8re+des+Pauvres+-+Getinside+-+20251209&utm_id=01KABXCGH9H33HV5WP3V0GY0T9&utm_term&_kx=r-LaIjEDTRmPfbFgRXCJFzc0hBtCMtsOXOreW8ea7prV95asLYm0NuVyjquYhKGA.VaWA4P')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://manage.kmail-lists.com/subscriptions/placeholder" target="_blank" class="link-data">
-                                    <div class="link-txt">ici</div>
-                                    <div class="link-final" title="Final Destination">https://manage.kmail-lists.com/subscriptions/placeholder</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://trk.klclick1.com/ls/click?upn=u001.iC-2FbQgSONq6bIrsnkT5qyyDK7C1n-2B472r9xnnS2A2XMKZiETUaDafhvsLAKEwTZJ8j2-2BHrFZDCsbzgEtTUh8DNIGHhalwDutWq7rRZlRIEk-3DlbVw_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4xy5rWsUmZd532gLkej0PCZzCAjt4xgVaFlKK-2BzsJwoPpSIMpYtNjXh-2F95OoHyGcrThhgEZceq4nxIgYzYaL3V2cT5zOsIkmNxzeKAf9u82GOSm4-2F7uoDFH6NsNlewx7x5tTsC4m1MwsU5cvhW9GdW8k0aLx4OHvYRXV-2B-2FIxf6bzR9twC6uTcbeLd-2B1UeGoWA-3D-3D</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.iC-2FbQgSONq6bIrsnkT5qyyDK7C1n-2B472r9xnnS2A2XMKZiETUaDafhvsLAKEwTZJ8j2-2BHrFZDCsbzgEtTUh8DNIGHhalwDutWq7rRZlRIEk-3DlbVw_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4xy5rWsUmZd532gLkej0PCZzCAjt4xgVaFlKK-2BzsJwoPpSIMpYtNjXh-2F95OoHyGcrThhgEZceq4nxIgYzYaL3V2cT5zOsIkmNxzeKAf9u82GOSm4-2F7uoDFH6NsNlewx7x5tTsC4m1MwsU5cvhW9GdW8k0aLx4OHvYRXV-2B-2FIxf6bzR9twC6uTcbeLd-2B1UeGoWA-3D-3D
+                        <li class="link-card">
+                            <div class="link-card-header">ici</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://trk.klclick1.com/ls/click?upn=u001.iC-2FbQgSONq6bIrsnkT5qyyDK7C1n-2B472r9xnnS2A2XMKZiETUaDafhvsLAKEwTZJ8j2-2BHrFZDCsbzgEtTUh8DNIGHhalwDutWq7rRZlRIEk-3DlbVw_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4xy5rWsUmZd532gLkej0PCZzCAjt4xgVaFlKK-2BzsJwoPpSIMpYtNjXh-2F95OoHyGcrThhgEZceq4nxIgYzYaL3V2cT5zOsIkmNxzeKAf9u82GOSm4-2F7uoDFH6NsNlewx7x5tTsC4m1MwsU5cvhW9GdW8k0aLx4OHvYRXV-2B-2FIxf6bzR9twC6uTcbeLd-2B1UeGoWA-3D-3D</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://manage.kmail-lists.com/subscriptions/placeholder</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://trk.klclick1.com/ls/click?upn=u001.iC-2FbQgSONq6bIrsnkT5qyyDK7C1n-2B472r9xnnS2A2XMKZiETUaDafhvsLAKEwTZJ8j2-2BHrFZDCsbzgEtTUh8DNIGHhalwDutWq7rRZlRIEk-3DlbVw_-2BluoFPcwczFWoyEUYjmCrpIOu-2BBafXBTec4gsCAqhbjg1Xm4wIHzrQEQRyAKHbYt8BeA6UrIGSurG3rANy1WltPsCtXpzDROzYxqiTlD5Il9uI4v-2B8rADuiZ8gXdGa-2BYP-2BAv8fUMGNrIO6LFYxmmiQ56FiEW4kq33BsJlKM1E5-2B0Bu5I9LoxduoTWNYPb8TIV-2FHvdL-2F1vQJUl7JCLa4BWKfqgmObonXdCRpPfVbjoSsQXP2Lt83Ol7HDP4sH-2BEYXwQOFEjvz-2FBsgVZTt1O1XNMamYaDMgOt9HFPyfu3Ft4UkQOq4scDBlRig3p7U6NBU38AXpMPZ5iQWB6f1mo0pfHpWIjPY15vsi-2FfrAvZtEd5e93OdhHUVhDBu5iER8xxSmKwWWYlGnntyZI2ilSUaO4xy5rWsUmZd532gLkej0PCZzCAjt4xgVaFlKK-2BzsJwoPpSIMpYtNjXh-2F95OoHyGcrThhgEZceq4nxIgYzYaL3V2cT5zOsIkmNxzeKAf9u82GOSm4-2F7uoDFH6NsNlewx7x5tTsC4m1MwsU5cvhW9GdW8k0aLx4OHvYRXV-2B-2FIxf6bzR9twC6uTcbeLd-2B1UeGoWA-3D-3D
 ⬇
 http://manage.kmail-lists.com/subscriptions/placeholder
 ⬇
 https://manage.kmail-lists.com/subscriptions/placeholder" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-7')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://manage.kmail-lists.com/subscriptions/placeholder')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-7')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://manage.kmail-lists.com/subscriptions/placeholder')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         </ul>
@@ -360,7 +411,7 @@ https://manage.kmail-lists.com/subscriptions/placeholder" title="Show Redirect P
                         </div>
                         <script>
                             
-const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixels", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "Active (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixels de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "Actif (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel(s)", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "active(s) (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel(s) de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "actif(s) (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
 let currentLang = localStorage.getItem('lang') || 'en';
 
 function updateLanguage(lang) {
@@ -430,7 +481,6 @@ updateLanguage(currentLang);
                                 body.highlight-links a { border: 2px solid red !important; background-color: yellow !important; color: black !important; position: relative; z-index: 9999; box-shadow: 0 0 5px rgba(255,0,0,0.5); animation: flash 1s infinite alternate; display: inline-block; }
                                 body.highlight-links a img { outline: 4px solid #ff0000 !important; outline-offset: -2px; opacity: 0.8; filter: grayscale(50%); }
                                 
-                                /* --- MODIF : ANIMATION PUISSANTE --- */
                                 @keyframes target-pulse { 
                                     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
                                     50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 0, 0, 0); }

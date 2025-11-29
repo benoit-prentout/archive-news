@@ -32,21 +32,25 @@
             #searchInput { width: 100%; padding: 12px 20px; margin-bottom: 25px; box-sizing: border-box; border: 2px solid var(--border-color); border-radius: 8px; font-size: 16px; background-color: var(--input-bg); color: var(--text-main); transition: border-color 0.3s; }
             #searchInput:focus { border-color: var(--accent-color); outline: none; }
             
-            ul { list-style: none; padding: 0; margin: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
-            li { border-bottom: 1px solid var(--border-color); margin: 0; }
-            li:last-child { border-bottom: none; }
+            ul { list-style: none; padding: 0; margin: 0; overflow: hidden; }
+            /* MODIF: Card Style for Index Items */
+            li.news-item { 
+                border: 1px solid var(--border-color); margin-bottom: 12px; border-radius: 8px; background: var(--bg-card);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            li.news-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); border-color: var(--accent-color); }
             
-            a.item-link { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-card); text-decoration: none; color: var(--text-main); transition: background 0.1s ease; }
-            a.item-link:hover { background-color: var(--hover-bg); }
+            a.item-link { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; text-decoration: none; color: var(--text-main); }
             
             .info-col { display: flex; flex-direction: column; flex: 1; min-width: 0; margin-right: 15px; }
-            .sender { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
-            .title { font-weight: 500; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }
-            .preheader-preview { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+            /* MODIF: Lowercase sender + fonts */
+            .sender { font-size: 0.8rem; text-transform: lowercase; color: var(--text-muted); margin-bottom: 6px; }
+            .title { font-weight: 600; font-size: 1.05rem; color: var(--text-main); margin-bottom: 6px; }
+            .preheader-preview { font-size: 0.85rem; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
             
             .date-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; margin-left: 10px; }
-            .date { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-            .date-arch { font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 3px; }
+            .date { font-size: 0.8rem; color: var(--text-main); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+            .date-arch { font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 4px; }
             
             .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 25px; flex-wrap: wrap; }
             .page-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
@@ -80,35 +84,6 @@
             <ul id="newsList">
                 
         <li class="news-item">
-            <a href="6cb8df889936/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">PeintureVoiture.fr</span>
-                    <span class="title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</span>
-                    <span class="preheader-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble,
- ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="e4303f6835dc/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">MonJardinBio.com</span>
-                    <span class="title">[TEST] Offrez un colis deNoël pour un aîné isolé et illuminez sonréveillon !</span>
-                    <span class="preheader-preview">Chère Madame, Cher Monsieur, Aujourd’hui en France, plus de 2 millions de personnes âgées sont isolées au quotidien , pire encore, 750 000 ne voient jamais pers...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
             <a href="ac4cc86c704f/index.html" class="item-link">
                 <div class="info-col">
                     <span class="sender">MonJardinBio.com</span>
@@ -116,8 +91,8 @@
                     <span class="preheader-preview">un geste solidaire qui compte pour nous 🙏 ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 17:40</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:56</span>
                 </div>
             </a>
         </li>
@@ -130,8 +105,22 @@
                     <span class="preheader-preview">On profite de la vente archive Drôle de Monsieur, on savoure un cocktail chez Super Fine puis on danse à la Fête du Cornichon avant de visiter la Maisonde Victo...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 14:09</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:59</span>
+                </div>
+            </a>
+        </li>
+        
+        <li class="news-item">
+            <a href="e4303f6835dc/index.html" class="item-link">
+                <div class="info-col">
+                    <span class="sender">MonJardinBio.com</span>
+                    <span class="title">[TEST] Offrez un colis deNoël pour un aîné isolé et illuminez sonréveillon !</span>
+                    <span class="preheader-preview">Chère Madame, Cher Monsieur, Aujourd’hui en France, plus de 2 millions de personnes âgées sont isolées au quotidien , pire encore, 750 000 ne voient jamais pers...</span>
+                </div>
+                <div class="date-col">
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 10:17</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:55</span>
                 </div>
             </a>
         </li>
@@ -144,8 +133,23 @@
                     <span class="preheader-preview">Ultra Premium Direct | Les croquettes de Noël 🐶 -25%* avec le code REDOUTE25 -25%* avec le code REDOUTE25 ! Faites vivre un Noël gourmand à votre animal avec Ul...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 08:37</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:55</span>
+                </div>
+            </a>
+        </li>
+        
+        <li class="news-item">
+            <a href="6cb8df889936/index.html" class="item-link">
+                <div class="info-col">
+                    <span class="sender">PeintureVoiture.fr</span>
+                    <span class="title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</span>
+                    <span class="preheader-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble,
+ ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
+                </div>
+                <div class="date-col">
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 08:36</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:59</span>
                 </div>
             </a>
         </li>
@@ -158,22 +162,8 @@
                     <span class="preheader-preview">Téléchargez l’app Wash, rechargez votre compte et faites des économies ! Version en ligne ‌ EN EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS * sur l’appl...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 27/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="fb1b5ee2d9fd/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Avec Babilou, trouvez votre place en crèche pour la rentrée !</span>
-                    <span class="preheader-preview">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l'aide de votre employeur ! Je réserve ma place Vous ...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 27/11/2025 à 03:53</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:57</span>
                 </div>
             </a>
         </li>
@@ -186,36 +176,22 @@
                     <span class="preheader-preview">Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025 à 13:22</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:56</span>
                 </div>
             </a>
         </li>
         
         <li class="news-item">
-            <a href="fb0907efa715/index.html" class="item-link">
+            <a href="fb1b5ee2d9fd/index.html" class="item-link">
                 <div class="info-col">
                     <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">On a un cadeau pour votre chat 🐱</span>
-                    <span class="preheader-preview">Promis, on peut tout vous expliquer ! ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
+                    <span class="title">Avec Babilou, trouvez votre place en crèche pour la rentrée !</span>
+                    <span class="preheader-preview">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l'aide de votre employeur ! Je réserve ma place Vous ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
-                </div>
-            </a>
-        </li>
-        
-        <li class="news-item">
-            <a href="2efc3f2b022e/index.html" class="item-link">
-                <div class="info-col">
-                    <span class="sender">benoit@getinside.fr</span>
-                    <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
-                    <span class="preheader-preview">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</span>
-                </div>
-                <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025 à 13:20</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:58</span>
                 </div>
             </a>
         </li>
@@ -228,8 +204,36 @@
                     <span class="preheader-preview">Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025 à 05:48</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:57</span>
+                </div>
+            </a>
+        </li>
+        
+        <li class="news-item">
+            <a href="2efc3f2b022e/index.html" class="item-link">
+                <div class="info-col">
+                    <span class="sender">benoit@getinside.fr</span>
+                    <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
+                    <span class="preheader-preview">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</span>
+                </div>
+                <div class="date-col">
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025 à 05:24</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:57</span>
+                </div>
+            </a>
+        </li>
+        
+        <li class="news-item">
+            <a href="fb0907efa715/index.html" class="item-link">
+                <div class="info-col">
+                    <span class="sender">benoit@getinside.fr</span>
+                    <span class="title">On a un cadeau pour votre chat 🐱</span>
+                    <span class="preheader-preview">Promis, on peut tout vous expliquer ! ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
+                </div>
+                <div class="date-col">
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025 à 05:21</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:57</span>
                 </div>
             </a>
         </li>
@@ -242,8 +246,8 @@
                     <span class="preheader-preview">En association avec Petits Frères des Pauvres 👴👵💓 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 20/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 20/11/2025 à 10:01</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:57</span>
                 </div>
             </a>
         </li>
@@ -256,8 +260,8 @@
                     <span class="preheader-preview">Besoin d'un mode de garde pour bébé ? Découvrez Babilou, notre coup de cœur pour accompagner les familles au quotidien.‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌   ­‌...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 17/11/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 17/11/2025 à 18:10</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:57</span>
                 </div>
             </a>
         </li>
@@ -270,8 +274,8 @@
                     <span class="preheader-preview">On a une offre (-20%!!!) Maison Lemahieu pour vous 🤗 ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏  ͏ ...</span>
                 </div>
                 <div class="date-col">
-                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 19/09/2025</span>
-                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025</span>
+                    <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 19/09/2025 à 14:23</span>
+                    <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 29/11/2025 à 14:58</span>
                 </div>
             </a>
         </li>
@@ -292,7 +296,7 @@
         </div>
         <script>
         
-const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixels", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "Active (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixels de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "Actif (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel(s)", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "active(s) (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel(s) de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "actif(s) (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
 let currentLang = localStorage.getItem('lang') || 'en';
 
 function updateLanguage(lang) {

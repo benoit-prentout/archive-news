@@ -4,9 +4,9 @@
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <meta name="creation_date" content="2025-11-26">
+                        <meta name="creation_date" content="2025-11-26 13:20">
                         <meta name="sender" content="benoit@getinside.fr">
-                        <meta name="archiving_date" content="2025-11-29">
+                        <meta name="archiving_date" content="2025-11-29 14:58">
                         <meta name="preheader" content="vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l&#x27;aide de votre employeur ! Je réserve ma place Vous ...">
                         <meta name="reading_time" content="1 min">
                         <title>Avec Babilou, trouvez votre place en crèche pour la rentrée !</title>
@@ -24,7 +24,7 @@
                             iframe { width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }
                             body.mobile-mode .iframe-wrapper { width: 375px; height: 812px; max-height: 85vh; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
                             
-                            /* --- MODIF : SIDEBAR PLUS LARGE --- */
+                            /* --- SIDEBAR --- */
                             .sidebar { position: fixed; top: 60px; right: -420px; width: 420px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
                             .sidebar.open { right: 0; }
                             
@@ -33,43 +33,51 @@
                             .meta-label { font-weight: 600; display: block; margin-bottom: 3px; color: #333; }
                             .meta-val { word-break: break-word; line-height: 1.4; }
                             .preheader-box { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }
+                            
                             .status-badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
                             .status-badge.ok { color: green; }
                             .status-badge.warn { color: orange; }
+                            
+                            /* Pixel List Style */
                             .pixel-list { list-style: none; padding: 0; margin: 0; background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 4px; }
                             .pixel-li { padding: 8px; border-bottom: 1px solid #c3e6cb; }
                             .pixel-li:last-child { border-bottom: none; }
                             .pixel-row { display: flex; align-items: center; gap: 6px; color: #155724; font-size: 11px; }
                             .pixel-url { word-break: break-all; font-family: monospace; }
-                            .btn-copy, .btn-action { border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }
-                            .btn-copy:hover, .btn-action:hover { color: #0070f3; background: #eee; }
                             
-                            /* Link Styles */
-                            .sidebar ul:not(.pixel-list) { list-style: none; padding: 0; margin: 0; }
-                            .sidebar li:not(.pixel-li) { margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
-                            .link-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-                            .link-data { text-decoration: none; color: inherit; font-size: 12px; flex: 1; min-width: 0; }
-                            .link-txt { font-weight: bold; color: #0070f3; margin-bottom: 2px; }
-                            .link-final { color: #222; font-weight: 600; word-break: break-all; font-size: 11px; margin-bottom: 2px; }
-                            .link-orig { color: #999; word-break: break-all; font-family: monospace; font-size: 10px; }
-                            .link-actions { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
-
+                            /* --- NEW LINK CARD DESIGN --- */
+                            .sidebar ul { list-style: none; padding: 0; margin: 0; }
+                            .link-card {
+                                border: 1px solid #eee; border-radius: 8px; background: #fff; margin-bottom: 12px;
+                                box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+                            }
+                            .link-card-header {
+                                padding: 8px 12px; background: #fcfcfc; border-bottom: 1px solid #f0f0f0;
+                                font-weight: 600; color: #333; font-size: 12px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+                            }
+                            .link-card-body { padding: 10px 12px; }
+                            .link-line { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+                            .link-line:last-child { margin-bottom: 0; }
+                            .link-icon-box { width: 16px; text-align: center; display: flex; justify-content: center; }
+                            .link-url-text { font-family: monospace; font-size: 11px; word-break: break-all; line-height: 1.3; }
+                            .link-url-text.orig { color: #888; }
+                            .link-url-text.dest { color: #0070f3; font-weight: 600; }
+                            .link-arrow-sep { padding-left: 20px; color: #ccc; font-size: 10px; margin: 2px 0; }
+                            
+                            .link-card-footer {
+                                padding: 6px 12px; background: #fafafa; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; justify-content: flex-end;
+                            }
+                            .btn-action {
+                                border: none; background: transparent; padding: 4px 8px; cursor: pointer; color: #666;
+                                display: flex; align-items: center; gap: 4px; font-size: 11px; border-radius: 4px;
+                            }
+                            .btn-action:hover { background: #eaeaea; color: #0070f3; }
+                            
                             /* Global Tooltip Fixed */
                             .global-tooltip {
-                                position: fixed;
-                                background: #333;
-                                color: white;
-                                padding: 10px;
-                                border-radius: 6px;
-                                z-index: 10000;
-                                max-width: 300px;
-                                font-size: 11px;
-                                pointer-events: none;
-                                display: none;
-                                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-                                white-space: pre-wrap; /* Preserve newlines */
-                                word-break: break-all;
-                                line-height: 1.4;
+                                position: fixed; background: #333; color: white; padding: 10px; border-radius: 6px;
+                                z-index: 10000; max-width: 300px; font-size: 11px; pointer-events: none; display: none;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; line-height: 1.4;
                             }
                             .global-tooltip.visible { display: block; }
 
@@ -84,14 +92,17 @@
                             body.dark-mode .meta-label { color: #ccc; }
                             body.dark-mode .meta-item { color: #aaa; }
                             body.dark-mode .preheader-box { background: #252525; border-color: #333; color: #aaa; }
+                            
                             body.dark-mode .pixel-list { background: #1e2e1e; border-color: #2b4c2b; }
                             body.dark-mode .pixel-li { border-bottom-color: #2b4c2b; }
                             body.dark-mode .pixel-row { color: #90cea1; }
-                            body.dark-mode .link-txt { color: #4da3ff; }
-                            body.dark-mode .link-final { color: #ccc; }
-                            body.dark-mode .link-orig { color: #666; }
-                            body.dark-mode .btn-copy, body.dark-mode .btn-action { color: #666; }
-                            body.dark-mode .btn-copy:hover, body.dark-mode .btn-action:hover { color: #4da3ff; background: #333; }
+                            
+                            body.dark-mode .link-card { background: #252525; border-color: #333; }
+                            body.dark-mode .link-card-header { background: #2c2c2c; border-bottom-color: #333; color: #ddd; }
+                            body.dark-mode .link-card-footer { background: #2c2c2c; border-top-color: #333; }
+                            body.dark-mode .link-url-text.dest { color: #4da3ff; }
+                            body.dark-mode .btn-action { color: #aaa; }
+                            body.dark-mode .btn-action:hover { background: #333; color: #fff; }
                         </style>
                     </head>
                     <body>
@@ -124,15 +135,15 @@
                             <!-- 1. METADATA (FIRST) -->
                             <div class="sidebar-section">
                                 <h3 data-i18n="meta_section"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Metadata</h3>
-                                <div class="meta-item"><span class="meta-label" data-i18n="label_sent">📅 Sent Date</span><span class="meta-val">26/11/2025</span></div>
-                                <div class="meta-item"><span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span><span class="meta-val">29/11/2025</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_sent">📅 Sent Date</span><span class="meta-val">26/11/2025 à 13:20</span></div>
+                                <div class="meta-item"><span class="meta-label" data-i18n="label_archived">🗄️ Archived Date</span><span class="meta-val">29/11/2025 à 14:58</span></div>
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_reading">⏱️ Reading Time</span><span class="meta-val">1 min</span></div>
                                 <div class="meta-item"><span class="meta-label" data-i18n="label_preheader">👀 Preheader (Preview)</span><div class="preheader-box">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l&#x27;aide de votre employeur ! Je réserve ma place Vous ...</div></div>
                             </div>
                             
                             <!-- 2. PIXELS (SECOND) -->
                             <div class="sidebar-section">
-                                <h3 data-i18n="pixel_section"><svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Tracking Pixels</h3>
+                                <h3 data-i18n="pixel_section"><svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Tracking Pixel(s)</h3>
                                 
                         <div class="meta-item">
                             <span class="status-badge warn"><span class="icon-status"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span> <span data-i18n="no_pixels">No trackers detected</span></span>
@@ -143,145 +154,175 @@
                             <div class="sidebar-section">
                                 <h3 data-i18n="links_section"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Detected Links (6)</h3>
                                 <ul>
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.bebeboutik-prive.fr/?utm_source=batch&utm_medium=email_trade&utm_campaign=2025-08-19" target="_blank" class="link-data">
-                                    <div class="link-txt">[Image/Vide]</div>
-                                    <div class="link-final" title="Final Destination">https://www.bebeboutik-prive.fr/?utm_source=batch&utm_medium=email_trade&utm_campaign=2025-08-19</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~
+                        <li class="link-card">
+                            <div class="link-card-header">[Image/Vide]</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.bebeboutik-prive.fr/?utm_source=batch&utm_medium=email_trade&utm_campaign=2025-08-19</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~
 ⬇
 https://www.bebeboutik-prive.fr/?utm_source=batch&amp;utm_medium=email_trade&amp;utm_campaign=2025-08-19" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-0')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/?utm_source=batch&utm_medium=email_trade&utm_campaign=2025-08-19')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-0')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/?utm_source=batch&utm_medium=email_trade&utm_campaign=2025-08-19')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.babilou.fr/babilouforyou?utm_medium=emailc&utm_source=newsletter&utm_campaign=b2c_emailc_bab-psu-occa-r%C3%A9gulier-%C3%A9t%C3%A925&campaign_id=CM250351" target="_blank" class="link-data">
-                                    <div class="link-txt">Je réserve ma place</div>
-                                    <div class="link-final" title="Final Destination">https://www.babilou.fr/babilouforyou?utm_medium=emailc&utm_source=newsletter&utm_campaign=b2c_emailc_bab-psu-occa-r%C3%A9gulier-%C3%A9t%C3%A925&campaign_id=CM250351</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~
+                        <li class="link-card">
+                            <div class="link-card-header">Je réserve ma place</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.babilou.fr/babilouforyou?utm_medium=emailc&utm_source=newsletter&utm_campaign=b2c_emailc_bab-psu-occa-r%C3%A9gulier-%C3%A9t%C3%A925&campaign_id=CM250351</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~
 ⬇
 https://www.babilou.fr/babilouforyou?utm_medium=emailc&amp;utm_source=newsletter&amp;utm_campaign=b2c_emailc_bab-psu-occa-r%C3%A9gulier-%C3%A9t%C3%A925&amp;campaign_id=CM250351" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-1')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.babilou.fr/babilouforyou?utm_medium=emailc&utm_source=newsletter&utm_campaign=b2c_emailc_bab-psu-occa-r%C3%A9gulier-%C3%A9t%C3%A925&campaign_id=CM250351')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-1')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.babilou.fr/babilouforyou?utm_medium=emailc&utm_source=newsletter&utm_campaign=b2c_emailc_bab-psu-occa-r%C3%A9gulier-%C3%A9t%C3%A925&campaign_id=CM250351')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.babilou.fr/babilouforyou?utm_medium=email&utm_source=newsletter&utm_campaign=b2c_email_bebeboutik&campaign_id=CM250374" target="_blank" class="link-data">
-                                    <div class="link-txt">Je réserve ma place</div>
-                                    <div class="link-final" title="Final Destination">https://www.babilou.fr/babilouforyou?utm_medium=email&utm_source=newsletter&utm_campaign=b2c_email_bebeboutik&campaign_id=CM250374</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl
+                        <li class="link-card">
+                            <div class="link-card-header">Je réserve ma place</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.babilou.fr/babilouforyou?utm_medium=email&utm_source=newsletter&utm_campaign=b2c_email_bebeboutik&campaign_id=CM250374</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl
 ⬇
 https://www.babilou.fr/babilouforyou?utm_medium=email&amp;utm_source=newsletter&amp;utm_campaign=b2c_email_bebeboutik&amp;campaign_id=CM250374" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-2')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.babilou.fr/babilouforyou?utm_medium=email&utm_source=newsletter&utm_campaign=b2c_email_bebeboutik&campaign_id=CM250374')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-2')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.babilou.fr/babilouforyou?utm_medium=email&utm_source=newsletter&utm_campaign=b2c_email_bebeboutik&campaign_id=CM250374')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.bebeboutik-prive.fr/" target="_blank" class="link-data">
-                                    <div class="link-txt">www.bebeboutik-prive.fr</div>
-                                    <div class="link-final" title="Final Destination">https://www.bebeboutik-prive.fr/</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7
+                        <li class="link-card">
+                            <div class="link-card-header">www.bebeboutik-prive.fr</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.bebeboutik-prive.fr/</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7
 ⬇
 http://www.bebeboutik-prive.fr/
 ⬇
 https://www.bebeboutik-prive.fr/" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-3')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-3')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.bebeboutik-prive.fr/desabonnement/669bc448061c37541b3a6b886e97569e5d17a8fc" target="_blank" class="link-data">
-                                    <div class="link-txt">cliquez ici</div>
-                                    <div class="link-final" title="Final Destination">https://www.bebeboutik-prive.fr/desabonnement/669bc448061c37541b3a6b886e97569e5d17a8fc</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~
+                        <li class="link-card">
+                            <div class="link-card-header">cliquez ici</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.bebeboutik-prive.fr/desabonnement/669bc448061c37541b3a6b886e97569e5d17a8fc</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~
 ⬇
 https://clic.bebeboutik-prive.fr/f/a/z5x-f8MUBCeAbE3xNw428g~~/AABGZBA~/WgF0xvv0XPnEQFj-Ffi3MyiMLwncDIno0msvrc2hC7ErVxc65B6M0gMSMdFfAbfF1RFus4kMLHr0wq1oUSFYBzfPD_ooRFjB0XRrn-Idpqsgsv7HWsioE9DWyQzGt5h1WxOKSKk3uiqhs1ySqpP8Il9mAbF4ct8WNMgsH80gxuK79Hf9N9_iesyWOQCzp1SdroB12L9APNuNjU4N87PpHg~~
 ⬇
 https://www.bebeboutik-prive.fr/desabonnement/669bc448061c37541b3a6b886e97569e5d17a8fc" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-4')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/desabonnement/669bc448061c37541b3a6b886e97569e5d17a8fc')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-4')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/desabonnement/669bc448061c37541b3a6b886e97569e5d17a8fc')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         
-                        <li>
-                            <div class="link-row">
-                                <a href="https://www.bebeboutik-prive.fr/page/mentions-legales" target="_blank" class="link-data">
-                                    <div class="link-txt">Mentions légales</div>
-                                    <div class="link-final" title="Final Destination">https://www.bebeboutik-prive.fr/page/mentions-legales</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~
+                        <li class="link-card">
+                            <div class="link-card-header">Mentions légales</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span>
+                                    <span class="link-url-text orig">https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~</span>
+                                </div>
+                                <div class="link-arrow-sep"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+                                    <span class="link-url-text dest">https://www.bebeboutik-prive.fr/page/mentions-legales</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~
 ⬇
 https://www.bebeboutik-prive.fr/page/mentions-legales" title="Show Redirect Path">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('detected-link-5')" title="Locate in Email">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/page/mentions-legales')" title="Copy Final URL">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    </button>
-                                </div>
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('detected-link-5')" title="Locate in Email">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('https://www.bebeboutik-prive.fr/page/mentions-legales')" title="Copy Final URL">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                                </button>
                             </div>
                         </li>
                         </ul>
@@ -289,7 +330,7 @@ https://www.bebeboutik-prive.fr/page/mentions-legales" title="Show Redirect Path
                         </div>
                         <script>
                             
-const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixels", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "Active (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixels de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "Actif (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
+const TRANSLATIONS = {"en": {"page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel(s)", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "active(s) (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date"}, "fr": {"page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel(s) de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "actif(s) (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage"}};
 let currentLang = localStorage.getItem('lang') || 'en';
 
 function updateLanguage(lang) {
@@ -359,7 +400,6 @@ updateLanguage(currentLang);
                                 body.highlight-links a { border: 2px solid red !important; background-color: yellow !important; color: black !important; position: relative; z-index: 9999; box-shadow: 0 0 5px rgba(255,0,0,0.5); animation: flash 1s infinite alternate; display: inline-block; }
                                 body.highlight-links a img { outline: 4px solid #ff0000 !important; outline-offset: -2px; opacity: 0.8; filter: grayscale(50%); }
                                 
-                                /* --- MODIF : ANIMATION PUISSANTE --- */
                                 @keyframes target-pulse { 
                                     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
                                     50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 0, 0, 0); }
