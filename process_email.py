@@ -375,7 +375,6 @@ def generate_index():
             #searchInput {{ width: 100%; padding: 12px 20px; margin-bottom: 25px; box-sizing: border-box; border: 2px solid var(--border-color); border-radius: 8px; font-size: 16px; background-color: var(--input-bg); color: var(--text-main); transition: border-color 0.3s; }}
             #searchInput:focus {{ border-color: var(--accent-color); outline: none; }}
             
-            /* MODIF FIX: Overflow visible to allow hover scaling without clipping */
             ul {{ list-style: none; padding: 0; margin: 0; overflow: visible; }}
             
             li.news-item {{ 
@@ -1035,28 +1034,36 @@ def process_emails():
                                 html.dark-mode-internal {{ filter: invert(1) hue-rotate(180deg); }}
                                 html.dark-mode-internal img, html.dark-mode-internal video, html.dark-mode-internal [style*="background-image"] {{ filter: invert(1) hue-rotate(180deg); }}
                                 
-                                body.highlight-links a {{ border: 2px solid red !important; background-color: yellow !important; color: black !important; position: relative; z-index: 9999; box-shadow: 0 0 5px rgba(255,0,0,0.5); animation: flash 1s infinite alternate; display: inline-block; }}
-                                body.highlight-links a img {{ outline: 4px solid #ff0000 !important; outline-offset: -2px; opacity: 0.8; filter: grayscale(50%); }}
+                                /* --- MODIF: BETTER HIGHLIGHT (SHADOW INSTEAD OF BORDER) --- */
+                                body.highlight-links a {{ 
+                                    position: relative; 
+                                    box-shadow: 0 0 0 3px red, 0 0 10px yellow !important; 
+                                    background-color: rgba(255, 255, 0, 0.2); 
+                                    z-index: 9999;
+                                    display: inline-block;
+                                }}
+                                /* Filter for images inside links to follow shape */
+                                body.highlight-links a img {{ 
+                                    filter: drop-shadow(0 0 3px red); 
+                                }}
                                 
-                                /* MODIF: NUMBER BADGE IN IFRAME */
-                                body.highlight-links a::after {{
-                                    content: attr(data-index);
+                                /* --- OVERLAY BADGE STYLE --- */
+                                .link-badge-overlay {{
                                     position: absolute;
-                                    top: -10px;
-                                    left: -10px;
+                                    z-index: 2147483647;
                                     background: black;
                                     color: white;
+                                    border: 1px solid white;
                                     border-radius: 50%;
-                                    width: 18px;
-                                    height: 18px;
+                                    width: 20px;
+                                    height: 20px;
                                     font-size: 10px;
                                     font-weight: bold;
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
-                                    z-index: 100000;
-                                    border: 1px solid white;
                                     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                                    pointer-events: none;
                                 }}
 
                                 @keyframes target-pulse {{ 
@@ -1076,10 +1083,44 @@ def process_emails():
                                 @media screen and (max-width: 600px) {{ table, tbody, tr, td {{ width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; height: auto !important; }} div[style*="width"] {{ width: 100% !important; max-width: 100% !important; }} img {{ width: auto !important; max-width: 100% !important; }} }}
                             `;
                             frame.contentDocument.head.appendChild(style);
+                            
                             function toggleMobile() {{ document.body.classList.toggle('mobile-mode'); document.getElementById('btn-mobile').classList.toggle('active'); }}
                             function toggleDark() {{ document.body.classList.toggle('dark-mode'); document.getElementById('btn-dark').classList.toggle('active'); if(frame.contentDocument.documentElement) {{ frame.contentDocument.documentElement.classList.toggle('dark-mode-internal'); }} }}
                             function toggleLinks() {{ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('btn-links').classList.toggle('active'); }}
-                            function toggleHighlight() {{ const btn = document.getElementById('btn-highlight'); btn.classList.toggle('active'); if(frame.contentDocument.body) {{ frame.contentDocument.body.classList.toggle('highlight-links'); }} }}
+                            
+                            function toggleHighlight() {{ 
+                                const btn = document.getElementById('btn-highlight');
+                                const doc = frame.contentDocument;
+                                const body = doc.body;
+                                
+                                body.classList.toggle('highlight-links');
+                                btn.classList.toggle('active');
+                                
+                                const isActive = body.classList.contains('highlight-links');
+                                
+                                if (isActive) {{
+                                    // GENERATE OVERLAY BADGES
+                                    const links = doc.querySelectorAll('a[data-index]');
+                                    links.forEach(link => {{
+                                        const rect = link.getBoundingClientRect();
+                                        // Ignore hidden links
+                                        if(rect.width === 0 || rect.height === 0) return;
+                                        
+                                        const badge = doc.createElement('div');
+                                        badge.className = 'link-badge-overlay';
+                                        badge.textContent = link.getAttribute('data-index');
+                                        // Absolute positioning relative to body (scrolled)
+                                        badge.style.top = (rect.top + doc.documentElement.scrollTop - 10) + 'px';
+                                        badge.style.left = (rect.left + doc.documentElement.scrollLeft - 10) + 'px';
+                                        body.appendChild(badge);
+                                    }});
+                                }} else {{
+                                    // REMOVE BADGES
+                                    const badges = doc.querySelectorAll('.link-badge-overlay');
+                                    badges.forEach(b => b.remove());
+                                }}
+                            }}
+                            
                             function copyToClipboard(text) {{ navigator.clipboard.writeText(text).then(() => {{ }}).catch(err => {{ console.error('Failed to copy: ', err); }}); }}
                             function scrollToLink(id) {{ const el = frame.contentDocument.getElementById(id); if(el) {{ el.scrollIntoView({{behavior: 'smooth', block: 'center'}}); el.classList.add('flash-target'); setTimeout(() => el.classList.remove('flash-target'), 2000); }} else {{ console.warn('Link not found in iframe:', id); }} }}
                             
@@ -1095,17 +1136,13 @@ def process_emails():
                                         const rect = btn.getBoundingClientRect();
                                         const viewportHeight = window.innerHeight;
                                         
-                                        // Position horizontale (gauche du bouton)
                                         tooltip.style.right = (window.innerWidth - rect.left + 10) + 'px';
                                         tooltip.style.left = 'auto';
 
-                                        // Position verticale intelligente
                                         if (rect.top > viewportHeight / 2) {{
-                                            // Bouton en bas -> Tooltip au-dessus
                                             tooltip.style.top = 'auto';
                                             tooltip.style.bottom = (viewportHeight - rect.bottom) + 'px';
                                         }} else {{
-                                            // Bouton en haut -> Tooltip en dessous
                                             tooltip.style.top = rect.top + 'px';
                                             tooltip.style.bottom = 'auto';
                                         }}
