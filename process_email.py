@@ -56,6 +56,11 @@ ICON_CHECK = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="green" str
 ICON_WARN = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="orange" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
 ICON_BUG = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
 ICON_CHAIN = '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>'
+# Nouvelles icônes pour le viewer de liens
+ICON_ORIGIN = '<svg viewBox="0 0 24 24" width="12" height="12" stroke="#666" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg>'
+ICON_DEST = '<svg viewBox="0 0 24 24" width="12" height="12" stroke="#0070f3" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
+ICON_ARROW_DOWN = '<svg viewBox="0 0 24 24" width="10" height="10" stroke="#ccc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>'
+
 
 # --- DICTIONNAIRE DE TRADUCTION ---
 TRANSLATIONS = {
@@ -67,14 +72,14 @@ TRANSLATIONS = {
         "btn_dark": "Dark",
         "btn_highlight": "Highlight",
         "meta_section": "Metadata",
-        "pixel_section": "Tracking Pixels",
+        "pixel_section": "Tracking Pixel(s)",
         "label_sent": "Sent Date",
         "label_archived": "Archived Date",
         "label_reading": "Reading Time",
         "label_preheader": "Preheader",
         "label_pixel_status": "Summary",
         "no_pixels": "No trackers detected",
-        "pixel_active_msg": "Active (Will be counted)",
+        "pixel_active_msg": "active(s) (Will be counted)",
         "links_section": "Detected Links",
         "legal_summary": "Legal Notice",
         "legal_publisher": "Publisher",
@@ -91,14 +96,14 @@ TRANSLATIONS = {
         "btn_dark": "Sombre",
         "btn_highlight": "Surligner",
         "meta_section": "Métadonnées",
-        "pixel_section": "Pixels de Tracking",
+        "pixel_section": "Pixel(s) de Tracking",
         "label_sent": "Date d'envoi",
         "label_archived": "Date d'archivage",
         "label_reading": "Temps de lecture",
         "label_preheader": "Pré-header",
         "label_pixel_status": "Résumé",
         "no_pixels": "Aucun traceur détecté",
-        "pixel_active_msg": "Actif (Sera pris en compte)",
+        "pixel_active_msg": "actif(s) (Sera pris en compte)",
         "links_section": "Liens détectés",
         "legal_summary": "Mentions Légales",
         "legal_publisher": "Éditeur",
@@ -196,10 +201,11 @@ def get_email_date(msg):
         date_header = msg["Date"]
         if date_header:
             dt = parsedate_to_datetime(date_header)
-            return dt.strftime('%Y-%m-%d')
+            # INCLUDE TIME
+            return dt.strftime('%Y-%m-%d %H:%M')
     except Exception:
         pass
-    return datetime.datetime.now().strftime('%Y-%m-%d')
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
 def get_clean_sender(msg):
     try:
@@ -269,9 +275,9 @@ def get_page_metadata(filepath):
     if not date_str:
         try:
             timestamp = os.path.getmtime(filepath)
-            date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
+            date_str = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
         except:
-            date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+            date_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
             
     if not archiving_date_str:
         archiving_date_str = date_str
@@ -279,9 +285,14 @@ def get_page_metadata(filepath):
     return title, date_str, sender, archiving_date_str, preheader, reading_time
 
 def format_date_fr(date_iso):
+    # Handles both YYYY-MM-DD and YYYY-MM-DD HH:MM
     try:
-        dt = datetime.datetime.strptime(date_iso, '%Y-%m-%d')
-        return dt.strftime('%d/%m/%Y')
+        if len(date_iso) > 10:
+            dt = datetime.datetime.strptime(date_iso, '%Y-%m-%d %H:%M')
+            return dt.strftime('%d/%m/%Y à %H:%M')
+        else:
+            dt = datetime.datetime.strptime(date_iso, '%Y-%m-%d')
+            return dt.strftime('%d/%m/%Y')
     except:
         return date_iso
 
@@ -367,21 +378,25 @@ def generate_index():
             #searchInput {{ width: 100%; padding: 12px 20px; margin-bottom: 25px; box-sizing: border-box; border: 2px solid var(--border-color); border-radius: 8px; font-size: 16px; background-color: var(--input-bg); color: var(--text-main); transition: border-color 0.3s; }}
             #searchInput:focus {{ border-color: var(--accent-color); outline: none; }}
             
-            ul {{ list-style: none; padding: 0; margin: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }}
-            li {{ border-bottom: 1px solid var(--border-color); margin: 0; }}
-            li:last-child {{ border-bottom: none; }}
+            ul {{ list-style: none; padding: 0; margin: 0; overflow: hidden; }}
+            /* MODIF: Card Style for Index Items */
+            li.news-item {{ 
+                border: 1px solid var(--border-color); margin-bottom: 12px; border-radius: 8px; background: var(--bg-card);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }}
+            li.news-item:hover {{ transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); border-color: var(--accent-color); }}
             
-            a.item-link {{ display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-card); text-decoration: none; color: var(--text-main); transition: background 0.1s ease; }}
-            a.item-link:hover {{ background-color: var(--hover-bg); }}
+            a.item-link {{ display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; text-decoration: none; color: var(--text-main); }}
             
             .info-col {{ display: flex; flex-direction: column; flex: 1; min-width: 0; margin-right: 15px; }}
-            .sender {{ font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }}
-            .title {{ font-weight: 500; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }}
-            .preheader-preview {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }}
+            /* MODIF: Lowercase sender + fonts */
+            .sender {{ font-size: 0.8rem; text-transform: lowercase; color: var(--text-muted); margin-bottom: 6px; }}
+            .title {{ font-weight: 600; font-size: 1.05rem; color: var(--text-main); margin-bottom: 6px; }}
+            .preheader-preview {{ font-size: 0.85rem; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }}
             
             .date-col {{ display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; margin-left: 10px; }}
-            .date {{ font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }}
-            .date-arch {{ font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 3px; }}
+            .date {{ font-size: 0.8rem; color: var(--text-main); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }}
+            .date-arch {{ font-size: 0.7rem; color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; margin-top: 4px; }}
             
             .pagination {{ display: flex; justify-content: center; gap: 8px; margin-top: 25px; flex-wrap: wrap; }}
             .page-btn {{ background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }}
@@ -700,30 +715,34 @@ def process_emails():
                         })
                         link_idx += 1
                     
-                    # Génération HTML des liens (Avec data-tooltip pour le JS)
+                    # Génération HTML des liens (Avec Design "Cell/Card")
                     links_html = ""
                     for l in links:
-                        # On échappe bien le texte pour l'attribut data-tooltip
                         safe_tooltip = html.escape(l["chain_text"], quote=True)
                         links_html += f'''
-                        <li>
-                            <div class="link-row">
-                                <a href="{l["final_url"]}" target="_blank" class="link-data">
-                                    <div class="link-txt">{l["txt"]}</div>
-                                    <div class="link-final" title="Final Destination">{l["final_url"]}</div>
-                                    <div class="link-orig" title="Original Tracking Link">Original: {l["original_url"]}</div>
-                                </a>
-                                <div class="link-actions">
-                                    <button class="btn-action btn-chain" data-tooltip="{safe_tooltip}" title="Show Redirect Path">
-                                        {ICON_CHAIN}
-                                    </button>
-                                    <button class="btn-action" onclick="scrollToLink('{l["id"]}')" title="Locate in Email">
-                                        {ICON_EYE}
-                                    </button>
-                                    <button class="btn-action" onclick="copyToClipboard('{l["final_url"]}')" title="Copy Final URL">
-                                        {ICON_COPY}
-                                    </button>
+                        <li class="link-card">
+                            <div class="link-card-header">{l["txt"]}</div>
+                            <div class="link-card-body">
+                                <div class="link-line" title="Original Link">
+                                    <span class="link-icon-box">{ICON_ORIGIN}</span>
+                                    <span class="link-url-text orig">{l["original_url"]}</span>
                                 </div>
+                                <div class="link-arrow-sep">{ICON_ARROW_DOWN}</div>
+                                <div class="link-line" title="Destination Link">
+                                    <span class="link-icon-box">{ICON_DEST}</span>
+                                    <span class="link-url-text dest">{l["final_url"]}</span>
+                                </div>
+                            </div>
+                            <div class="link-card-footer">
+                                <button class="btn-action" data-tooltip="{safe_tooltip}" title="Show Redirect Path">
+                                    {ICON_CHAIN} Path
+                                </button>
+                                <button class="btn-action" onclick="scrollToLink('{l["id"]}')" title="Locate in Email">
+                                    {ICON_EYE} Locate
+                                </button>
+                                <button class="btn-action" onclick="copyToClipboard('{l["final_url"]}')" title="Copy Final URL">
+                                    {ICON_COPY} Copy
+                                </button>
                             </div>
                         </li>
                         '''
@@ -796,7 +815,7 @@ def process_emails():
                     # VIEWER
                     safe_html = json.dumps(str(soup))
                     nb_links = len(links)
-                    date_arch_str = datetime.datetime.now().strftime('%Y-%m-%d')
+                    date_arch_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
                     
                     pixel_html_block = ""
                     if detected_pixels_list:
@@ -814,7 +833,7 @@ def process_emails():
                         pixel_html_block = f"""
                         <div class="meta-item">
                             <span class="meta-label" data-i18n="label_pixel_status">Summary</span>
-                            <span class="status-badge ok"><span class="icon-status">{ICON_CHECK}</span> <span data-i18n="pixel_active_msg">Active (Will be counted)</span> ({len(detected_pixels_list)})</span>
+                            <span class="status-badge ok"><span class="icon-status">{ICON_CHECK}</span> <span data-i18n="pixel_active_msg">active(s) (Will be counted)</span> ({len(detected_pixels_list)})</span>
                         </div>
                         <ul class="pixel-list">
                             {pixels_li}
@@ -853,7 +872,7 @@ def process_emails():
                             iframe {{ width: 100%; height: 100%; border: none; display: block; border-radius: inherit; }}
                             body.mobile-mode .iframe-wrapper {{ width: 375px; height: 812px; max-height: 85vh; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }}
                             
-                            /* --- MODIF : SIDEBAR PLUS LARGE --- */
+                            /* --- SIDEBAR --- */
                             .sidebar {{ position: fixed; top: 60px; right: -420px; width: 420px; height: calc(100vh - 60px); background: white; border-left: 1px solid #ddd; transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }}
                             .sidebar.open {{ right: 0; }}
                             
@@ -862,43 +881,51 @@ def process_emails():
                             .meta-label {{ font-weight: 600; display: block; margin-bottom: 3px; color: #333; }}
                             .meta-val {{ word-break: break-word; line-height: 1.4; }}
                             .preheader-box {{ background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-style: italic; color: #666; font-size: 12px; }}
+                            
                             .status-badge {{ display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }}
                             .status-badge.ok {{ color: green; }}
                             .status-badge.warn {{ color: orange; }}
+                            
+                            /* Pixel List Style */
                             .pixel-list {{ list-style: none; padding: 0; margin: 0; background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 4px; }}
                             .pixel-li {{ padding: 8px; border-bottom: 1px solid #c3e6cb; }}
                             .pixel-li:last-child {{ border-bottom: none; }}
                             .pixel-row {{ display: flex; align-items: center; gap: 6px; color: #155724; font-size: 11px; }}
                             .pixel-url {{ word-break: break-all; font-family: monospace; }}
-                            .btn-copy, .btn-action {{ border: none; background: transparent; padding: 6px; cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center; }}
-                            .btn-copy:hover, .btn-action:hover {{ color: #0070f3; background: #eee; }}
                             
-                            /* Link Styles */
-                            .sidebar ul:not(.pixel-list) {{ list-style: none; padding: 0; margin: 0; }}
-                            .sidebar li:not(.pixel-li) {{ margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }}
-                            .link-row {{ display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }}
-                            .link-data {{ text-decoration: none; color: inherit; font-size: 12px; flex: 1; min-width: 0; }}
-                            .link-txt {{ font-weight: bold; color: #0070f3; margin-bottom: 2px; }}
-                            .link-final {{ color: #222; font-weight: 600; word-break: break-all; font-size: 11px; margin-bottom: 2px; }}
-                            .link-orig {{ color: #999; word-break: break-all; font-family: monospace; font-size: 10px; }}
-                            .link-actions {{ display: flex; gap: 2px; flex-shrink: 0; align-items: center; }}
-
+                            /* --- NEW LINK CARD DESIGN --- */
+                            .sidebar ul {{ list-style: none; padding: 0; margin: 0; }}
+                            .link-card {{
+                                border: 1px solid #eee; border-radius: 8px; background: #fff; margin-bottom: 12px;
+                                box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+                            }}
+                            .link-card-header {{
+                                padding: 8px 12px; background: #fcfcfc; border-bottom: 1px solid #f0f0f0;
+                                font-weight: 600; color: #333; font-size: 12px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+                            }}
+                            .link-card-body {{ padding: 10px 12px; }}
+                            .link-line {{ display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }}
+                            .link-line:last-child {{ margin-bottom: 0; }}
+                            .link-icon-box {{ width: 16px; text-align: center; display: flex; justify-content: center; }}
+                            .link-url-text {{ font-family: monospace; font-size: 11px; word-break: break-all; line-height: 1.3; }}
+                            .link-url-text.orig {{ color: #888; }}
+                            .link-url-text.dest {{ color: #0070f3; font-weight: 600; }}
+                            .link-arrow-sep {{ padding-left: 20px; color: #ccc; font-size: 10px; margin: 2px 0; }}
+                            
+                            .link-card-footer {{
+                                padding: 6px 12px; background: #fafafa; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; justify-content: flex-end;
+                            }}
+                            .btn-action {{
+                                border: none; background: transparent; padding: 4px 8px; cursor: pointer; color: #666;
+                                display: flex; align-items: center; gap: 4px; font-size: 11px; border-radius: 4px;
+                            }}
+                            .btn-action:hover {{ background: #eaeaea; color: #0070f3; }}
+                            
                             /* Global Tooltip Fixed */
                             .global-tooltip {{
-                                position: fixed;
-                                background: #333;
-                                color: white;
-                                padding: 10px;
-                                border-radius: 6px;
-                                z-index: 10000;
-                                max-width: 300px;
-                                font-size: 11px;
-                                pointer-events: none;
-                                display: none;
-                                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-                                white-space: pre-wrap; /* Preserve newlines */
-                                word-break: break-all;
-                                line-height: 1.4;
+                                position: fixed; background: #333; color: white; padding: 10px; border-radius: 6px;
+                                z-index: 10000; max-width: 300px; font-size: 11px; pointer-events: none; display: none;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; line-height: 1.4;
                             }}
                             .global-tooltip.visible {{ display: block; }}
 
@@ -913,14 +940,17 @@ def process_emails():
                             body.dark-mode .meta-label {{ color: #ccc; }}
                             body.dark-mode .meta-item {{ color: #aaa; }}
                             body.dark-mode .preheader-box {{ background: #252525; border-color: #333; color: #aaa; }}
+                            
                             body.dark-mode .pixel-list {{ background: #1e2e1e; border-color: #2b4c2b; }}
                             body.dark-mode .pixel-li {{ border-bottom-color: #2b4c2b; }}
                             body.dark-mode .pixel-row {{ color: #90cea1; }}
-                            body.dark-mode .link-txt {{ color: #4da3ff; }}
-                            body.dark-mode .link-final {{ color: #ccc; }}
-                            body.dark-mode .link-orig {{ color: #666; }}
-                            body.dark-mode .btn-copy, body.dark-mode .btn-action {{ color: #666; }}
-                            body.dark-mode .btn-copy:hover, body.dark-mode .btn-action:hover {{ color: #4da3ff; background: #333; }}
+                            
+                            body.dark-mode .link-card {{ background: #252525; border-color: #333; }}
+                            body.dark-mode .link-card-header {{ background: #2c2c2c; border-bottom-color: #333; color: #ddd; }}
+                            body.dark-mode .link-card-footer {{ background: #2c2c2c; border-top-color: #333; }}
+                            body.dark-mode .link-url-text.dest {{ color: #4da3ff; }}
+                            body.dark-mode .btn-action {{ color: #aaa; }}
+                            body.dark-mode .btn-action:hover {{ background: #333; color: #fff; }}
                         </style>
                     </head>
                     <body>
@@ -961,7 +991,7 @@ def process_emails():
                             
                             <!-- 2. PIXELS (SECOND) -->
                             <div class="sidebar-section">
-                                <h3 data-i18n="pixel_section">{ICON_WARN} Tracking Pixels</h3>
+                                <h3 data-i18n="pixel_section">{ICON_WARN} Tracking Pixel(s)</h3>
                                 {pixel_html_block}
                             </div>
                             
@@ -1000,7 +1030,6 @@ def process_emails():
                                 body.highlight-links a {{ border: 2px solid red !important; background-color: yellow !important; color: black !important; position: relative; z-index: 9999; box-shadow: 0 0 5px rgba(255,0,0,0.5); animation: flash 1s infinite alternate; display: inline-block; }}
                                 body.highlight-links a img {{ outline: 4px solid #ff0000 !important; outline-offset: -2px; opacity: 0.8; filter: grayscale(50%); }}
                                 
-                                /* --- MODIF : ANIMATION PUISSANTE --- */
                                 @keyframes target-pulse {{ 
                                     0% {{ transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }}
                                     50% {{ transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 0, 0, 0); }}
