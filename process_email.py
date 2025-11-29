@@ -153,47 +153,28 @@ function toggleLanguage() {{
 updateLanguage(currentLang);
 """
 
-# --- FONCTION DE REDIRECTION (Portage du Google Script) ---
 def resolve_redirect_chain(start_url, max_redirects=5):
-    """
-    Suit les redirections comme le script Google Apps Script.
-    Retourne (final_url, [liste_des_sauts])
-    """
     if not start_url: return start_url, []
     if start_url.startswith("mailto:") or start_url.startswith("tel:"): return start_url, []
 
     chain = [start_url]
     current_url = start_url
-    
-    # Session pour réutiliser la connexion (plus rapide)
     session = requests.Session()
     
     for _ in range(max_redirects):
         try:
-            # On utilise HEAD avec allow_redirects=False pour contrôler manuellement
-            # Timeout court pour ne pas ralentir le script si le lien est mort
             resp = session.head(current_url, allow_redirects=False, headers=HEADERS, timeout=2.0)
-            
             if 300 <= resp.status_code < 400:
                 location = resp.headers.get('Location') or resp.headers.get('location')
                 if location:
-                    # Gestion URL relative
                     if not location.startswith('http'):
                         location = urljoin(current_url, location)
-                    
-                    # Eviter les boucles
-                    if location in chain:
-                        break
-
+                    if location in chain: break
                     chain.append(location)
                     current_url = location
-                else:
-                    break
-            else:
-                break # Ce n'est plus une redirection
-        except:
-            # En cas d'erreur (timeout, dns...), on s'arrête là
-            break
+                else: break
+            else: break
+        except: break
             
     return current_url, chain
 
@@ -696,7 +677,6 @@ def process_emails():
                     links = []
                     link_idx = 0
                     
-                    # On ne traite que les 50 premiers liens pour ne pas exploser le temps de traitement
                     all_links = soup.find_all('a', href=True)
                     print(f"   -> Résolution de {len(all_links)} liens...")
                     
@@ -706,10 +686,7 @@ def process_emails():
                         a['id'] = link_id
                         
                         original_url = a['href']
-                        # Résolution de la chaîne de redirection
                         final_dest, chain = resolve_redirect_chain(original_url)
-                        
-                        # Construction du texte de la chaîne pour le tooltip
                         chain_text = " > ".join(chain)
                         
                         links.append({
@@ -721,9 +698,11 @@ def process_emails():
                         })
                         link_idx += 1
                     
-                    # Génération HTML des liens (Mise à jour pour afficher l'URL finale)
+                    # Génération HTML des liens (Avec data-tooltip pour le JS)
                     links_html = ""
                     for l in links:
+                        # On échappe bien le texte pour l'attribut data-tooltip
+                        safe_tooltip = html.escape(l["chain_text"], quote=True)
                         links_html += f'''
                         <li>
                             <div class="link-row">
@@ -733,10 +712,9 @@ def process_emails():
                                     <div class="link-orig" title="Original Tracking Link">Original: {l["original_url"]}</div>
                                 </a>
                                 <div class="link-actions">
-                                    <div class="chain-tooltip-container">
-                                        <button class="btn-action" title="Show Redirect Path">{ICON_CHAIN}</button>
-                                        <div class="chain-tooltip">{l["chain_text"]}</div>
-                                    </div>
+                                    <button class="btn-action btn-chain" data-tooltip="{safe_tooltip}" title="Show Redirect Path">
+                                        {ICON_CHAIN}
+                                    </button>
                                     <button class="btn-action" onclick="scrollToLink('{l["id"]}')" title="Locate in Email">
                                         {ICON_EYE}
                                     </button>
@@ -900,16 +878,24 @@ def process_emails():
                             .link-orig {{ color: #999; word-break: break-all; font-family: monospace; font-size: 10px; }}
                             .link-actions {{ display: flex; gap: 2px; flex-shrink: 0; align-items: center; }}
 
-                            /* Tooltip Redirect Chain */
-                            .chain-tooltip-container {{ position: relative; display: inline-block; }}
-                            .chain-tooltip {{ 
-                                visibility: hidden; width: 300px; background-color: #333; color: #fff; text-align: left; 
-                                border-radius: 6px; padding: 10px; position: absolute; z-index: 1000; 
-                                right: 100%; top: -5px; margin-right: 10px; font-size: 11px; line-height: 1.4;
-                                word-break: break-all; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s;
+                            /* Global Tooltip Fixed */
+                            .global-tooltip {{
+                                position: fixed;
+                                background: #333;
+                                color: white;
+                                padding: 10px;
+                                border-radius: 6px;
+                                z-index: 10000;
+                                max-width: 300px;
+                                font-size: 11px;
+                                pointer-events: none;
+                                display: none;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
                                 white-space: pre-wrap;
+                                word-break: break-all;
+                                line-height: 1.4;
                             }}
-                            .chain-tooltip-container:hover .chain-tooltip {{ visibility: visible; opacity: 1; }}
+                            .global-tooltip.visible {{ display: block; }}
 
                             body.dark-mode .main-view {{ background: #121212; }}
                             body.dark-mode .header {{ background: #1e1e1e; border-bottom-color: #333; }}
@@ -933,6 +919,7 @@ def process_emails():
                         </style>
                     </head>
                     <body>
+                        <div id="global-tooltip" class="global-tooltip"></div>
                         <header class="header">
                             <div class="title">{subject}</div>
                             <div class="controls">
@@ -1013,6 +1000,27 @@ def process_emails():
                             function toggleHighlight() {{ const btn = document.getElementById('btn-highlight'); btn.classList.toggle('active'); if(frame.contentDocument.body) {{ frame.contentDocument.body.classList.toggle('highlight-links'); }} }}
                             function copyToClipboard(text) {{ navigator.clipboard.writeText(text).then(() => {{ }}).catch(err => {{ console.error('Failed to copy: ', err); }}); }}
                             function scrollToLink(id) {{ const el = frame.contentDocument.getElementById(id); if(el) {{ el.scrollIntoView({{behavior: 'smooth', block: 'center'}}); el.classList.add('flash-target'); setTimeout(() => el.classList.remove('flash-target'), 2000); }} else {{ console.warn('Link not found in iframe:', id); }} }}
+                            
+                            // TOOLTIP LOGIC
+                            const tooltip = document.getElementById('global-tooltip');
+                            document.querySelectorAll('[data-tooltip]').forEach(btn => {{
+                                btn.addEventListener('mouseenter', e => {{
+                                    const text = btn.getAttribute('data-tooltip');
+                                    if(text) {{
+                                        tooltip.textContent = text;
+                                        tooltip.classList.add('visible');
+                                        const rect = btn.getBoundingClientRect();
+                                        tooltip.style.top = rect.top + 'px';
+                                        // Position to the left of the sidebar (button left position - tooltip estimated width)
+                                        // Simple calculation: align right edge of tooltip with left edge of button - 10px
+                                        tooltip.style.right = (window.innerWidth - rect.left + 10) + 'px';
+                                        tooltip.style.left = 'auto';
+                                    }}
+                                }});
+                                btn.addEventListener('mouseleave', () => {{
+                                    tooltip.classList.remove('visible');
+                                }});
+                            }});
                         </script>
                     </body>
                     </html>
