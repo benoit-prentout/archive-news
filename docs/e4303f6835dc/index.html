@@ -51,16 +51,24 @@
                             .link-orig { color: #999; word-break: break-all; font-family: monospace; font-size: 10px; }
                             .link-actions { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
 
-                            /* Tooltip Redirect Chain */
-                            .chain-tooltip-container { position: relative; display: inline-block; }
-                            .chain-tooltip { 
-                                visibility: hidden; width: 300px; background-color: #333; color: #fff; text-align: left; 
-                                border-radius: 6px; padding: 10px; position: absolute; z-index: 1000; 
-                                right: 100%; top: -5px; margin-right: 10px; font-size: 11px; line-height: 1.4;
-                                word-break: break-all; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s;
+                            /* Global Tooltip Fixed */
+                            .global-tooltip {
+                                position: fixed;
+                                background: #333;
+                                color: white;
+                                padding: 10px;
+                                border-radius: 6px;
+                                z-index: 10000;
+                                max-width: 300px;
+                                font-size: 11px;
+                                pointer-events: none;
+                                display: none;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
                                 white-space: pre-wrap;
+                                word-break: break-all;
+                                line-height: 1.4;
                             }
-                            .chain-tooltip-container:hover .chain-tooltip { visibility: visible; opacity: 1; }
+                            .global-tooltip.visible { display: block; }
 
                             body.dark-mode .main-view { background: #121212; }
                             body.dark-mode .header { background: #1e1e1e; border-bottom-color: #333; }
@@ -84,6 +92,7 @@
                         </style>
                     </head>
                     <body>
+                        <div id="global-tooltip" class="global-tooltip"></div>
                         <header class="header">
                             <div class="title">[TEST] Offrez un colis deNoël pour un aîné isolé et illuminez sonréveillon !</div>
                             <div class="controls">
@@ -145,10 +154,9 @@
                                     <div class="link-orig" title="Original Tracking Link">Original: https://gtinsi.de/691753713e2df</div>
                                 </a>
                                 <div class="link-actions">
-                                    <div class="chain-tooltip-container">
-                                        <button class="btn-action" title="Show Redirect Path"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></button>
-                                        <div class="chain-tooltip">https://gtinsi.de/691753713e2df > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM&amount=2500&frequency=once > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM</div>
-                                    </div>
+                                    <button class="btn-action btn-chain" data-tooltip="https://gtinsi.de/691753713e2df &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM" title="Show Redirect Path">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    </button>
                                     <button class="btn-action" onclick="scrollToLink('detected-link-0')" title="Locate in Email">
                                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>
@@ -167,10 +175,9 @@
                                     <div class="link-orig" title="Original Tracking Link">Original: https://gtinsi.de/691753713e2df</div>
                                 </a>
                                 <div class="link-actions">
-                                    <div class="chain-tooltip-container">
-                                        <button class="btn-action" title="Show Redirect Path"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></button>
-                                        <div class="chain-tooltip">https://gtinsi.de/691753713e2df > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM&amount=2500&frequency=once > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM</div>
-                                    </div>
+                                    <button class="btn-action btn-chain" data-tooltip="https://gtinsi.de/691753713e2df &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM" title="Show Redirect Path">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    </button>
                                     <button class="btn-action" onclick="scrollToLink('detected-link-1')" title="Locate in Email">
                                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>
@@ -189,10 +196,9 @@
                                     <div class="link-orig" title="Original Tracking Link">Original: https://gtinsi.de/691753713e2df</div>
                                 </a>
                                 <div class="link-actions">
-                                    <div class="chain-tooltip-container">
-                                        <button class="btn-action" title="Show Redirect Path"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></button>
-                                        <div class="chain-tooltip">https://gtinsi.de/691753713e2df > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM&amount=2500&frequency=once > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM</div>
-                                    </div>
+                                    <button class="btn-action btn-chain" data-tooltip="https://gtinsi.de/691753713e2df &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM" title="Show Redirect Path">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    </button>
                                     <button class="btn-action" onclick="scrollToLink('detected-link-2')" title="Locate in Email">
                                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>
@@ -211,10 +217,9 @@
                                     <div class="link-orig" title="Original Tracking Link">Original: https://gtinsi.de/691753713e2df</div>
                                 </a>
                                 <div class="link-actions">
-                                    <div class="chain-tooltip-container">
-                                        <button class="btn-action" title="Show Redirect Path"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></button>
-                                        <div class="chain-tooltip">https://gtinsi.de/691753713e2df > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM&amount=2500&frequency=once > https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&utm_source=GI-JARDINBIO&utm_medium=CPM</div>
-                                    </div>
+                                    <button class="btn-action btn-chain" data-tooltip="https://gtinsi.de/691753713e2df &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM&amp;amount=2500&amp;frequency=once &gt; https://faireundon.petitsfreresdespauvres.fr/colis-de-noel/~mon-don?utm_campaign=Colis25&amp;utm_source=GI-JARDINBIO&amp;utm_medium=CPM" title="Show Redirect Path">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    </button>
                                     <button class="btn-action" onclick="scrollToLink('detected-link-3')" title="Locate in Email">
                                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>
@@ -309,6 +314,27 @@ updateLanguage(currentLang);
                             function toggleHighlight() { const btn = document.getElementById('btn-highlight'); btn.classList.toggle('active'); if(frame.contentDocument.body) { frame.contentDocument.body.classList.toggle('highlight-links'); } }
                             function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => { }).catch(err => { console.error('Failed to copy: ', err); }); }
                             function scrollToLink(id) { const el = frame.contentDocument.getElementById(id); if(el) { el.scrollIntoView({behavior: 'smooth', block: 'center'}); el.classList.add('flash-target'); setTimeout(() => el.classList.remove('flash-target'), 2000); } else { console.warn('Link not found in iframe:', id); } }
+                            
+                            // TOOLTIP LOGIC
+                            const tooltip = document.getElementById('global-tooltip');
+                            document.querySelectorAll('[data-tooltip]').forEach(btn => {
+                                btn.addEventListener('mouseenter', e => {
+                                    const text = btn.getAttribute('data-tooltip');
+                                    if(text) {
+                                        tooltip.textContent = text;
+                                        tooltip.classList.add('visible');
+                                        const rect = btn.getBoundingClientRect();
+                                        tooltip.style.top = rect.top + 'px';
+                                        // Position to the left of the sidebar (button left position - tooltip estimated width)
+                                        // Simple calculation: align right edge of tooltip with left edge of button - 10px
+                                        tooltip.style.right = (window.innerWidth - rect.left + 10) + 'px';
+                                        tooltip.style.left = 'auto';
+                                    }
+                                });
+                                btn.addEventListener('mouseleave', () => {
+                                    tooltip.classList.remove('visible');
+                                });
+                            });
                         </script>
                     </body>
                     </html>
