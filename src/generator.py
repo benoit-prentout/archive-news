@@ -45,3 +45,17 @@ def generate_index(emails_metadata, output_path):
     
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(rendered_html)
+
+def copy_assets(output_dir):
+    """
+    Copies static assets from src/assets to the output directory (docs/assets).
+    """
+    import shutil
+    
+    src_assets = os.path.join(os.path.dirname(__file__), 'assets')
+    dest_assets = os.path.join(output_dir, 'assets')
+    
+    if os.path.exists(src_assets):
+        if os.path.exists(dest_assets):
+            shutil.rmtree(dest_assets)
+        shutil.copytree(src_assets, dest_assets)

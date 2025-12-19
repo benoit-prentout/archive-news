@@ -116,6 +116,12 @@ def process_emails():
         # Sort by date ISO (descending)
         all_metadata.sort(key=lambda x: x.get('date_iso', ''), reverse=True)
         generate_index(all_metadata, os.path.join(OUTPUT_FOLDER, "index.html"))
+        
+        # 5. Copy Assets
+        from src.generator import copy_assets
+        copy_assets(OUTPUT_FOLDER)
+        print("Assets copied.")
+        
         print("Main index generated.")
         
     except Exception as e:

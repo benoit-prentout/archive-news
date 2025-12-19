@@ -1,609 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newsletter Archive</title>
-    <meta name="robots" content="noindex, nofollow">
-    <style>
-        :root {
-            --bg-body: #f6f9fc;
-            --bg-card: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --text-light: #888888;
-            --border-color: #eaeaea;
-            --accent-color: #0070f3;
-            --hover-bg: #f8f9fa;
-            --input-bg: #fcfcfc;
-            --shadow: rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #121212;
-            --bg-card: #1e1e1e;
-            --text-main: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --text-light: #666666;
-            --border-color: #333333;
-            --accent-color: #4da3ff;
-            --hover-bg: #252525;
-            --input-bg: #252525;
-            --shadow: rgba(0, 0, 0, 0.3);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-            margin: 0 auto;
-            background: var(--bg-card);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px var(--shadow);
-            flex: 1;
-            position: relative;
-        }
-
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--text-main);
-            margin: 0;
-            font-size: 1.8rem;
-            flex-grow: 1;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        #theme-toggle,
-        #lang-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0 10px;
-            height: 40px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            color: var(--text-main);
-        }
-
-        #theme-toggle:hover,
-        #lang-toggle:hover {
-            background-color: var(--hover-bg);
-            border-color: var(--accent-color);
-        }
-
-        .icon-moon {
-            display: block;
-        }
-
-        .icon-sun {
-            display: none;
-        }
-
-        [data-theme="dark"] .icon-moon {
-            display: none;
-        }
-
-        [data-theme="dark"] .icon-sun {
-            display: block;
-        }
-
-        #searchInput {
-            width: 100%;
-            padding: 12px 20px;
-            margin-bottom: 25px;
-            box-sizing: border-box;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: var(--input-bg);
-            color: var(--text-main);
-            transition: border-color 0.3s;
-        }
-
-        #searchInput:focus {
-            border-color: var(--accent-color);
-            outline: none;
-        }
-
-        /* Stats Dashboard */
-        .stats-dashboard {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-            padding: 15px;
-            background: var(--hover-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            justify-content: space-around;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--accent-color);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        #noResults {
-            display: none;
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
-            font-style: italic;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow: visible;
-        }
-
-        li.news-item {
-            border: 1px solid var(--border-color);
-            margin-bottom: 12px;
-            border-radius: 8px;
-            background: var(--bg-card);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        li.news-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px var(--shadow);
-            border-color: var(--accent-color);
-            z-index: 10;
-            position: relative;
-        }
-
-        a.item-link {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            text-decoration: none;
-            color: var(--text-main);
-        }
-
-        .info-col {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
-            margin-right: 15px;
-        }
-
-        .sender {
-            font-size: 0.8rem;
-            text-transform: lowercase;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .title {
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .preheader-preview {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
-
-        .date-col {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-
-        .date {
-            font-size: 0.8rem;
-            color: var(--text-main);
-            font-weight: 500;
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .date-arch {
-            font-size: 0.7rem;
-            color: var(--text-light);
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-            margin-top: 4px;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-
-        .page-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .page-btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--accent-color);
-        }
-
-        .page-btn.active {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .copyright a {
-            color: inherit;
-            text-decoration: none;
-            border-bottom: 1px dotted var(--text-muted);
-            transition: color 0.2s;
-        }
-
-        .copyright a:hover {
-            color: var(--accent-color);
-            border-bottom-color: var(--accent-color);
-        }
-
-        details {
-            margin-top: 15px;
-            cursor: pointer;
-        }
-
-        details p {
-            background: var(--hover-bg);
-            padding: 10px;
-            border-radius: 4px;
-            text-align: left;
-        }
-    </style>
+    <title data-i18n="page_title">Newsletter Archive</title>
+    <meta name="description" content="A premium archive of curated newsletters.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body>
     <div class="container">
-        <div class="header-row">
-            <div style="width: 80px;"></div>
-            <h1 data-i18n="page_title">Newsletter Archive</h1>
-            <div class="controls">
-                <button id="lang-toggle" onclick="toggleLanguage()" title="Switch Language">
-                    <span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg></span>&nbsp;FR
-                </button>
-                <button id="theme-toggle" title="Toggle Theme">
-                    <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor"
-                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                        </svg></span>
-                    <span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor"
-                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                        </svg></span>
-                </button>
+        <header>
+            <h1 class="logo">Newsletter Archive</h1>
+            <p class="subtitle" data-i18n="legal_text">A personal collection of inspiring emails.</p>
+        </header>
+
+        <div class="controls-bar glass">
+            <div class="search-wrapper">
+                <svg class="icon search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search..." data-i18n="search_placeholder">
+            </div>
+            
+            <div class="actions">
+                 <button id="lang-toggle" onclick="toggleLanguage()" class="btn-icon" title="Switch Language">
+                    <span id="lang-toggle-text">FR</span>
+                 </button>
+                 <button id="theme-toggle" onclick="toggleTheme()" class="btn-icon" title="Toggle Theme">
+                    <svg class="icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                 </button>
             </div>
         </div>
-        <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search by title, sender or date...">
 
-        <div class="stats-dashboard">
-            <div class="stat-item">
-                <span class="stat-value" id="totalCount">{{ emails|length }}</span>
+        <div class="stats-row">
+            <div class="stat-card glass">
+                <span class="stat-value">{{ emails|length }}</span>
                 <span class="stat-label" data-i18n="stat_newsletters">Newsletters</span>
             </div>
-            <div class="stat-item">
-                <span class="stat-value" id="totalTime">0</span>
-                <span class="stat-label" data-i18n="stat_reading_time">Reading Time</span>
-            </div>
+            <!-- Additional stats can be added here -->
+            <div class="stat-card glass">
+                 <span class="stat-value" id="totalTime">0</span>
+                 <span class="stat-label" data-i18n="stat_reading_time">Reading Time</span>
+             </div>
         </div>
 
-        <ul id="newsList">
-            <div id="noResults" data-i18n="no_results">No results found for your search.</div>
+        <ul class="news-grid" id="newsList">
+            <div id="noResults" style="display:none; grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);" data-i18n="no_results">
+                No results found.
+            </div>
             {% for email in emails %}
-            <li class="news-item" data-reading-time="{{ email.reading_time }}">
-                <a href="{{ email.id }}/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">{{ email.sender }}</span>
-                        <span class="title">{{ email.subject }}</span>
-                        <span class="preheader-preview">{{ email.preheader }}</span>
+            <li class="news-card glass">
+                <a href="{{ email.id }}/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">{{ email.date_rec }}</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 {{ email.date_rec
-                            }}</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ {{
-                            email.date_arch }}</span>
+                    <div class="sender-pill">{{ email.sender }}</div>
+                    <h2 class="card-title">{{ email.subject }}</h2>
+                    <p class="card-preview">{{ email.preheader }}</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>{{ email.reading_time }}</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             {% endfor %}
         </ul>
-        <div id="pagination" class="pagination"></div>
+
         <footer>
-            <p class="copyright">&copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît
-                    Prentout</a>.</p>
-            <details>
-                <summary data-i18n="legal_summary">Legal Notice</summary>
-                <p style="margin-top:10px;">
-                    <strong data-i18n="legal_publisher">Publisher</strong> : Benoît Prentout<br>
-                    <strong data-i18n="legal_hosting">Hosting</strong> : GitHub Inc.<br>
-                    <span data-i18n="legal_text">This site is a personal archive.</span>
-                </p>
-            </details>
+            <p>&copy; 2025 <a href="https://github.com/benoit-prentout">Benoît Prentout</a>. <span data-i18n="footer_rights">All rights reserved.</span></p>
         </footer>
     </div>
+    <script src="assets/js/main.js"></script>
     <script>
-
-        const TRANSLATIONS = { "en": { "page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel(s)", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "active(s) (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date", "stat_newsletters": "Newsletters", "stat_reading_time": "Reading Time", "no_results": "No results found for your search." }, "fr": { "page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel(s) de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "actif(s) (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage", "stat_newsletters": "Newsletters", "stat_reading_time": "Temps de lecture", "no_results": "Aucun r\u00e9sultat pour votre recherche." } };
-        let currentLang = localStorage.getItem('lang') || 'en';
-
-        function updateLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('lang', lang);
-            const t = TRANSLATIONS[lang];
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) el.textContent = t[key];
-            });
-
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput && t['search_placeholder']) searchInput.placeholder = t['search_placeholder'];
-
-            document.querySelectorAll('[data-i18n-title]').forEach(el => {
-                const key = el.getAttribute('data-i18n-title');
-                if (t[key]) el.title = t[key];
-            });
-
-            document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {
-                const key = el.getAttribute('data-i18n-btn');
-                if (t[key]) {
-                    const icon = el.firstElementChild;
-                    el.innerHTML = '';
-                    el.appendChild(icon);
-                    el.appendChild(document.createTextNode(' ' + t[key]));
-                }
-            });
-
-            const langBtn = document.getElementById('lang-toggle');
-            if (langBtn) langBtn.innerHTML = `<span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;${lang === 'en' ? 'FR' : 'EN'}`;
-        }
-
-        function toggleLanguage() {
-            const newLang = currentLang === 'en' ? 'fr' : 'en';
-            updateLanguage(newLang);
-        }
-
-        updateLanguage(currentLang);
-
-
-        const toggleBtn = document.getElementById('theme-toggle');
-        const root = document.documentElement;
-        const savedTheme = localStorage.getItem('theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && systemDark)) { root.setAttribute('data-theme', 'dark'); }
-
-        toggleBtn.addEventListener('click', () => {
-            const currentTheme = root.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            root.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+        // Simple aggregate for reading time
+        document.addEventListener("DOMContentLoaded", () => {
+             const items = document.querySelectorAll('.news-card .read-time span');
+             let total = 0;
+             items.forEach(i => {
+                 const t = parseInt(i.innerText);
+                 if(!isNaN(t)) total += t;
+             });
+             const totalEl = document.getElementById('totalTime');
+             if(totalEl) totalEl.innerText = total + " min";
         });
-
-        const itemsPerPage = 10;
-        let currentPage = 1;
-        const list = document.getElementById("newsList");
-        const allItems = Array.from(list.getElementsByClassName('news-item'));
-        const paginationContainer = document.getElementById('pagination');
-
-        function showPage(page) {
-            currentPage = page;
-            const start = (page - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-
-            allItems.forEach((item, index) => {
-                if (index >= start && index < end) {
-                    item.style.display = "";
-                } else {
-                    item.style.display = "none";
-                }
-            });
-            renderPaginationControls();
-            window.scrollTo(0, 0);
-        }
-
-        function renderPaginationControls() {
-            const totalPages = Math.ceil(allItems.length / itemsPerPage);
-            paginationContainer.innerHTML = '';
-
-            if (totalPages <= 1) return;
-
-            const prevBtn = document.createElement('button');
-            prevBtn.className = 'page-btn';
-            prevBtn.innerHTML = '&laquo;';
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.onclick = () => showPage(currentPage - 1);
-            paginationContainer.appendChild(prevBtn);
-
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
-
-            if (startPage > 1) {
-                const firstPage = document.createElement('button');
-                firstPage.className = 'page-btn';
-                firstPage.innerText = '1';
-                firstPage.onclick = () => showPage(1);
-                paginationContainer.appendChild(firstPage);
-                if (startPage > 2) paginationContainer.appendChild(document.createTextNode('...'));
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                const btn = document.createElement('button');
-                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-                btn.innerText = i;
-                btn.onclick = () => showPage(i);
-                paginationContainer.appendChild(btn);
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) paginationContainer.appendChild(document.createTextNode('...'));
-                const lastPage = document.createElement('button');
-                lastPage.className = 'page-btn';
-                lastPage.innerText = totalPages;
-                lastPage.onclick = () => showPage(totalPages);
-                paginationContainer.appendChild(lastPage);
-            }
-
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'page-btn';
-            nextBtn.innerHTML = '&raquo;';
-            nextBtn.disabled = currentPage === totalPages;
-            nextBtn.onclick = () => showPage(currentPage + 1);
-            paginationContainer.appendChild(nextBtn);
-        }
-
-        function filterList() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toUpperCase();
-            const noResults = document.getElementById('noResults');
-            let visibleCount = 0;
-
-            if (filter === "") {
-                paginationContainer.style.display = "flex";
-                showPage(1);
-            } else {
-                paginationContainer.style.display = "none";
-                allItems.forEach(item => {
-                    const text = item.textContent || item.innerText;
-                    if (text.toUpperCase().indexOf(filter) > -1) {
-                        item.style.display = "";
-                        visibleCount++;
-                    } else {
-                        item.style.display = "none";
-                    }
-                });
-            }
-
-            if (noResults) noResults.style.display = (filter !== "" && visibleCount === 0) ? "block" : "none";
-            updateStats();
-        }
-
-        function updateStats() {
-            const totalCountEl = document.getElementById('totalCount');
-            const totalTimeEl = document.getElementById('totalTime');
-            if (!totalCountEl || !totalTimeEl) return;
-
-            let count = 0;
-            let totalMinutes = 0;
-
-            allItems.forEach(item => {
-                if (item.style.display !== "none") {
-                    count++;
-                    const timeStr = item.getAttribute('data-reading-time') || "1 min";
-                    const mins = parseInt(timeStr) || 1;
-                    totalMinutes += mins;
-                }
-            });
-
-            totalCountEl.innerText = count;
-
-            if (totalMinutes >= 60) {
-                const h = Math.floor(totalMinutes / 60);
-                const m = totalMinutes % 60;
-                totalTimeEl.innerText = `${h}h ${m}m`;
-            } else {
-                totalTimeEl.innerText = `${totalMinutes} min`;
-            }
-        }
-
-        updateStats();
-        showPage(1);
     </script>
 </body>
-
 </html>
