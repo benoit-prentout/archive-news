@@ -1,946 +1,528 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newsletter Archive</title>
-    <meta name="robots" content="noindex, nofollow">
-    <style>
-        :root {
-            --bg-body: #f6f9fc;
-            --bg-card: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --text-light: #888888;
-            --border-color: #eaeaea;
-            --accent-color: #0070f3;
-            --hover-bg: #f8f9fa;
-            --input-bg: #fcfcfc;
-            --shadow: rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #121212;
-            --bg-card: #1e1e1e;
-            --text-main: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --text-light: #666666;
-            --border-color: #333333;
-            --accent-color: #4da3ff;
-            --hover-bg: #252525;
-            --input-bg: #252525;
-            --shadow: rgba(0, 0, 0, 0.3);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-            margin: 0 auto;
-            background: var(--bg-card);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px var(--shadow);
-            flex: 1;
-            position: relative;
-        }
-
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--text-main);
-            margin: 0;
-            font-size: 1.8rem;
-            flex-grow: 1;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        #theme-toggle,
-        #lang-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0 10px;
-            height: 40px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            color: var(--text-main);
-        }
-
-        #theme-toggle:hover,
-        #lang-toggle:hover {
-            background-color: var(--hover-bg);
-            border-color: var(--accent-color);
-        }
-
-        .icon-moon {
-            display: block;
-        }
-
-        .icon-sun {
-            display: none;
-        }
-
-        [data-theme="dark"] .icon-moon {
-            display: none;
-        }
-
-        [data-theme="dark"] .icon-sun {
-            display: block;
-        }
-
-        #searchInput {
-            width: 100%;
-            padding: 12px 20px;
-            margin-bottom: 25px;
-            box-sizing: border-box;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: var(--input-bg);
-            color: var(--text-main);
-            transition: border-color 0.3s;
-        }
-
-        #searchInput:focus {
-            border-color: var(--accent-color);
-            outline: none;
-        }
-
-        /* Stats Dashboard */
-        .stats-dashboard {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-            padding: 15px;
-            background: var(--hover-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            justify-content: space-around;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--accent-color);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        #noResults {
-            display: none;
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
-            font-style: italic;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow: visible;
-        }
-
-        li.news-item {
-            border: 1px solid var(--border-color);
-            margin-bottom: 12px;
-            border-radius: 8px;
-            background: var(--bg-card);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        li.news-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px var(--shadow);
-            border-color: var(--accent-color);
-            z-index: 10;
-            position: relative;
-        }
-
-        a.item-link {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            text-decoration: none;
-            color: var(--text-main);
-        }
-
-        .info-col {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
-            margin-right: 15px;
-        }
-
-        .sender {
-            font-size: 0.8rem;
-            text-transform: lowercase;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .title {
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .preheader-preview {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
-
-        .date-col {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-
-        .date {
-            font-size: 0.8rem;
-            color: var(--text-main);
-            font-weight: 500;
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .date-arch {
-            font-size: 0.7rem;
-            color: var(--text-light);
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-            margin-top: 4px;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-
-        .page-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .page-btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--accent-color);
-        }
-
-        .page-btn.active {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .copyright a {
-            color: inherit;
-            text-decoration: none;
-            border-bottom: 1px dotted var(--text-muted);
-            transition: color 0.2s;
-        }
-
-        .copyright a:hover {
-            color: var(--accent-color);
-            border-bottom-color: var(--accent-color);
-        }
-
-        details {
-            margin-top: 15px;
-            cursor: pointer;
-        }
-
-        details p {
-            background: var(--hover-bg);
-            padding: 10px;
-            border-radius: 4px;
-            text-align: left;
-        }
-    </style>
+    <title data-i18n="page_title">Newsletter Archive</title>
+    <meta name="description" content="A premium archive of curated newsletters.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body>
     <div class="container">
-        <div class="header-row">
-            <div style="width: 80px;"></div>
-            <h1 data-i18n="page_title">Newsletter Archive</h1>
-            <div class="controls">
-                <button id="lang-toggle" onclick="toggleLanguage()" title="Switch Language">
-                    <span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg></span>&nbsp;FR
-                </button>
-                <button id="theme-toggle" title="Toggle Theme">
-                    <span class="icon-moon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor"
-                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                        </svg></span>
-                    <span class="icon-sun"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor"
-                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                        </svg></span>
-                </button>
+        <header>
+            <h1 class="logo">Newsletter Archive</h1>
+            <p class="subtitle" data-i18n="legal_text">A personal collection of inspiring emails.</p>
+        </header>
+
+        <div class="controls-bar glass">
+            <div class="search-wrapper">
+                <svg class="icon search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search..." data-i18n="search_placeholder">
+            </div>
+            
+            <div class="actions">
+                 <button id="lang-toggle" onclick="toggleLanguage()" class="btn-icon" title="Switch Language">
+                    <span id="lang-toggle-text">FR</span>
+                 </button>
+                 <button id="theme-toggle" onclick="toggleTheme()" class="btn-icon" title="Toggle Theme">
+                    <svg class="icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                 </button>
             </div>
         </div>
-        <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search by title, sender or date...">
 
-        <div class="stats-dashboard">
-            <div class="stat-item">
-                <span class="stat-value" id="totalCount">25</span>
+        <div class="stats-row">
+            <div class="stat-card glass">
+                <span class="stat-value">25</span>
                 <span class="stat-label" data-i18n="stat_newsletters">Newsletters</span>
             </div>
-            <div class="stat-item">
-                <span class="stat-value" id="totalTime">0</span>
-                <span class="stat-label" data-i18n="stat_reading_time">Reading Time</span>
-            </div>
+            <!-- Additional stats can be added here -->
+            <div class="stat-card glass">
+                 <span class="stat-value" id="totalTime">0</span>
+                 <span class="stat-label" data-i18n="stat_reading_time">Reading Time</span>
+             </div>
         </div>
 
-        <ul id="newsList">
-            <div id="noResults" data-i18n="no_results">No results found for your search.</div>
+        <ul class="news-grid" id="newsList">
+            <div id="noResults" style="display:none; grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);" data-i18n="no_results">
+                No results found.
+            </div>
             
-            <li class="news-item" data-reading-time="1 min">
-                <a href="b86901725817/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"MonJardinBio.com" <contact@monjardinbio.com></span>
-                        <span class="title">[TEST] {prénom} découvrez Epsiloon pour 1€ seulement 🌿</span>
-                        <span class="preheader-preview">Epsiloon x MonJardinBio Le magazine scientifique pour voir le monde autrement : offre exclusive ! ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­...</span>
+            <li class="news-card glass">
+                <a href="b86901725817/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">19/12/2025 à 14:18</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 19/12/2025 à 14:18</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">"MonJardinBio.com" <contact@monjardinbio.com></div>
+                    <h2 class="card-title">[TEST] {prénom} découvrez Epsiloon pour 1€ seulement 🌿</h2>
+                    <p class="card-preview">Epsiloon x MonJardinBio Le magazine scientifique pour voir le monde autrement : offre exclusive ! ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="2 min">
-                <a href="0095a3e7cf89/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=
-	<motsdoux@atelier-loupiote.fr></span>
-                        <span class="title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</span>
-                        <span class="preheader-preview">En association avec Petits Frères des Pauvres 👴👵💓 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
+            <li class="news-card glass">
+                <a href="0095a3e7cf89/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">09/12/2025 à 17:04</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 09/12/2025 à 17:04</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="2 min">
-                <a href="07b1ca3050ce/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Berceau magique <newsletter@megara.fr></span>
-                        <span class="title">Mini livre photo offert 🎁</span>
-                        <span class="preheader-preview">Revivez vos plus beaux souvenirs de l’année ✨ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 08/12/2025 à 17:32</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=
+	<motsdoux@atelier-loupiote.fr></div>
+                    <h2 class="card-title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</h2>
+                    <p class="card-preview">En association avec Petits Frères des Pauvres 👴👵💓 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="3 min">
-                <a href="8d07c49db9b0/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"PeintureVoiture.fr" <contact@peinturevoiture.fr></span>
-                        <span class="title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</span>
-                        <span class="preheader-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble, ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</span>
+            <li class="news-card glass">
+                <a href="07b1ca3050ce/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">08/12/2025 à 17:32</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 08/12/2025 à 09:05</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="1 min">
-                <a href="70b400a5618d/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"MieuxQueDesFleurs" <bonjour@mieuxquedesfleurs.com></span>
-                        <span class="title">Le seul colis qu'ils attendent 👀</span>
-                        <span class="preheader-preview">Livré grâce à vous ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 05/12/2025 à 16:01</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">Berceau magique <newsletter@megara.fr></div>
+                    <h2 class="card-title">Mini livre photo offert 🎁</h2>
+                    <p class="card-preview">Revivez vos plus beaux souvenirs de l’année ✨ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="2 min">
-                <a href="7cf147a3ee88/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Berceau magique <newsletter@megara.fr></span>
-                        <span class="title">Bouteilles sensorielles à prix minis 🌟</span>
-                        <span class="preheader-preview">[OP] VP Petit Boum - 05/12/25 Jusqu'à -10% sur la marque Petit Boum ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
+            <li class="news-card glass">
+                <a href="8d07c49db9b0/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">08/12/2025 à 09:05</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 05/12/2025 à 15:33</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="2 min">
-                <a href="39082a187a19/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"Sophie d'Ultra Premium Direct" <sophie@info.ultrapremiumdirect.com></span>
-                        <span class="title">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</span>
-                        <span class="preheader-preview">[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 04/12/2025 à 11:02</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">"PeintureVoiture.fr" <contact@peinturevoiture.fr></div>
+                    <h2 class="card-title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</h2>
+                    <p class="card-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble, ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>3 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="3 min">
-                <a href="918b15c59154/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Monsieur TSHIRT <info@monsieurtshirt.com></span>
-                        <span class="title">On a quelque chose à vous annoncer... 🎅</span>
-                        <span class="preheader-preview">Découvrez les coulisses de notre atelier 🤩 • Les cadeaux personnalisés sont les meilleurs ✨• Livraison 24h ✅ • Atelier français 🇫🇷 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</span>
+            <li class="news-card glass">
+                <a href="70b400a5618d/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">05/12/2025 à 16:01</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 03/12/2025 à 13:05</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="1 min">
-                <a href="9969f0b76404/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"MieuxQueDesFleurs" <bonjour@mieuxquedesfleurs.com></span>
-                        <span class="title">Le seul colis qu'ils attendent 👀</span>
-                        <span class="preheader-preview">Livré grâce à vous ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 03/12/2025 à 11:58</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">"MieuxQueDesFleurs" <bonjour@mieuxquedesfleurs.com></div>
+                    <h2 class="card-title">Le seul colis qu'ils attendent 👀</h2>
+                    <p class="card-preview">Livré grâce à vous ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="2 min">
-                <a href="3189f73bc0cb/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"CANIGOURMAND" <contact@canigourmand.com></span>
-                        <span class="title">Dernier rappel : -15% + 5% pour la SPA… avant la fin 💙</span>
-                        <span class="preheader-preview">Dernière chance avant la fin des promos ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
+            <li class="news-card glass">
+                <a href="7cf147a3ee88/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">05/12/2025 à 15:33</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 30/11/2025 à 06:00</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="1 min">
-                <a href="a08b20ec6f01/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"Bebeboutik" <bebeboutik@hello.bebeboutik-prive.fr></span>
-                        <span class="title">YOOJI ✨ recettes bio & portions faciles</span>
-                        <span class="preheader-preview">OWLET, ATMOSPHERA FOR KIDS, DOMIVA Dès aujourd'hui Yooji 🥕 Le bon goût du fait maison pour bébé 🍽️ Des repas bio et sains, faciles à doser et à préparer. 💚 Prat...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 29/11/2025 à 06:00</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">Berceau magique <newsletter@megara.fr></div>
+                    <h2 class="card-title">Bouteilles sensorielles à prix minis 🌟</h2>
+                    <p class="card-preview">[OP] VP Petit Boum - 05/12/25 Jusqu'à -10% sur la marque Petit Boum ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="1 min">
-                <a href="63f98f0ad806/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"MonJardinBio.com" <contact@monjardinbio.com></span>
-                        <span class="title">[TEST] Une initiative deNoël qui nous tient à cœur :découvrez-la 🎁</span>
-                        <span class="preheader-preview">un geste solidaire qui compte pour nous 🙏 ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ Chère Madame, Cher ...</span>
+            <li class="news-card glass">
+                <a href="39082a187a19/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">04/12/2025 à 11:02</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 17:40</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="1 min">
-                <a href="b201ec85b9da/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">The Bradery <hello@thebradery.com></span>
-                        <span class="title">Agenda Club 💚</span>
-                        <span class="preheader-preview">On profite de la vente archive Drôle de Monsieur, on savoure un cocktail chez Super Fine puis on danse à la Fête du Cornichon avant de visiter la Maisonde Victo...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 14:09</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">"Sophie d'Ultra Premium Direct" <sophie@info.ultrapremiumdirect.com></div>
+                    <h2 class="card-title">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</h2>
+                    <p class="card-preview">[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="1 min">
-                <a href="780984cf9365/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"MonJardinBio.com" <contact@monjardinbio.com></span>
-                        <span class="title">[TEST] Offrez un colis deNoël pour un aîné isolé et illuminez sonréveillon !</span>
-                        <span class="preheader-preview">Chère Madame, Cher Monsieur, Aujourd’hui en France, plus de 2 millions de personnes âgées sont isolées au quotidien , pire encore, 750 000 ne voient jamais pers...</span>
+            <li class="news-card glass">
+                <a href="918b15c59154/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">03/12/2025 à 13:05</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 10:17</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="2 min">
-                <a href="be20b468f3ac/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">Ultra Premium Direct | Les croquettes de Noël 🐶</span>
-                        <span class="preheader-preview">Ultra Premium Direct | Les croquettes de Noël 🐶 -25%* avec le code REDOUTE25 -25%* avec le code REDOUTE25 ! Faites vivre un Noël gourmand à votre animal avec Ul...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 08:37</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:16</span>
+                    <div class="sender-pill">Monsieur TSHIRT <info@monsieurtshirt.com></div>
+                    <h2 class="card-title">On a quelque chose à vous annoncer... 🎅</h2>
+                    <p class="card-preview">Découvrez les coulisses de notre atelier 🤩 • Les cadeaux personnalisés sont les meilleurs ✨• Livraison 24h ✅ • Atelier français 🇫🇷 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>3 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="3 min">
-                <a href="0a7817c3400c/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">"PeintureVoiture.fr" <contact@peinturevoiture.fr></span>
-                        <span class="title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</span>
-                        <span class="preheader-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble, ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</span>
+            <li class="news-card glass">
+                <a href="9969f0b76404/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">03/12/2025 à 11:58</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 28/11/2025 à 08:36</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="1 min">
-                <a href="f39d681287b0/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS</span>
-                        <span class="preheader-preview">Téléchargez l’app Wash, rechargez votre compte et faites des économies ! Version en ligne EN EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS * sur l’applic...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 27/11/2025 à 03:53</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
+                    <div class="sender-pill">"MieuxQueDesFleurs" <bonjour@mieuxquedesfleurs.com></div>
+                    <h2 class="card-title">Le seul colis qu'ils attendent 👀</h2>
+                    <p class="card-preview">Livré grâce à vous ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="1 min">
-                <a href="084229ed0e81/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...</span>
-                        <span class="preheader-preview">Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...</span>
+            <li class="news-card glass">
+                <a href="3189f73bc0cb/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">30/11/2025 à 06:00</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025 à 13:22</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="1 min">
-                <a href="fecb032eaf5c/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">Avec Babilou, trouvez votre place en crèche pour la rentrée !</span>
-                        <span class="preheader-preview">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l'aide de votre employeur ! Je réserve ma place Vous ...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 26/11/2025 à 13:20</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
+                    <div class="sender-pill">"CANIGOURMAND" <contact@canigourmand.com></div>
+                    <h2 class="card-title">Dernier rappel : -15% + 5% pour la SPA… avant la fin 💙</h2>
+                    <p class="card-preview">Dernière chance avant la fin des promos ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="2 min">
-                <a href="8fb31ccea9fa/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">🎁 95€ offerts + un bonus savoureux</span>
-                        <span class="preheader-preview">Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...</span>
+            <li class="news-card glass">
+                <a href="a08b20ec6f01/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">29/11/2025 à 06:00</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025 à 05:48</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="2 min">
-                <a href="667f1f1b378c/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
-                        <span class="preheader-preview">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025 à 05:24</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
+                    <div class="sender-pill">"Bebeboutik" <bebeboutik@hello.bebeboutik-prive.fr></div>
+                    <h2 class="card-title">YOOJI ✨ recettes bio & portions faciles</h2>
+                    <p class="card-preview">OWLET, ATMOSPHERA FOR KIDS, DOMIVA Dès aujourd'hui Yooji 🥕 Le bon goût du fait maison pour bébé 🍽️ Des repas bio et sains, faciles à doser et à préparer. 💚 Prat...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="2 min">
-                <a href="1aebb73dd87d/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">benoit@getinside.fr</span>
-                        <span class="title">On a un cadeau pour votre chat 🐱</span>
-                        <span class="preheader-preview">Promis, on peut tout vous expliquer ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
+            <li class="news-card glass">
+                <a href="63f98f0ad806/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">28/11/2025 à 17:40</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 24/11/2025 à 05:21</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
-                    </div>
-                </a>
-            </li>
-            
-            <li class="news-item" data-reading-time="2 min">
-                <a href="db3fd63ac9d5/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=
-	<motsdoux@atelier-loupiote.fr></span>
-                        <span class="title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</span>
-                        <span class="preheader-preview">En association avec Petits Frères des Pauvres 👴👵💓 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
-                    </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 20/11/2025 à 10:01</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
+                    <div class="sender-pill">"MonJardinBio.com" <contact@monjardinbio.com></div>
+                    <h2 class="card-title">[TEST] Une initiative deNoël qui nous tient à cœur :découvrez-la 🎁</h2>
+                    <p class="card-preview">un geste solidaire qui compte pour nous 🙏 ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ Chère Madame, Cher ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="3 min">
-                <a href="fdf5fd94e9da/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Fanny de Yooji <service-client@yooji.fr></span>
-                        <span class="title">Besoin d'un mode de garde pour bébé ?</span>
-                        <span class="preheader-preview">Besoin d'un mode de garde pour bébé ? Découvrez Babilou, notre coup de cœur pour accompagner les familles au quotidien. ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</span>
+            <li class="news-card glass">
+                <a href="b201ec85b9da/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">28/11/2025 à 14:09</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 17/11/2025 à 18:10</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
+                    <div class="sender-pill">The Bradery <hello@thebradery.com></div>
+                    <h2 class="card-title">Agenda Club 💚</h2>
+                    <p class="card-preview">On profite de la vente archive Drôle de Monsieur, on savoure un cocktail chez Super Fine puis on danse à la Fête du Cornichon avant de visiter la Maisonde Victo...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
-            <li class="news-item" data-reading-time="3 min">
-                <a href="8eb0a0b995a0/index.html" class="item-link">
-                    <div class="info-col">
-                        <span class="sender">Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=
-	<motsdoux@atelier-loupiote.fr></span>
-                        <span class="title">🌱 🇫🇷 👕  Envie d'unintérieur ET d'une garde robe saine ?</span>
-                        <span class="preheader-preview">On a une offre (-20%!!!) Maison Lemahieu pour vous 🤗 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</span>
+            <li class="news-card glass">
+                <a href="780984cf9365/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">28/11/2025 à 10:17</span>
                     </div>
-                    <div class="date-col">
-                        <span class="date" title="Received Date" data-i18n-title="tooltip_sent">📩 19/09/2025 à 14:23</span>
-                        <span class="date-arch" title="Archived Date" data-i18n-title="tooltip_archived">🗄️ 19/12/2025 à 17:17</span>
+                    <div class="sender-pill">"MonJardinBio.com" <contact@monjardinbio.com></div>
+                    <h2 class="card-title">[TEST] Offrez un colis deNoël pour un aîné isolé et illuminez sonréveillon !</h2>
+                    <p class="card-preview">Chère Madame, Cher Monsieur, Aujourd’hui en France, plus de 2 millions de personnes âgées sont isolées au quotidien , pire encore, 750 000 ne voient jamais pers...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="be20b468f3ac/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">28/11/2025 à 08:37</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">Ultra Premium Direct | Les croquettes de Noël 🐶</h2>
+                    <p class="card-preview">Ultra Premium Direct | Les croquettes de Noël 🐶 -25%* avec le code REDOUTE25 -25%* avec le code REDOUTE25 ! Faites vivre un Noël gourmand à votre animal avec Ul...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="0a7817c3400c/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">28/11/2025 à 08:36</span>
+                    </div>
+                    <div class="sender-pill">"PeintureVoiture.fr" <contact@peinturevoiture.fr></div>
+                    <h2 class="card-title">[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur</h2>
+                    <p class="card-preview">Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble, ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>3 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="f39d681287b0/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">27/11/2025 à 03:53</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS</h2>
+                    <p class="card-preview">Téléchargez l’app Wash, rechargez votre compte et faites des économies ! Version en ligne EN EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS * sur l’applic...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="084229ed0e81/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">26/11/2025 à 13:22</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...</h2>
+                    <p class="card-preview">Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="fecb032eaf5c/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">26/11/2025 à 13:20</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">Avec Babilou, trouvez votre place en crèche pour la rentrée !</h2>
+                    <p class="card-preview">vous présente Réservez votre place en crèche pour la rentrée ! Votre place en crèche pour la rentrée, sans l'aide de votre employeur ! Je réserve ma place Vous ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>1 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="8fb31ccea9fa/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">24/11/2025 à 05:48</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">🎁 95€ offerts + un bonus savoureux</h2>
+                    <p class="card-preview">Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="667f1f1b378c/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">24/11/2025 à 05:24</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</h2>
+                    <p class="card-preview">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="1aebb73dd87d/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">24/11/2025 à 05:21</span>
+                    </div>
+                    <div class="sender-pill">benoit@getinside.fr</div>
+                    <h2 class="card-title">On a un cadeau pour votre chat 🐱</h2>
+                    <p class="card-preview">Promis, on peut tout vous expliquer ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="db3fd63ac9d5/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">20/11/2025 à 10:01</span>
+                    </div>
+                    <div class="sender-pill">Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=
+	<motsdoux@atelier-loupiote.fr></div>
+                    <h2 class="card-title">Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨</h2>
+                    <p class="card-preview">En association avec Petits Frères des Pauvres 👴👵💓 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="fdf5fd94e9da/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">17/11/2025 à 18:10</span>
+                    </div>
+                    <div class="sender-pill">Fanny de Yooji <service-client@yooji.fr></div>
+                    <h2 class="card-title">Besoin d'un mode de garde pour bébé ?</h2>
+                    <p class="card-preview">Besoin d'un mode de garde pour bébé ? Découvrez Babilou, notre coup de cœur pour accompagner les familles au quotidien. ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>3 min</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="news-card glass">
+                <a href="8eb0a0b995a0/index.html" class="news-link">
+                    <div class="card-header">
+                        <span class="date">19/09/2025 à 14:23</span>
+                    </div>
+                    <div class="sender-pill">Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=
+	<motsdoux@atelier-loupiote.fr></div>
+                    <h2 class="card-title">🌱 🇫🇷 👕  Envie d'unintérieur ET d'une garde robe saine ?</h2>
+                    <p class="card-preview">On a une offre (-20%!!!) Maison Lemahieu pour vous 🤗 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...</p>
+                    <div class="card-footer">
+                        <div class="read-time">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>3 min</span>
+                        </div>
+                        <span class="arrow">→</span>
                     </div>
                 </a>
             </li>
             
         </ul>
-        <div id="pagination" class="pagination"></div>
+
         <footer>
-            <p class="copyright">&copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît
-                    Prentout</a>.</p>
-            <details>
-                <summary data-i18n="legal_summary">Legal Notice</summary>
-                <p style="margin-top:10px;">
-                    <strong data-i18n="legal_publisher">Publisher</strong> : Benoît Prentout<br>
-                    <strong data-i18n="legal_hosting">Hosting</strong> : GitHub Inc.<br>
-                    <span data-i18n="legal_text">This site is a personal archive.</span>
-                </p>
-            </details>
+            <p>&copy; 2025 <a href="https://github.com/benoit-prentout">Benoît Prentout</a>. <span data-i18n="footer_rights">All rights reserved.</span></p>
         </footer>
     </div>
+    <script src="assets/js/main.js"></script>
     <script>
-
-        const TRANSLATIONS = { "en": { "page_title": "Newsletter Archive", "search_placeholder": "Search by title, sender or date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Dark", "btn_highlight": "Highlight", "meta_section": "Metadata", "pixel_section": "Tracking Pixel(s)", "label_sent": "Sent Date", "label_archived": "Archived Date", "label_reading": "Reading Time", "label_preheader": "Preheader", "label_pixel_status": "Summary", "no_pixels": "No trackers detected", "pixel_active_msg": "active(s) (Will be counted)", "links_section": "Detected Links", "legal_summary": "Legal Notice", "legal_publisher": "Publisher", "legal_hosting": "Hosting", "legal_text": "This site is a personal archive.", "tooltip_sent": "Received Date", "tooltip_archived": "Archived Date", "stat_newsletters": "Newsletters", "stat_reading_time": "Reading Time", "no_results": "No results found for your search." }, "fr": { "page_title": "Archives Newsletters", "search_placeholder": "Rechercher par titre, exp\u00e9diteur ou date...", "btn_infos": "Infos", "btn_mobile": "Mobile", "btn_dark": "Sombre", "btn_highlight": "Surligner", "meta_section": "M\u00e9tadonn\u00e9es", "pixel_section": "Pixel(s) de Tracking", "label_sent": "Date d'envoi", "label_archived": "Date d'archivage", "label_reading": "Temps de lecture", "label_preheader": "Pr\u00e9-header", "label_pixel_status": "R\u00e9sum\u00e9", "no_pixels": "Aucun traceur d\u00e9tect\u00e9", "pixel_active_msg": "actif(s) (Sera pris en compte)", "links_section": "Liens d\u00e9tect\u00e9s", "legal_summary": "Mentions L\u00e9gales", "legal_publisher": "\u00c9diteur", "legal_hosting": "H\u00e9bergement", "legal_text": "Ce site est une archive personnelle.", "tooltip_sent": "Date de r\u00e9ception", "tooltip_archived": "Date d'archivage", "stat_newsletters": "Newsletters", "stat_reading_time": "Temps de lecture", "no_results": "Aucun r\u00e9sultat pour votre recherche." } };
-        let currentLang = localStorage.getItem('lang') || 'en';
-
-        function updateLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('lang', lang);
-            const t = TRANSLATIONS[lang];
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) el.textContent = t[key];
-            });
-
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput && t['search_placeholder']) searchInput.placeholder = t['search_placeholder'];
-
-            document.querySelectorAll('[data-i18n-title]').forEach(el => {
-                const key = el.getAttribute('data-i18n-title');
-                if (t[key]) el.title = t[key];
-            });
-
-            document.querySelectorAll('.btn[data-i18n-btn]').forEach(el => {
-                const key = el.getAttribute('data-i18n-btn');
-                if (t[key]) {
-                    const icon = el.firstElementChild;
-                    el.innerHTML = '';
-                    el.appendChild(icon);
-                    el.appendChild(document.createTextNode(' ' + t[key]));
-                }
-            });
-
-            const langBtn = document.getElementById('lang-toggle');
-            if (langBtn) langBtn.innerHTML = `<span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>&nbsp;${lang === 'en' ? 'FR' : 'EN'}`;
-        }
-
-        function toggleLanguage() {
-            const newLang = currentLang === 'en' ? 'fr' : 'en';
-            updateLanguage(newLang);
-        }
-
-        updateLanguage(currentLang);
-
-
-        const toggleBtn = document.getElementById('theme-toggle');
-        const root = document.documentElement;
-        const savedTheme = localStorage.getItem('theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && systemDark)) { root.setAttribute('data-theme', 'dark'); }
-
-        toggleBtn.addEventListener('click', () => {
-            const currentTheme = root.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            root.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+        // Simple aggregate for reading time
+        document.addEventListener("DOMContentLoaded", () => {
+             const items = document.querySelectorAll('.news-card .read-time span');
+             let total = 0;
+             items.forEach(i => {
+                 const t = parseInt(i.innerText);
+                 if(!isNaN(t)) total += t;
+             });
+             const totalEl = document.getElementById('totalTime');
+             if(totalEl) totalEl.innerText = total + " min";
         });
-
-        const itemsPerPage = 10;
-        let currentPage = 1;
-        const list = document.getElementById("newsList");
-        const allItems = Array.from(list.getElementsByClassName('news-item'));
-        const paginationContainer = document.getElementById('pagination');
-
-        function showPage(page) {
-            currentPage = page;
-            const start = (page - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-
-            allItems.forEach((item, index) => {
-                if (index >= start && index < end) {
-                    item.style.display = "";
-                } else {
-                    item.style.display = "none";
-                }
-            });
-            renderPaginationControls();
-            window.scrollTo(0, 0);
-        }
-
-        function renderPaginationControls() {
-            const totalPages = Math.ceil(allItems.length / itemsPerPage);
-            paginationContainer.innerHTML = '';
-
-            if (totalPages <= 1) return;
-
-            const prevBtn = document.createElement('button');
-            prevBtn.className = 'page-btn';
-            prevBtn.innerHTML = '&laquo;';
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.onclick = () => showPage(currentPage - 1);
-            paginationContainer.appendChild(prevBtn);
-
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
-
-            if (startPage > 1) {
-                const firstPage = document.createElement('button');
-                firstPage.className = 'page-btn';
-                firstPage.innerText = '1';
-                firstPage.onclick = () => showPage(1);
-                paginationContainer.appendChild(firstPage);
-                if (startPage > 2) paginationContainer.appendChild(document.createTextNode('...'));
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                const btn = document.createElement('button');
-                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-                btn.innerText = i;
-                btn.onclick = () => showPage(i);
-                paginationContainer.appendChild(btn);
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) paginationContainer.appendChild(document.createTextNode('...'));
-                const lastPage = document.createElement('button');
-                lastPage.className = 'page-btn';
-                lastPage.innerText = totalPages;
-                lastPage.onclick = () => showPage(totalPages);
-                paginationContainer.appendChild(lastPage);
-            }
-
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'page-btn';
-            nextBtn.innerHTML = '&raquo;';
-            nextBtn.disabled = currentPage === totalPages;
-            nextBtn.onclick = () => showPage(currentPage + 1);
-            paginationContainer.appendChild(nextBtn);
-        }
-
-        function filterList() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toUpperCase();
-            const noResults = document.getElementById('noResults');
-            let visibleCount = 0;
-
-            if (filter === "") {
-                paginationContainer.style.display = "flex";
-                showPage(1);
-            } else {
-                paginationContainer.style.display = "none";
-                allItems.forEach(item => {
-                    const text = item.textContent || item.innerText;
-                    if (text.toUpperCase().indexOf(filter) > -1) {
-                        item.style.display = "";
-                        visibleCount++;
-                    } else {
-                        item.style.display = "none";
-                    }
-                });
-            }
-
-            if (noResults) noResults.style.display = (filter !== "" && visibleCount === 0) ? "block" : "none";
-            updateStats();
-        }
-
-        function updateStats() {
-            const totalCountEl = document.getElementById('totalCount');
-            const totalTimeEl = document.getElementById('totalTime');
-            if (!totalCountEl || !totalTimeEl) return;
-
-            let count = 0;
-            let totalMinutes = 0;
-
-            allItems.forEach(item => {
-                if (item.style.display !== "none") {
-                    count++;
-                    const timeStr = item.getAttribute('data-reading-time') || "1 min";
-                    const mins = parseInt(timeStr) || 1;
-                    totalMinutes += mins;
-                }
-            });
-
-            totalCountEl.innerText = count;
-
-            if (totalMinutes >= 60) {
-                const h = Math.floor(totalMinutes / 60);
-                const m = totalMinutes % 60;
-                totalTimeEl.innerText = `${h}h ${m}m`;
-            } else {
-                totalTimeEl.innerText = `${totalMinutes} min`;
-            }
-        }
-
-        updateStats();
-        showPage(1);
     </script>
 </body>
-
 </html>

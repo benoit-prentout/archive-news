@@ -4,839 +4,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Metadata extraction -->
     <meta name="creation_date" content="04/12/2025 à 11:02">
     <meta name="sender" content=""Sophie d'Ultra Premium Direct" <sophie@info.ultrapremiumdirect.com>">
-    <meta name="archiving_date" content="19/12/2025 à 17:16">
-    <meta name="preheader" content="[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...">
-    <meta name="reading_time" content="2 min">
     <title>Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        :root {
-            --bg-body: #eef2f5;
-            --bg-header: #ffffff;
-            --text-main: #333;
-            --border: #ddd;
-            --accent: #0070f3;
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #121212;
-            --bg-header: #1e1e1e;
-            --text-main: #e0e0e0;
-            --border: #333;
-            --accent: #4da3ff;
-        }
-
+        /* Viewer Specific Styles */
         body {
-            margin: 0;
-            padding: 0;
-            background: var(--bg-body);
-            font-family: Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
-            color: var(--text-main);
-            transition: background 0.3s;
-        }
-
-        /* HEADER with Toolbar */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: var(--bg-header);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 200;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-        }
-
-        .title {
-            font-size: 16px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-right: 20px;
-            flex: 1;
-        }
-
-        .controls-group {
-            display: flex;
-            gap: 10px;
-            border-right: 1px solid var(--border);
-            padding-right: 10px;
-            margin-right: 10px;
-        }
-
-        .controls-group:last-child {
-            border-right: none;
-            padding-right: 0;
-            margin-right: 0;
-        }
-
-        .controls {
-            display: flex;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border: 1px solid var(--border);
-            background: transparent;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-            min-width: 32px;
-        }
-
-        .btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .btn-label {
-            font-size: 12px;
-            font-weight: 500;
-            display: none;
-        }
-
-        @media (min-width: 800px) {
-            .btn-label {
-                display: block;
-            }
-        }
-
-        /* MAIN VIEW - Device Simulation */
-        .main-view {
-            margin-top: 60px;
-            height: calc(100vh - 60px);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            overflow: auto;
-            padding: 40px;
-            box-sizing: border-box;
-        }
-
-        .device-wrapper {
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                border-radius 0.5s ease,
-                box-shadow 0.3s ease;
-            background: #333;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden !important;
-            border-radius: 4px;
-        }
-
-        /* Notch & Home Bar */
-        .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 25px;
-            background: #333;
-            border-bottom-left-radius: 18px;
-            border-bottom-right-radius: 18px;
-            z-index: 10;
-            display: none;
-        }
-
-        .notch::after {
-            /* Speaker/Camera */
-            content: '';
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 4px;
-            background: #555;
-            border-radius: 2px;
-        }
-
-        .home-bar {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 5px;
-            background: #555;
-            border-radius: 10px;
-            z-index: 10;
-            display: none;
-        }
-
-        /* Desktop (Default) */
-        .device-wrapper[data-mode="desktop"] {
-            background: white;
-            width: 1000px;
-            height: 100%;
-            max-height: 90vh;
-            border: 1px solid #ddd;
-        }
-
-        /* Mobile */
-        .device-wrapper[data-mode="mobile"] {
-            width: 320px;
-            height: 667px;
-            border-radius: 40px;
-            border: 10px solid #333;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-            padding: 0;
-        }
-
-        .device-wrapper[data-mode="mobile"] .notch {
-            display: block;
-            width: 120px;
-            height: 25px;
-        }
-
-        .device-wrapper[data-mode="mobile"] .home-bar {
-            display: block;
-            width: 80px;
-        }
-
-        /* Tablet */
-        .device-wrapper[data-mode="tablet"] {
-            width: 768px;
-            max-width: 90%;
-            height: 90%;
-            max-height: 800px;
-            border-radius: 24px;
-            border: 12px solid #333;
-        }
-
-        iframe {
-            width: 100% !important;
-            height: 100% !important;
-            border: none;
-            display: block;
-            border-radius: inherit;
-            background: white;
-        }
-
-        /* OUTLOOK QUIRKS MODE (Apply to iframe content via JS injections or wrapper class) */
-        /* Note: We can't easily change internal rendering engine, but we can restrict CSS via JS inside iframe */
-
-        /* SIDEBAR (Metadata) */
-        .sidebar {
-            position: fixed;
-            top: 60px;
-            right: -420px;
-            width: 420px;
-            height: calc(100vh - 60px);
-            background: var(--bg-header);
-            border-left: 1px solid var(--border);
-            transition: right 0.3s;
-            overflow-y: auto;
-            z-index: 90;
-            padding: 20px;
-            box-sizing: border-box;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 20px;
         }
 
-        .sidebar.open {
-            right: 0;
-        }
-
-        .sidebar h3 {
-            margin-top: 0;
-            font-size: 16px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+        .viewer-container {
+            flex: 1;
             display: flex;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+        }
+
+        .device-stage {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        /* Realistic Device Frame */
+        .device-frame {
+            background: #111;
+            border-radius: 40px;
+            box-shadow:
+                0 0 0 2px #333,
+                0 0 0 6px #000,
+                0 20px 50px -10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        .device-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            display: block;
+        }
+
+        /* Modes */
+        .device-frame[data-mode="desktop"] {
+            width: 90%;
+            height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #fff;
+        }
+
+        .device-frame[data-mode="mobile"] {
+            width: 375px;
+            height: 812px;
+            max-height: 90vh;
+            /* Adjust for small screens */
+            border-radius: 40px;
+            border: 12px solid #111;
+        }
+
+        .device-frame[data-mode="mobile"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background: #111;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 10;
+        }
+
+        .device-frame[data-mode="tablet"] {
+            width: 768px;
+            height: 1024px;
+            max-height: 90vh;
+            max-width: 90vw;
+            border-radius: 24px;
+            border: 12px solid #111;
+        }
+
+        /* Sidebar Glass */
+        .meta-sidebar {
+            width: 350px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 20;
+            transition: transform 0.3s ease;
+        }
+
+        .meta-sidebar.closed {
+            transform: translateX(100%);
+            width: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .back-nav {
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
             gap: 8px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.2s;
         }
 
-        /* Utility classes from previous version */
-        .meta-item {
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #555;
+        .back-btn:hover {
+            background: white;
+            color: var(--accent-color);
+            box-shadow: var(--shadow-sm);
         }
 
-        [data-theme="dark"] .meta-item {
-            color: #aaa;
+        .meta-group {
+            margin-bottom: 24px;
         }
 
         .meta-label {
-            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
             display: block;
-            margin-bottom: 3px;
         }
 
-        .preheader-box {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 10px;
-            border-radius: 6px;
-            font-style: italic;
-            font-size: 12px;
-            margin-top: 5px;
+        .meta-value {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            word-break: break-word;
         }
 
-        /* Link Cards */
-        .links-list {
+        .pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+            font-size: 0.85rem;
+        }
+
+        /* Link List */
+        .link-list {
             list-style: none;
             padding: 0;
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .link-card {
-            border: 1px solid var(--border);
+        .link-item {
             padding: 12px;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: var(--bg-header);
+            background: rgba(255, 255, 255, 0.4);
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .link-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border-color: var(--accent);
-        }
-
-        .link-card-header {
+            transition: all 0.2s;
+            font-size: 0.9rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .link-card-index {
-            background: var(--accent);
+        .link-item:hover {
+            background: white;
+            border-color: var(--accent-color);
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .link-idx {
+            background: var(--accent-color);
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .link-card-title {
-            font-size: 13px;
-            font-weight: 600;
-            flex: 1;
-            margin-right: 10px;
-            line-height: 1.4;
-        }
-
-        .link-card-url {
-            font-size: 11px;
-            color: #777;
-            word-break: break-all;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            opacity: 0.8;
-        }
-
-        [data-theme="dark"] .link-card-url {
-            color: #999;
-        }
-
-        /* Icons */
-        .icon {
-            width: 16px;
-            height: 16px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* CLIP WARNING */
-        .clip-warning {
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
+            font-size: 10px;
+            flex-shrink: 0;
+            margin-left: 10px;
         }
 
-        .device-wrapper.clipped .clip-warning {
-            opacity: 1;
+        .link-txt {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Header Controls for Viewer */
+        .viewer-header {
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+        }
+
+        .device-toggles {
+            display: flex;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .device-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .device-btn.active {
+            background: white;
+            color: var(--text-primary);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            display: flex;
+            alignItems: center;
+            justifyContent: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            margin-left: 8px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover,
+        .action-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
         }
     </style>
 </head>
 
 <body>
-    <header class="header">
-        <div class="title">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</div>
-
-        <div class="controls">
-            <!-- Device Toolbar -->
-            <div class="controls-group">
-                <button class="btn active" onclick="setDevice('desktop')" title="Desktop View">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                        <line x1="8" y1="21" x2="16" y2="21"></line>
-                        <line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
-                    <span class="btn-label" data-i18n="desktop">Desktop</span>
-                </button>
-                <button class="btn" onclick="setDevice('tablet')" title="Tablet View">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
-                    <span class="btn-label" data-i18n="tablet">Tablet</span>
-                </button>
-                <button class="btn" onclick="setDevice('mobile')" title="Mobile View">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
-                    <span class="btn-label" data-i18n="mobile">Mobile</span>
-                </button>
-            </div>
-
-            <!-- Analysis Toolbar -->
-            <div class="controls-group">
-                <button class="btn" onclick="toggleLinks()" id="btn-links" title="Toggle Info Sidebar">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    &nbsp;Info
-                </button>
-                <button class="btn" onclick="toggleHighlight()" id="btn-highlight" title="Highlight Links">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <circle cx="12" cy="12" r="6"></circle>
-                        <line x1="22" y1="12" x2="18" y2="12"></line>
-                        <line x1="6" y1="12" x2="2" y2="12"></line>
-                        <line x1="12" y1="6" x2="12" y2="2"></line>
-                        <line x1="12" y1="22" x2="12" y2="18"></line>
-                    </svg>
-                </button>
-                <button class="btn" onclick="toggleDark()" id="btn-dark" title="Toggle Dark Mode">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                </button>
-                <button class="btn" onclick="toggleSource()" id="btn-source" title="View Source">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <polyline points="16 18 22 12 16 6"></polyline>
-                        <polyline points="8 6 2 12 8 18"></polyline>
-                    </svg>
-                </button>
-            </div>
-            <div class="controls-group">
-                <button class="btn" onclick="toggleLang()" id="btn-lang">
-                    FR
-                </button>
-            </div>
+    <div class="viewer-header">
+        <div class="back-nav" style="margin:0;">
+            <a href="../index.html" class="back-btn">← <span data-i18n="back">Back</span></a>
         </div>
-    </header>
 
-    <div class="main-view">
-        <div class="device-wrapper" id="deviceWrapper" data-mode="desktop">
-            <div class="notch"></div>
-            <div class="home-bar"></div>
-            <div class="clip-warning">⚠️ Gmail Clipping Warning (>102KB)</div>
-            <iframe id="emailFrame"></iframe>
+        <div class="device-toggles">
+            <button class="device-btn" onclick="setMode('mobile')">Mobile</button>
+            <button class="device-btn" onclick="setMode('tablet')">Tablet</button>
+            <button class="device-btn active" onclick="setMode('desktop')">Desktop</button>
+        </div>
+
+        <div style="display:flex;">
+            <button class="action-btn" onclick="toggleSidebar()" title="Toggle Info">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </button>
+            <!-- Add highlighting toggle here later -->
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-section">
-            <h3 data-i18n="metadata">Metadata</h3>
-            <div class="meta-item"><span class="emoji">📝</span> <span class="meta-label"
-                    data-i18n="object">Object</span>Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</div>
-            <div class="meta-item"><span class="emoji">📅</span> <span class="meta-label" data-i18n="sent date">Sent
-                    Date</span>04/12/2025 à 11:02</div>
-            <div class="meta-item"><span class="emoji">🗄️</span> <span class="meta-label"
-                    data-i18n="archived date">Archived Date</span>19/12/2025 à 17:16
-            </div>
-            <div class="meta-item"><span class="emoji">⏱️</span> <span class="meta-label"
-                    data-i18n="reading time">Reading Time</span>2 min</div>
-            <div class="meta-item"><span class="emoji">👀</span> <span class="meta-label"
-                    data-i18n="preheader">Preheader</span>
-                <div class="preheader-box">[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...</div>
+    <div class="viewer-container">
+        <div class="device-stage">
+            <div class="device-frame" id="deviceFrame" data-mode="desktop">
+                <iframe id="emailFrame"></iframe>
             </div>
         </div>
 
-        <div class="sidebar-section">
-            <h3 data-i18n="links">Links (13)</h3>
-            <div class="links-list">
-                
-                <div class="link-card" onclick="focusLink(1)">
-                    <div class="link-card-header">
-                        <div class="link-card-title"></div>
-                        <div class="link-card-index">#1</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(2)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">En savoir plus</div>
-                        <div class="link-card-index">#2</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(3)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">Commander le coffret</div>
-                        <div class="link-card-index">#3</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(4)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">Commander le coffret</div>
-                        <div class="link-card-index">#4</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(5)">
-                    <div class="link-card-header">
-                        <div class="link-card-title"></div>
-                        <div class="link-card-index">#5</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(6)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">En savoir plus</div>
-                        <div class="link-card-index">#6</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(7)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">05.64.25.03.08</div>
-                        <div class="link-card-index">#7</div>
-                    </div>
-                    <div class="link-card-url">tel:0564250308</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(8)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">contact@ultrapremiumdirect.com</div>
-                        <div class="link-card-index">#8</div>
-                    </div>
-                    <div class="link-card-url">mailto:contact@ultrapremiumdirect.com</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(9)">
-                    <div class="link-card-header">
-                        <div class="link-card-title"></div>
-                        <div class="link-card-index">#9</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(10)">
-                    <div class="link-card-header">
-                        <div class="link-card-title"></div>
-                        <div class="link-card-index">#10</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(11)">
-                    <div class="link-card-header">
-                        <div class="link-card-title"></div>
-                        <div class="link-card-index">#11</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(12)">
-                    <div class="link-card-header">
-                        <div class="link-card-title"></div>
-                        <div class="link-card-index">#12</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e</div>
-                </div>
-                
-                <div class="link-card" onclick="focusLink(13)">
-                    <div class="link-card-header">
-                        <div class="link-card-title">Ne plus recevoir de mail de notre part</div>
-                        <div class="link-card-index">#13</div>
-                    </div>
-                    <div class="link-card-url">https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170</div>
-                </div>
-                
+        <div class="meta-sidebar" id="sidebar">
+            <div class="meta-group">
+                <span class="meta-label">Subject</span>
+                <div class="meta-value">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</div>
             </div>
+            <div class="meta-group">
+                <span class="meta-label">Sender</span>
+                <div class="pill">"Sophie d'Ultra Premium Direct" <sophie@info.ultrapremiumdirect.com></div>
+            </div>
+            <div class="meta-group">
+                <span class="meta-label">Date</span>
+                <div class="meta-value">04/12/2025 à 11:02</div>
+            </div>
+            <div class="meta-group">
+                <span class="meta-label">Reading Time</span>
+                <div class="meta-value">~2 min</div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;">
+
+            <h3 style="font-size:1rem; margin-bottom:15px;">Links (13)</h3>
+            <ul class="link-list">
+                
+                <li class="link-item" onclick="highlightLink(1)">
+                    <div class="link-txt"></div>
+                    <div class="link-idx">1</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(2)">
+                    <div class="link-txt">En savoir plus</div>
+                    <div class="link-idx">2</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(3)">
+                    <div class="link-txt">Commander le coffret</div>
+                    <div class="link-idx">3</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(4)">
+                    <div class="link-txt">Commander le coffret</div>
+                    <div class="link-idx">4</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(5)">
+                    <div class="link-txt"></div>
+                    <div class="link-idx">5</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(6)">
+                    <div class="link-txt">En savoir plus</div>
+                    <div class="link-idx">6</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(7)">
+                    <div class="link-txt">05.64.25.03.08</div>
+                    <div class="link-idx">7</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(8)">
+                    <div class="link-txt">contact@ultrapremiumdirect.com</div>
+                    <div class="link-idx">8</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(9)">
+                    <div class="link-txt"></div>
+                    <div class="link-idx">9</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(10)">
+                    <div class="link-txt"></div>
+                    <div class="link-idx">10</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(11)">
+                    <div class="link-txt"></div>
+                    <div class="link-idx">11</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(12)">
+                    <div class="link-txt"></div>
+                    <div class="link-idx">12</div>
+                </li>
+                
+                <li class="link-item" onclick="highlightLink(13)">
+                    <div class="link-txt">Ne plus recevoir de mail de notre part</div>
+                    <div class="link-idx">13</div>
+                </li>
+                
+            </ul>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js"></script>
+    <script src="../assets/js/main.js"></script>
     <script>
-        // INJECTED CONTENT
-        const emailContent = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n\n<html>\n<head>\n<meta content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\" name=\"viewport\"/>\n<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"/>\n<style type=\"text/css\">\r\n      ReadMsgBody{ width: 100%;}\r\n      .ExternalClass {width: 100%;}\r\n      .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}\r\n      body {-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;margin:0 !important;}\r\n      p { margin: 1em 0;}\r\n      table td { border-collapse: collapse;}\r\n      img {outline:0;}\r\n      a img {border:none;}\r\n      @-ms-viewport{ width: device-width;}\r\n    </style>\n<style type=\"text/css\">\r\n      @media only screen and (max-width: 480px) {\r\n        .container {width: 100% !important;}\r\n        .footer { width:auto !important; margin-left:0; }\r\n        .mobile-hidden { display:none !important; }\r\n        .logo { display:block !important; padding:0 !important; }\r\n        img { max-width:100% !important; height:auto !important; max-height:auto !important;}\r\n        .header img{max-width:100% !important;height:auto !important; max-height:auto !important;}\r\n        .photo img { width:100% !important; max-width:100% !important; height:auto !important;}\r\n        .drop { display:block !important; width: 100% !important; float:left; clear:both;}\r\n        .footerlogo { display:block !important; width: 100% !important; padding-top:15px; float:left; clear:both;}\r\n        .nav4, .nav5, .nav6 { display: none !important; }\r\n        .tableBlock {width:100% !important;}\r\n        .responsive-td {width:100% !important; display:block !important; padding:0 !important; }\r\n        .fluid, .fluid-centered {\r\n          width: 100% !important;\r\n          max-width: 100% !important;\r\n          height: auto !important;\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        .fluid-centered {\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        /* MOBILE GLOBAL STYLES - DO NOT CHANGE */\r\nbody, .tb_properties{font-family: Arial !important; font-size: 16px !important; color: #393939 !important; line-height: 1.5 !important; padding: 0px !important; }.buttonstyles{font-family: Arial, helvetica, sans-serif !important; font-size: 14px !important; color: #FFFFFF !important; padding: 10px 15px !important; }h1{font-family: Arial !important; font-size: 22px !important; color: #202020 !important; line-height: 1 !important; }h2{font-family: Arial !important; font-size: 20px !important; color: #202020 !important; line-height: 1 !important; }h3{font-family: Arial !important; font-size: 18px !important; color: #202020 !important; line-height: 1 !important; }a:not(.buttonstyles){line-height: 1 !important; }.mobile-hidden{display: none !important; }.responsive-td {width: 100% !important;\r\n display: block !important; padding: 0 !important;}\r\n/* END OF MOBILE GLOBAL STYLES - DO NOT CHANGE */\r\n      }\r\n      @media only screen and (max-width: 640px) {\r\n        .container { width:100% !important; }\r\n        .mobile-hidden { display:none !important; }\r\n        .logo { display:block !important; padding:0 !important; }\r\n        .photo img { width:100% !important; height:auto !important;}\r\n        .nav5, .nav6 { display: none !important;}\r\n        .fluid, .fluid-centered {\r\n          width: 100% !important;\r\n          max-width: 100% !important;\r\n          height: auto !important;\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        .fluid-centered {\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n      }\r\n    </style>\n<!--[if mso]>       <style type=\"text/css\">           /* Begin Outlook Font Fix */               body, table, td {                  font-family : Arial, helvetica, sans-serif;                  line-height : 150%;                  font-size : 16px;                  color : #515151;               }           /* End Outlook Font Fix */       </style>     <![endif]-->\n</head>\n<body bgcolor=\"#EEEEEE\" style=\"margin: 0px; -webkit-text-size-adjust:none;background-color : #EEEEEE; font-family : Arial, helvetica, sans-serif; line-height : 150%; font-size : 16px; color : #515151; padding : 0px; \" text=\"#808080\"><style type=\"text/css\">\r\ndiv.preheader \r\n{ display: none !important; } \r\n</style>\n<div class=\"preheader\" style=\"font-size: 1px; display: none !important;\">[Edition limit\u00e9e] D\u00e9p\u00eachez-vous, il n'en reste plus beaucoup !</div>\n<div style=\"font-size:0; line-height:0;\"><img alt=\"\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/></div>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td align=\"center\" valign=\"top\">\n</td>\n</tr>\n<tr>\n<td align=\"center\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"container\" width=\"600\">\n<tr>\n<td>\n<table bgcolor=\"#FFF9F5\" cellpadding=\"0\" cellspacing=\"0\" class=\"tb_properties border_style\" style=\"font-size : 16px; font-family : Arial, helvetica, sans-serif; color : #515151;background-color : #FFF9F5; border : 0px; line-height : 100%; \" width=\"100%\">\n<tr>\n<td align=\"center\" valign=\"top\">\n<table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td class=\"content_padding\" style=\"border:0px;padding : 0px 0px 10px; \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td align=\"left\" class=\"header\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: #FFFAF5; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<a data-index=\"1\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95\" title=\"Je d\u00e9couvre la box\"><img alt=\"\" data-assetid=\"182223\" src=\"img_0.gif\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"600\"/></a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 40px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><div style=\"text-align: center;\">\n<span style=\"font-size:17px;line-height:1.8\"><b>Le coffret parfait pour votre animal</b></span></div><p data-end=\"256\" data-start=\"154\" style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Ultra Premium Direct s'associe au cr\u00e9ateur de contenu et amoureux des animaux, <b>Mastu</b>, pour d\u00e9voiler une <b>\u00e9dition limit\u00e9e*</b> unique !</span></p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Pens\u00e9 comme une v\u00e9ritable <b>exp\u00e9rience de complicit\u00e9</b>, c'est le coffret parfait pour g\u00e2ter votre chien ou votre chat. Il combine le meilleur de la nutrition Ultra Premium Direct et une s\u00e9lection de jouets et accessoires exclusifs, <b>imagin\u00e9s et co-cr\u00e9\u00e9s avec Mastu.</b></span><br/>\r\n\t\u00a0</p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Une belle dose d\u2019amour, de gourmandise et de surprises pour renforcer chaque jour le lien avec votre animal. Mais attention, c'est une <b>\u00c9dition Limit\u00e9e</b> !</span></p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Valeur r\u00e9elle des produits : <b>plus de\u00a050\u20ac</b><br/>\r\n\tPrix exceptionnel du coffret : <b>34,90\u20ac</b></span></p></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 0px 20px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"2\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">En savoir plus </a></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr>\n<td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"182269\" src=\"img_1.jpg\" style=\"display: block; padding: 25px 0px 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></td></tr></table></td></tr></table></td>\n<td class=\"responsive-td\" style=\"width: 50%; padding-left: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><div style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8\"><b>Coffret pour Chien\u00a0\ud83d\udc36</b><br/>\n<br/>\r\n\tVous y trouverez l'<b>huile de saumon Mastu</b>, deux \u00e9chantillons de <b>croquettes fabriqu\u00e9es sans c\u00e9r\u00e9ales</b> (poulet ou saumon frais), des <b>friandises articulation</b> et deux <b>toppers au poulet</b> pour transformer les repas en festin.<br/>\r\n\tC\u00f4t\u00e9 accessoires exclusifs co-cr\u00e9\u00e9s avec Mastu : un <b>jouet indestructible</b> id\u00e9al pour l'hygi\u00e8ne dentaire, une <b>peluche </b>robuste, un <b>tote bag </b>et un <b>gobelet personnalis\u00e9</b>.\u00a0</span></div></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"3\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #6B9DB3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">Commander le coffret</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr>\n<td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><div style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8\"><b>Coffret pour Chat\u00a0\ud83d\udc31</b><br/>\n<br/>\r\n\tVous y trouverez l'<b>huile de saumon Mastu</b>, un \u00e9chantillon de <b>croquettes fabriqu\u00e9es sans c\u00e9r\u00e9ales</b> (poulet frais), des <b>friandises</b> au saumon<b> (anti-boules de poils),\u00a0</b>deux <b>sachets fra\u00eecheur </b>(saumon/cabillaud &amp; poulet/dinde)<b>, </b>des <b>friandises cr\u00e9meuses </b>et <b>2 bo\u00eetes d'\u00e9minc\u00e9s en sauce</b> (poulet &amp; veau).<br/>\r\n\tC\u00f4t\u00e9 accessoires exclusifs co-cr\u00e9\u00e9s avec Mastu : un <b>jouet interactif</b>, une <b>canne \u00e0 p\u00eache avec herbe \u00e0 chat</b>, des balles, un <b>tote bag </b>et un <b>gobelet personnalis\u00e9</b>.\u00a0</span></div></td></tr></table></td><td class=\"responsive-td\" style=\"width: 50%; padding-left: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 25px 0px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<img alt=\"\" data-assetid=\"182270\" src=\"img_2.jpg\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px 25px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"4\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">Commander le coffret</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 5px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding-bottom: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<a data-index=\"5\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2\" title=\"\"><img alt=\"\" data-assetid=\"185068\" src=\"img_3.jpg\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></a></td></tr></table></td></tr></table></td>\n<td class=\"responsive-td\" style=\"width: 50%; padding-left: 5px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding-bottom: 10px; \">\u00a0<div style=\"line-height: 150%;\">\n</div>\u00a0<div style=\"line-height: 150%; text-align: center;\">\n<span style=\"font-size:14px;\"><b>Dites adieu aux boules de poils !\u00a0\u2728</b></span><br/>\r\n\t\u00a0</div><div style=\"line-height: 150%; text-align: center;\">\n<span style=\"font-size:14px;\">Offrez \u00e0 votre chat un moment de plaisir tout en <b>am\u00e9liorant son confort digestif</b>. D\u00e9couvrez en<b> \u00e9dition limit\u00e9e</b> nos friandises au saumon qui <b>raviront le corps et les papilles </b>de votre chat.</span></div></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 6px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px 0px 10px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"6\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"En savoir plus\">En savoir plus</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr>\n</table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td style=\"width: 25%; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<img alt=\"\" data-assetid=\"171692\" height=\"125\" src=\"img_4.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171693\" height=\"125\" src=\"img_5.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr>\n</table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171748\" height=\"125\" src=\"img_6.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\">\n<table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171695\" height=\"125\" src=\"img_7.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 20px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; border-top: 1px solid #848487; border-right: 0px; border-bottom: 0px; border-left: 0px; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><p style=\"text-align: center; line-height: 115%;\">\n</p><div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:13px;\">\n<span><b>Nos experts en nutrition vous r\u00e9pondent :</b></span><br/>\n<span>Au</span>\u00a0\r\n    <b>\n<a data-index=\"7\" href=\"tel:0564250308\" style=\"text-decoration: none; color: inherit;\">\r\n        05.64.25.03.08\r\n      </a>\n</b>\u00a0\r\n    <span>(num\u00e9ro non surtax\u00e9) ou par email \u00e0</span>\u00a0\r\n    <b>\n<a data-index=\"8\" href=\"mailto:contact@ultrapremiumdirect.com\" style=\"text-decoration: none; color: inherit;\">\r\n        contact@ultrapremiumdirect.com\r\n      </a>\n</b>\n</span>\n</div>\n<div style=\"text-align: center;\">\n<div style=\"width:300px;height:30px;background:none;margin:auto;padding:10px;text-align:center\">\n<a data-index=\"9\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b\" title=\"\"><img alt=\"Suivez-nous sur Instagram\" data-assetid=\"6804\" height=\"30\" src=\"img_8.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"10\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5\" title=\"\"><img alt=\"\" data-assetid=\"6803\" height=\"30\" src=\"img_9.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"11\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2\" title=\"\"><img alt=\"\" data-assetid=\"6805\" height=\"30\" src=\"img_10.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"12\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e\" title=\"\"><img alt=\"\" data-assetid=\"6806\" height=\"30\" src=\"img_11.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n</div>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:12px;\">Ultra Premium Direct - Agropole 3 Chemin du Saylat CS 30009 47901 AGEN CEDEX 9</span><br/><br/>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:12px;\">*Vous pouvez ajouter au maximum 5 coffrets cadeaux dans votre panier, chien et chat confondus.</span><br/><br/>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:10px;\"><a data-index=\"13\" data-linkto=\"other\" href=\"https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170\" style=\"color:#AE9973;text-decoration:underline;\" title=\"Ne plus recevoir de mail de notre part\">Ne plus recevoir de mail de notre part</a></span></div></div></div></div></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n<tr>\n<td valign=\"top\">\n</td>\n</tr>\n</table>\n</body>\n</html>\n";
-        const emailSize = 28386; // bytes
-
-        // SETUP FRAME
-        const wrapper = document.getElementById('deviceWrapper');
+        const content = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n\n<html>\n<head>\n<meta content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\" name=\"viewport\"/>\n<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"/>\n<style type=\"text/css\">\r\n      ReadMsgBody{ width: 100%;}\r\n      .ExternalClass {width: 100%;}\r\n      .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}\r\n      body {-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;margin:0 !important;}\r\n      p { margin: 1em 0;}\r\n      table td { border-collapse: collapse;}\r\n      img {outline:0;}\r\n      a img {border:none;}\r\n      @-ms-viewport{ width: device-width;}\r\n    </style>\n<style type=\"text/css\">\r\n      @media only screen and (max-width: 480px) {\r\n        .container {width: 100% !important;}\r\n        .footer { width:auto !important; margin-left:0; }\r\n        .mobile-hidden { display:none !important; }\r\n        .logo { display:block !important; padding:0 !important; }\r\n        img { max-width:100% !important; height:auto !important; max-height:auto !important;}\r\n        .header img{max-width:100% !important;height:auto !important; max-height:auto !important;}\r\n        .photo img { width:100% !important; max-width:100% !important; height:auto !important;}\r\n        .drop { display:block !important; width: 100% !important; float:left; clear:both;}\r\n        .footerlogo { display:block !important; width: 100% !important; padding-top:15px; float:left; clear:both;}\r\n        .nav4, .nav5, .nav6 { display: none !important; }\r\n        .tableBlock {width:100% !important;}\r\n        .responsive-td {width:100% !important; display:block !important; padding:0 !important; }\r\n        .fluid, .fluid-centered {\r\n          width: 100% !important;\r\n          max-width: 100% !important;\r\n          height: auto !important;\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        .fluid-centered {\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        /* MOBILE GLOBAL STYLES - DO NOT CHANGE */\r\nbody, .tb_properties{font-family: Arial !important; font-size: 16px !important; color: #393939 !important; line-height: 1.5 !important; padding: 0px !important; }.buttonstyles{font-family: Arial, helvetica, sans-serif !important; font-size: 14px !important; color: #FFFFFF !important; padding: 10px 15px !important; }h1{font-family: Arial !important; font-size: 22px !important; color: #202020 !important; line-height: 1 !important; }h2{font-family: Arial !important; font-size: 20px !important; color: #202020 !important; line-height: 1 !important; }h3{font-family: Arial !important; font-size: 18px !important; color: #202020 !important; line-height: 1 !important; }a:not(.buttonstyles){line-height: 1 !important; }.mobile-hidden{display: none !important; }.responsive-td {width: 100% !important;\r\n display: block !important; padding: 0 !important;}\r\n/* END OF MOBILE GLOBAL STYLES - DO NOT CHANGE */\r\n      }\r\n      @media only screen and (max-width: 640px) {\r\n        .container { width:100% !important; }\r\n        .mobile-hidden { display:none !important; }\r\n        .logo { display:block !important; padding:0 !important; }\r\n        .photo img { width:100% !important; height:auto !important;}\r\n        .nav5, .nav6 { display: none !important;}\r\n        .fluid, .fluid-centered {\r\n          width: 100% !important;\r\n          max-width: 100% !important;\r\n          height: auto !important;\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        .fluid-centered {\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n      }\r\n    </style>\n<!--[if mso]>       <style type=\"text/css\">           /* Begin Outlook Font Fix */               body, table, td {                  font-family : Arial, helvetica, sans-serif;                  line-height : 150%;                  font-size : 16px;                  color : #515151;               }           /* End Outlook Font Fix */       </style>     <![endif]-->\n</head>\n<body bgcolor=\"#EEEEEE\" style=\"margin: 0px; -webkit-text-size-adjust:none;background-color : #EEEEEE; font-family : Arial, helvetica, sans-serif; line-height : 150%; font-size : 16px; color : #515151; padding : 0px; \" text=\"#808080\"><style type=\"text/css\">\r\ndiv.preheader \r\n{ display: none !important; } \r\n</style>\n<div class=\"preheader\" style=\"font-size: 1px; display: none !important;\">[Edition limit\u00e9e] D\u00e9p\u00eachez-vous, il n'en reste plus beaucoup !</div>\n<div style=\"font-size:0; line-height:0;\"><img alt=\"\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/></div>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td align=\"center\" valign=\"top\">\n</td>\n</tr>\n<tr>\n<td align=\"center\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"container\" width=\"600\">\n<tr>\n<td>\n<table bgcolor=\"#FFF9F5\" cellpadding=\"0\" cellspacing=\"0\" class=\"tb_properties border_style\" style=\"font-size : 16px; font-family : Arial, helvetica, sans-serif; color : #515151;background-color : #FFF9F5; border : 0px; line-height : 100%; \" width=\"100%\">\n<tr>\n<td align=\"center\" valign=\"top\">\n<table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td class=\"content_padding\" style=\"border:0px;padding : 0px 0px 10px; \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td align=\"left\" class=\"header\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: #FFFAF5; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<a data-index=\"1\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95\" title=\"Je d\u00e9couvre la box\"><img alt=\"\" data-assetid=\"182223\" src=\"img_0.gif\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"600\"/></a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 40px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><div style=\"text-align: center;\">\n<span style=\"font-size:17px;line-height:1.8\"><b>Le coffret parfait pour votre animal</b></span></div><p data-end=\"256\" data-start=\"154\" style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Ultra Premium Direct s'associe au cr\u00e9ateur de contenu et amoureux des animaux, <b>Mastu</b>, pour d\u00e9voiler une <b>\u00e9dition limit\u00e9e*</b> unique !</span></p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Pens\u00e9 comme une v\u00e9ritable <b>exp\u00e9rience de complicit\u00e9</b>, c'est le coffret parfait pour g\u00e2ter votre chien ou votre chat. Il combine le meilleur de la nutrition Ultra Premium Direct et une s\u00e9lection de jouets et accessoires exclusifs, <b>imagin\u00e9s et co-cr\u00e9\u00e9s avec Mastu.</b></span><br/>\r\n\t\u00a0</p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Une belle dose d\u2019amour, de gourmandise et de surprises pour renforcer chaque jour le lien avec votre animal. Mais attention, c'est une <b>\u00c9dition Limit\u00e9e</b> !</span></p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Valeur r\u00e9elle des produits : <b>plus de\u00a050\u20ac</b><br/>\r\n\tPrix exceptionnel du coffret : <b>34,90\u20ac</b></span></p></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 0px 20px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"2\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">En savoir plus </a></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr>\n<td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"182269\" src=\"img_1.jpg\" style=\"display: block; padding: 25px 0px 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></td></tr></table></td></tr></table></td>\n<td class=\"responsive-td\" style=\"width: 50%; padding-left: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><div style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8\"><b>Coffret pour Chien\u00a0\ud83d\udc36</b><br/>\n<br/>\r\n\tVous y trouverez l'<b>huile de saumon Mastu</b>, deux \u00e9chantillons de <b>croquettes fabriqu\u00e9es sans c\u00e9r\u00e9ales</b> (poulet ou saumon frais), des <b>friandises articulation</b> et deux <b>toppers au poulet</b> pour transformer les repas en festin.<br/>\r\n\tC\u00f4t\u00e9 accessoires exclusifs co-cr\u00e9\u00e9s avec Mastu : un <b>jouet indestructible</b> id\u00e9al pour l'hygi\u00e8ne dentaire, une <b>peluche </b>robuste, un <b>tote bag </b>et un <b>gobelet personnalis\u00e9</b>.\u00a0</span></div></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"3\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #6B9DB3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">Commander le coffret</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr>\n<td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><div style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8\"><b>Coffret pour Chat\u00a0\ud83d\udc31</b><br/>\n<br/>\r\n\tVous y trouverez l'<b>huile de saumon Mastu</b>, un \u00e9chantillon de <b>croquettes fabriqu\u00e9es sans c\u00e9r\u00e9ales</b> (poulet frais), des <b>friandises</b> au saumon<b> (anti-boules de poils),\u00a0</b>deux <b>sachets fra\u00eecheur </b>(saumon/cabillaud &amp; poulet/dinde)<b>, </b>des <b>friandises cr\u00e9meuses </b>et <b>2 bo\u00eetes d'\u00e9minc\u00e9s en sauce</b> (poulet &amp; veau).<br/>\r\n\tC\u00f4t\u00e9 accessoires exclusifs co-cr\u00e9\u00e9s avec Mastu : un <b>jouet interactif</b>, une <b>canne \u00e0 p\u00eache avec herbe \u00e0 chat</b>, des balles, un <b>tote bag </b>et un <b>gobelet personnalis\u00e9</b>.\u00a0</span></div></td></tr></table></td><td class=\"responsive-td\" style=\"width: 50%; padding-left: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 25px 0px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<img alt=\"\" data-assetid=\"182270\" src=\"img_2.jpg\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px 25px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"4\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">Commander le coffret</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 5px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding-bottom: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<a data-index=\"5\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2\" title=\"\"><img alt=\"\" data-assetid=\"185068\" src=\"img_3.jpg\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></a></td></tr></table></td></tr></table></td>\n<td class=\"responsive-td\" style=\"width: 50%; padding-left: 5px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding-bottom: 10px; \">\u00a0<div style=\"line-height: 150%;\">\n</div>\u00a0<div style=\"line-height: 150%; text-align: center;\">\n<span style=\"font-size:14px;\"><b>Dites adieu aux boules de poils !\u00a0\u2728</b></span><br/>\r\n\t\u00a0</div><div style=\"line-height: 150%; text-align: center;\">\n<span style=\"font-size:14px;\">Offrez \u00e0 votre chat un moment de plaisir tout en <b>am\u00e9liorant son confort digestif</b>. D\u00e9couvrez en<b> \u00e9dition limit\u00e9e</b> nos friandises au saumon qui <b>raviront le corps et les papilles </b>de votre chat.</span></div></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 6px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px 0px 10px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"6\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"En savoir plus\">En savoir plus</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr>\n</table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td style=\"width: 25%; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<img alt=\"\" data-assetid=\"171692\" height=\"125\" src=\"img_4.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171693\" height=\"125\" src=\"img_5.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr>\n</table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171748\" height=\"125\" src=\"img_6.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\">\n<table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171695\" height=\"125\" src=\"img_7.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 20px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; border-top: 1px solid #848487; border-right: 0px; border-bottom: 0px; border-left: 0px; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><p style=\"text-align: center; line-height: 115%;\">\n</p><div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:13px;\">\n<span><b>Nos experts en nutrition vous r\u00e9pondent :</b></span><br/>\n<span>Au</span>\u00a0\r\n    <b>\n<a data-index=\"7\" href=\"tel:0564250308\" style=\"text-decoration: none; color: inherit;\">\r\n        05.64.25.03.08\r\n      </a>\n</b>\u00a0\r\n    <span>(num\u00e9ro non surtax\u00e9) ou par email \u00e0</span>\u00a0\r\n    <b>\n<a data-index=\"8\" href=\"mailto:contact@ultrapremiumdirect.com\" style=\"text-decoration: none; color: inherit;\">\r\n        contact@ultrapremiumdirect.com\r\n      </a>\n</b>\n</span>\n</div>\n<div style=\"text-align: center;\">\n<div style=\"width:300px;height:30px;background:none;margin:auto;padding:10px;text-align:center\">\n<a data-index=\"9\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b\" title=\"\"><img alt=\"Suivez-nous sur Instagram\" data-assetid=\"6804\" height=\"30\" src=\"img_8.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"10\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5\" title=\"\"><img alt=\"\" data-assetid=\"6803\" height=\"30\" src=\"img_9.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"11\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2\" title=\"\"><img alt=\"\" data-assetid=\"6805\" height=\"30\" src=\"img_10.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"12\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e\" title=\"\"><img alt=\"\" data-assetid=\"6806\" height=\"30\" src=\"img_11.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n</div>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:12px;\">Ultra Premium Direct - Agropole 3 Chemin du Saylat CS 30009 47901 AGEN CEDEX 9</span><br/><br/>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:12px;\">*Vous pouvez ajouter au maximum 5 coffrets cadeaux dans votre panier, chien et chat confondus.</span><br/><br/>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:10px;\"><a data-index=\"13\" data-linkto=\"other\" href=\"https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170\" style=\"color:#AE9973;text-decoration:underline;\" title=\"Ne plus recevoir de mail de notre part\">Ne plus recevoir de mail de notre part</a></span></div></div></div></div></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n<tr>\n<td valign=\"top\">\n</td>\n</tr>\n</table>\n</body>\n</html>\n";
         const frame = document.getElementById('emailFrame');
 
-        function initFrame() {
-            try {
-                const doc = frame.contentDocument;
-                doc.open();
-
-                // 1. Inject Viewport if missing
-                let content = emailContent;
-                if (!content.toLowerCase().includes('name="viewport"')) {
-                    content = '<meta name="viewport" content="width=device-width, initial-scale=1.0">' + content;
-                }
-
-                doc.write(content);
-                doc.close();
-
-                // 2. Inject base styles for iframe
-                const style = doc.createElement('style');
-                style.textContent = `
-                    body { margin: 0; padding: 0; font-family: sans-serif; background: white; }
-                    
-                    /* Responsive Fixes */
-                    html, body { 
-                        width: 100%; 
-                        overflow-x: hidden; 
-                        -webkit-text-size-adjust: 100%;
-                    }
-                    
-                    /* Force images/tables into viewport */
-                    img { max-width: 100% !important; height: auto !important; }
-                    table { max-width: 100% !important; }
-                    
-                    html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
-                    html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
-                    
-                    html::-webkit-scrollbar { display: none; } /* Hide SCROLLBAR in mobile mode mostly */
-                    
-                    /* Highlight classes */
-                    body.highlight-links a { 
-                        position: relative;
-                        box-shadow: 0 0 0 3px red, 0 0 10px yellow !important; 
-                        background-color: rgba(255, 255, 0, 0.2); 
-                        z-index: 9999;
-                        display: inline-block;
-                    }
-                    
-                    /* OVERLAY BADGE */
-                    .link-badge-overlay {
-                        position: absolute;
-                        z-index: 2147483647;
-                        background: #ff4444; /* Brighter red */
-                        color: white;
-                        border: 2px solid white;
-                        border-radius: 50%;
-                        width: 24px; height: 24px;
-                        font-size: 12px; font-weight: bold;
-                        display: flex; justify-content: center; align-items: center;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-                        pointer-events: none;
-                        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    }
-                    .link-badge-overlay.pulse {
-                        animation: badgePulse 1.5s 2;
-                    }
-                    @keyframes badgePulse {
-                        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
-                        70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
-                        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
-                    }
-                `;
-                doc.head.appendChild(style);
-
-                // CHECK CLIPPING
-                if (emailSize > 102 * 1024) {
-                    wrapper.classList.add('clipped');
-                }
-            } catch (e) {
-                console.error("Failed to initialize iframe:", e);
-                // Try to at least close the document to avoid hang
-                try { frame.contentDocument.close(); } catch (err) { }
-            }
-        }
-
-        initFrame();
-
-        function focusLink(index) {
+        function init() {
             const doc = frame.contentDocument;
-            const link = doc.querySelector(`a[data-index="${index}"]`);
-            if (link) {
-                if (!doc.body.classList.contains('highlight-links')) toggleHighlight();
-                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                const badge = Array.from(doc.querySelectorAll('.link-badge-overlay')).find(b => b.textContent == index);
-                if (badge) {
-                    badge.classList.add('pulse');
-                    setTimeout(() => badge.classList.remove('pulse'), 3000);
-                }
-            }
+            doc.open();
+            // Inject cleaner styles for iframe
+            const baseStyles = `
+                <style>
+                    body { margin: 0; font-family: sans-serif; background: #fff; }
+                    img { max-width: 100%; height: auto; }
+                    /* Scrollbar hide */
+                    ::-webkit-scrollbar { width: 0px; background: transparent; }
+                </style>
+            `;
+            doc.write(baseStyles + content);
+            doc.close();
         }
 
-        // ACTIONS
-        function setDevice(mode) {
-            wrapper.setAttribute('data-mode', mode);
-            document.querySelectorAll('.controls-group:first-child .btn').forEach(b => b.classList.remove('active'));
-            // Find the button (handle direct call or click event)
-            const clickedBtn = (window.event && window.event.target) ? window.event.target.closest('.btn') : document.querySelector(`.btn[onclick *= "'${mode}'"]`);
-            if (clickedBtn) clickedBtn.classList.add('active');
-
-            // Recalculate badges if highlighting is on
-            if (frame.contentDocument.body.classList.contains('highlight-links')) {
-                setTimeout(repositionBadges, 600); // Wait for transition
-            }
+        function setMode(mode) {
+            document.getElementById('deviceFrame').setAttribute('data-mode', mode);
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
         }
 
-        function repositionBadges() {
-            const doc = frame.contentDocument;
-            const body = doc.body;
-            doc.querySelectorAll('.link-badge-overlay').forEach(b => b.remove());
-
-            doc.querySelectorAll('a[data-index]').forEach(link => {
-                const rect = link.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) return;
-                const badge = doc.createElement('div');
-                badge.className = 'link-badge-overlay';
-                badge.textContent = link.getAttribute('data-index');
-                badge.style.top = (rect.top + doc.documentElement.scrollTop - 10) + 'px';
-                badge.style.left = (rect.left + doc.documentElement.scrollLeft - 10) + 'px';
-                body.appendChild(badge);
-            });
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('closed');
+            event.currentTarget.classList.toggle('active');
         }
 
-        function toggleLinks() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('btn-links').classList.toggle('active');
-        }
-
-        function toggleDark() {
-            document.body.setAttribute('data-theme',
-                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
-            );
-            frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
-            document.getElementById('btn-dark').classList.toggle('active');
-        }
-
-        function toggleHighlight() {
-            const btn = document.getElementById('btn-highlight');
-            const doc = frame.contentDocument;
-            const body = doc.body;
-
-            body.classList.toggle('highlight-links');
-            btn.classList.toggle('active');
-
-            const isActive = body.classList.contains('highlight-links');
-
-            if (isActive) {
-                // GENERATE OVERLAY BADGES
-                const links = doc.querySelectorAll('a[data-index]');
-                links.forEach(link => {
-                    const rect = link.getBoundingClientRect();
-                    // Ignore hidden links
-                    if (rect.width === 0 || rect.height === 0) return;
-
-                    const badge = doc.createElement('div');
-                    badge.className = 'link-badge-overlay';
-                    badge.textContent = link.getAttribute('data-index');
-                    // Absolute positioning relative to body (scrolled)
-                    badge.style.top = (rect.top + doc.documentElement.scrollTop - 10) + 'px';
-                    badge.style.left = (rect.left + doc.documentElement.scrollLeft - 10) + 'px';
-                    body.appendChild(badge);
-                });
-            } else {
-                // REMOVE BADGES
-                const badges = doc.querySelectorAll('.link-badge-overlay');
-                badges.forEach(b => b.remove());
-            }
-        }
-
-        function toggleSource() {
-            const w = window.open("", "_blank");
-            const formatted = html_beautify(emailContent);
-            w.document.write('<pre>' + formatted.replace(/</g, "&lt;") + '</pre>');
-        }
-
-        function toggleLang() {
-            const btn = document.getElementById('btn-lang');
-            const current = btn.innerText.trim().toUpperCase();
-            const next = current === 'EN' ? 'FR' : 'EN';
-            btn.innerText = next;
-
-            const map = {
-                'desktop': { 'FR': 'Bureau', 'EN': 'Desktop' },
-                'tablet': { 'FR': 'Tablette', 'EN': 'Tablet' },
-                'mobile': { 'FR': 'Mobile', 'EN': 'Mobile' },
-                'metadata': { 'FR': 'Métadonnées', 'EN': 'Metadata' },
-                'object': { 'FR': 'Objet', 'EN': 'Object' },
-                'sent date': { 'FR': "Date d'envoi", 'EN': 'Sent Date' },
-                'archived date': { 'FR': "Date d'archivage", 'EN': 'Archived Date' },
-                'reading time': { 'FR': 'Temps de lecture', 'EN': 'Reading Time' },
-                'preheader': { 'FR': 'Pré-en-tête', 'EN': 'Preheader' },
-                'links': { 'FR': 'Liens', 'EN': 'Links' }
-            };
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (map[key] && map[key][next]) {
-                    // Special case for Titles with counts
-                    if (key === 'links') {
-                        const countMatch = el.innerText.match(/\(\d+\)/);
-                        el.innerText = map[key][next] + (countMatch ? ' ' + countMatch[0] : '');
-                    } else {
-                        el.innerText = map[key][next];
-                    }
-                }
-            });
-        }
-
+        // Initialize
+        init();
     </script>
 </body>
 
