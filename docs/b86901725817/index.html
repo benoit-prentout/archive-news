@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="creation_date" content="19/12/2025 à 14:18">
+    <meta name="sender" content=""MonJardinBio.com" <contact@monjardinbio.com>">
+    <meta name="archiving_date" content="19/12/2025 à 17:16">
+    <meta name="preheader" content="Epsiloon x MonJardinBio Le magazine scientifique pour voir le monde autrement : offre exclusive ! ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­...">
+    <meta name="reading_time" content="1 min">
+    <title>[TEST] {prénom} découvrez Epsiloon pour 1€ seulement 🌿</title>
+    <style>
+        :root {
+            --bg-body: #eef2f5;
+            --bg-header: #ffffff;
+            --text-main: #333;
+            --border: #ddd;
+            --accent: #0070f3;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-header: #1e1e1e;
+            --text-main: #e0e0e0;
+            --border: #333;
+            --accent: #4da3ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-body);
+            font-family: Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            color: var(--text-main);
+            transition: background 0.3s;
+        }
+
+        /* HEADER with Toolbar */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-header);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 200;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 20px;
+            flex: 1;
+        }
+
+        .controls-group {
+            display: flex;
+            gap: 10px;
+            border-right: 1px solid var(--border);
+            padding-right: 10px;
+            margin-right: 10px;
+        }
+
+        .controls-group:last-child {
+            border-right: none;
+            padding-right: 0;
+            margin-right: 0;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+            min-width: 32px;
+        }
+
+        .btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn-label {
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+        }
+
+        @media (min-width: 800px) {
+            .btn-label {
+                display: block;
+            }
+        }
+
+        /* MAIN VIEW - Device Simulation */
+        .main-view {
+            margin-top: 60px;
+            height: calc(100vh - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: auto;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .device-wrapper {
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                border-radius 0.5s ease,
+                box-shadow 0.3s ease;
+            background: #333;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden !important;
+            border-radius: 4px;
+        }
+
+        /* Notch & Home Bar */
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #333;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            z-index: 10;
+            display: none;
+        }
+
+        .notch::after {
+            /* Speaker/Camera */
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: #555;
+            border-radius: 2px;
+        }
+
+        .home-bar {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 5px;
+            background: #555;
+            border-radius: 10px;
+            z-index: 10;
+            display: none;
+        }
+
+        /* Desktop (Default) */
+        .device-wrapper[data-mode="desktop"] {
+            background: white;
+            width: 1000px;
+            height: 100%;
+            max-height: 90vh;
+            border: 1px solid #ddd;
+        }
+
+        /* Mobile */
+        .device-wrapper[data-mode="mobile"] {
+            width: 320px;
+            height: 667px;
+            border-radius: 40px;
+            border: 10px solid #333;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            padding: 0;
+        }
+
+        .device-wrapper[data-mode="mobile"] .notch {
+            display: block;
+            width: 120px;
+            height: 25px;
+        }
+
+        .device-wrapper[data-mode="mobile"] .home-bar {
+            display: block;
+            width: 80px;
+        }
+
+        /* Tablet */
+        .device-wrapper[data-mode="tablet"] {
+            width: 768px;
+            max-width: 90%;
+            height: 90%;
+            max-height: 800px;
+            border-radius: 24px;
+            border: 12px solid #333;
+        }
+
+        iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            display: block;
+            border-radius: inherit;
+            background: white;
+        }
+
+        /* OUTLOOK QUIRKS MODE (Apply to iframe content via JS injections or wrapper class) */
+        /* Note: We can't easily change internal rendering engine, but we can restrict CSS via JS inside iframe */
+
+        /* SIDEBAR (Metadata) */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            right: -420px;
+            width: 420px;
+            height: calc(100vh - 60px);
+            background: var(--bg-header);
+            border-left: 1px solid var(--border);
+            transition: right 0.3s;
+            overflow-y: auto;
+            z-index: 90;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Utility classes from previous version */
+        .meta-item {
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        [data-theme="dark"] .meta-item {
+            color: #aaa;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .preheader-box {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            font-style: italic;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* Link Cards */
+        .links-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-card {
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--bg-header);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .link-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent);
+        }
+
+        .link-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .link-card-index {
+            background: var(--accent);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .link-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1;
+            margin-right: 10px;
+            line-height: 1.4;
+        }
+
+        .link-card-url {
+            font-size: 11px;
+            color: #777;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            opacity: 0.8;
+        }
+
+        [data-theme="dark"] .link-card-url {
+            color: #999;
+        }
+
+        /* Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* CLIP WARNING */
+        .clip-warning {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .device-wrapper.clipped .clip-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="title">[TEST] {prénom} découvrez Epsiloon pour 1€ seulement 🌿</div>
+
+        <div class="controls">
+            <!-- Device Toolbar -->
+            <div class="controls-group">
+                <button class="btn active" onclick="setDevice('desktop')" title="Desktop View">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span class="btn-label" data-i18n="desktop">Desktop</span>
+                </button>
+                <button class="btn" onclick="setDevice('tablet')" title="Tablet View">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                    <span class="btn-label" data-i18n="tablet">Tablet</span>
+                </button>
+                <button class="btn" onclick="setDevice('mobile')" title="Mobile View">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                    <span class="btn-label" data-i18n="mobile">Mobile</span>
+                </button>
+            </div>
+
+            <!-- Analysis Toolbar -->
+            <div class="controls-group">
+                <button class="btn" onclick="toggleLinks()" id="btn-links" title="Toggle Info Sidebar">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    &nbsp;Info
+                </button>
+                <button class="btn" onclick="toggleHighlight()" id="btn-highlight" title="Highlight Links">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="6"></circle>
+                        <line x1="22" y1="12" x2="18" y2="12"></line>
+                        <line x1="6" y1="12" x2="2" y2="12"></line>
+                        <line x1="12" y1="6" x2="12" y2="2"></line>
+                        <line x1="12" y1="22" x2="12" y2="18"></line>
+                    </svg>
+                </button>
+                <button class="btn" onclick="toggleDark()" id="btn-dark" title="Toggle Dark Mode">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button class="btn" onclick="toggleSource()" id="btn-source" title="View Source">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <div class="controls-group">
+                <button class="btn" onclick="toggleLang()" id="btn-lang">
+                    FR
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-view">
+        <div class="device-wrapper" id="deviceWrapper" data-mode="desktop">
+            <div class="notch"></div>
+            <div class="home-bar"></div>
+            <div class="clip-warning">⚠️ Gmail Clipping Warning (>102KB)</div>
+            <iframe id="emailFrame"></iframe>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <h3 data-i18n="metadata">Metadata</h3>
+            <div class="meta-item"><span class="emoji">📝</span> <span class="meta-label"
+                    data-i18n="object">Object</span>[TEST] {prénom} découvrez Epsiloon pour 1€ seulement 🌿</div>
+            <div class="meta-item"><span class="emoji">📅</span> <span class="meta-label" data-i18n="sent date">Sent
+                    Date</span>19/12/2025 à 14:18</div>
+            <div class="meta-item"><span class="emoji">🗄️</span> <span class="meta-label"
+                    data-i18n="archived date">Archived Date</span>19/12/2025 à 17:16
+            </div>
+            <div class="meta-item"><span class="emoji">⏱️</span> <span class="meta-label"
+                    data-i18n="reading time">Reading Time</span>1 min</div>
+            <div class="meta-item"><span class="emoji">👀</span> <span class="meta-label"
+                    data-i18n="preheader">Preheader</span>
+                <div class="preheader-box">Epsiloon x MonJardinBio Le magazine scientifique pour voir le monde autrement : offre exclusive ! ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­...</div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3 data-i18n="links">Links (8)</h3>
+            <div class="links-list">
+                
+                <div class="link-card" onclick="focusLink(1)">
+                    <div class="link-card-header">
+                        <div class="link-card-title"></div>
+                        <div class="link-card-index">#1</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/6945116f40f5f</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(2)">
+                    <div class="link-card-header">
+                        <div class="link-card-title"></div>
+                        <div class="link-card-index">#2</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/69451179a7ae9</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(3)">
+                    <div class="link-card-header">
+                        <div class="link-card-title"></div>
+                        <div class="link-card-index">#3</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/69314cdcb0a3f</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(4)">
+                    <div class="link-card-header">
+                        <div class="link-card-title">JE DÉCOUVRE EPSILOON POUR 1€</div>
+                        <div class="link-card-index">#4</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/69314cdcb0a3f</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(5)">
+                    <div class="link-card-header">
+                        <div class="link-card-title">JE M'ABONNE À EPSILOON</div>
+                        <div class="link-card-index">#5</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/69450b3a91746</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(6)">
+                    <div class="link-card-header">
+                        <div class="link-card-title">J'OFFRE UN ABONNEMENT</div>
+                        <div class="link-card-index">#6</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/6931cdd3c9ecc</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(7)">
+                    <div class="link-card-header">
+                        <div class="link-card-title">Se désabonner</div>
+                        <div class="link-card-index">#7</div>
+                    </div>
+                    <div class="link-card-url">https://www.monjardinbio.com/account/unsubscribe/preview</div>
+                </div>
+                
+                <div class="link-card" onclick="focusLink(8)">
+                    <div class="link-card-header">
+                        <div class="link-card-title"></div>
+                        <div class="link-card-index">#8</div>
+                    </div>
+                    <div class="link-card-url">https://gtinsi.de/69451525d3b35</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js"></script>
+    <script>
+        // INJECTED CONTENT
+        const emailContent = "<!DOCTYPE html>\n<html lang=\"fr\"><head>\n<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"/>\n<meta charset=\"utf-8\"/>\n<meta content=\"width=device-width, initial-scale=1.0\" name=\"viewport\"/>\n<meta name=\"x-apple-disable-message-reformatting\"/>\n<title>Epsiloon x MonJardinBio</title>\n<style>\r\n        /* Reset et styles de base */\r\n        body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #f4f4f4; font-family: 'Helvetica', 'Arial', sans-serif; }\r\n        table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }\r\n        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; max-width: 100%; display: block; }\r\n        \r\n        /* Couleurs de la charte */\r\n        .bg-body { background-color: #f4f4f4; }\r\n        .bg-white { background-color: #ffffff; }\r\n        .text-mjb { color: #435e1b; } /* Vert Mon Jardin Bio */\r\n        \r\n        /* Boutons */\r\n        .btn-primary {\r\n            background-color: #FEED2E; /* Jaune Epsiloon */\r\n            color: #000000;\r\n            font-weight: bold;\r\n            text-decoration: none;\r\n            padding: 15px 25px;\r\n            display: inline-block;\r\n            border-radius: 0px; /* Style carr\u00e9 Epsiloon */\r\n            text-transform: uppercase;\r\n            font-size: 16px;\r\n            letter-spacing: 0.5px;\r\n            mso-padding-alt: 0;\r\n            text-align: center;\r\n            border: 1px solid #e6d900;\r\n        }\r\n        \r\n        .btn-green {\r\n            background-color: #435e1b; \r\n            color: #ffffff;\r\n            border: none;\r\n        }\r\n\r\n        .btn-black {\r\n            background-color: #000000; \r\n            color: #FEED2E;\r\n            border: 1px solid #000000;\r\n        }\r\n        \r\n        /* Mobile */\r\n        @media only screen and (max-width: 600px) {\r\n            .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }\r\n            .mobile-stack { display: block !important; width: 100% !important; padding-bottom: 10px; }\r\n            .mobile-img { width: 100% !important; height: auto !important; }\r\n            .mobile-text-center { text-align: center !important; }\r\n            .testimonial-box { height: auto !important; margin-bottom: 15px !important; }\r\n        }\r\n    </style>\n</head>\n<body class=\"bg-body\">\n<div style=\"display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif\">Le magazine scientifique pour voir le monde autrement : offre exclusive !</div>\n<div style=\"display: none; max-height: 0px; overflow: hidden\">\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00a0</div>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"bg-body\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"bg-white mobile-img\" style=\"margin-top: 20px; margin-bottom: 20px; max-width: 600px; box-shadow: 0px 2px 10px rgba(0,0,0,0.05);\" width=\"600\">\n<tbody><tr>\n<td align=\"center\" style=\"padding: 25px 20px; border-bottom: 1px solid #eeeeee;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" style=\"font-size:0;\" valign=\"middle\">\n<a data-index=\"1\" href=\"https://gtinsi.de/6945116f40f5f\" style=\"text-decoration:none; border:0;\" target=\"_blank\">\n<img alt=\"MonJardinBio.com\" src=\"img_0.png\" style=\"display: inline-block; vertical-align: middle; border:0;\" width=\"140\"/>\n</a>\n<span style=\"font-size: 24px; color: #dddddd; margin: 0 15px; vertical-align: middle; font-weight:300; line-height:1;\">|</span>\n<a data-index=\"2\" href=\"https://gtinsi.de/69451179a7ae9\" style=\"text-decoration:none; border:0;\" target=\"_blank\">\n<img alt=\"Epsiloon\" src=\"img_1.png\" style=\"display: inline-block; vertical-align: middle; border:0;\" width=\"140\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding: 0;\">\n<a data-index=\"3\" href=\"https://gtinsi.de/69314cdcb0a3f\" style=\"text-decoration:none; border:0;\" target=\"_blank\">\n<img alt=\"D\u00e9couvrez Epsiloon\" class=\"mobile-img\" src=\"img_2.png\" style=\"display:block; border:0;\" width=\"600\"/>\n</a>\n</td>\n</tr>\n<tr>\n<td class=\"mobile-padding\" style=\"padding: 35px 40px 20px 40px; text-align: center;\">\n<h1 style=\"font-family: 'Helvetica', 'Arial', sans-serif; color: #435e1b; font-size: 22px; line-height: 1.4; margin: 0 0 20px 0;\">\r\n                                \ud83c\udf0d Offre exclusive : votre premier mois d'abonnement \u00e0 Epsiloon pour 1\u20ac seulement !\r\n                            </h1>\n<p style=\"font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;\">\r\n                                Chez <strong>MonJardinBio.com</strong>, on conna\u00eet l'importance d'\u00e9couter la nature pour en comprendre ses m\u00e9canismes profonds et mieux la respecter au quotidien.\r\n                            </p>\n<p style=\"font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 30px;\">\r\n                                C'est pourquoi nous avons le plaisir de vous faire d\u00e9couvrir <strong>Epsiloon</strong>, le magazine scientifique d'actualit\u00e9 ind\u00e9pendant qui explore le vivant et vous offre un nouveau regard sur le monde.\r\n                            </p>\n<p style=\"font-size: 18px; font-weight: bold; color: #000000; margin-bottom: 30px;\">\r\n                                Profitez d'une offre d\u00e9couverte \u00e0 1\u20ac le premier mois, sans engagement !\r\n                            </p>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\">\n<a class=\"btn-primary\" data-index=\"4\" href=\"https://gtinsi.de/69314cdcb0a3f\" target=\"_blank\">\r\n                                            JE D\u00c9COUVRE EPSILOON POUR 1\u20ac\r\n                                        </a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td class=\"mobile-padding\" style=\"padding: 30px 40px; background-color: #ffffff;\">\n<h2 style=\"font-size: 18px; color: #435e1b; margin-top: 0; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; font-weight:800;\">\r\n                                Pourquoi vous allez adorer Epsiloon ?\r\n                            </h2>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"font-size: 20px; padding-bottom:15px;\" valign=\"top\" width=\"30\">\ud83d\udd2c</td>\n<td style=\"padding-bottom: 15px; font-size: 15px; color: #333333; line-height: 1.5;\" valign=\"top\">\r\n                                        Des enqu\u00eates passionnantes sur les derni\u00e8res avanc\u00e9es scientifiques, la biodiversit\u00e9, les myst\u00e8res du vivant.\r\n                                    </td>\n</tr>\n<tr>\n<td style=\"font-size: 20px; padding-bottom:15px;\" valign=\"top\" width=\"30\">\u2728</td>\n<td style=\"padding-bottom: 15px; font-size: 15px; color: #333333; line-height: 1.5;\" valign=\"top\">\r\n                                        Des histoires originales et des rencontres avec les plus grands chercheurs.\r\n                                    </td>\n</tr>\n<tr>\n<td style=\"font-size: 20px; padding-bottom:15px;\" valign=\"top\" width=\"30\">\ud83d\udc4c</td>\n<td style=\"padding-bottom: 15px; font-size: 15px; color: #333333; line-height: 1.5;\" valign=\"top\">\r\n                                        Un ton clair, accessible\u2026 doubl\u00e9 d'un journalisme sinc\u00e8re et document\u00e9.\r\n                                    </td>\n</tr>\n<tr>\n<td style=\"font-size: 20px; padding-bottom:0px;\" valign=\"top\" width=\"30\">\ud83c\udf3f</td>\n<td style=\"padding-bottom: 0px; font-size: 15px; color: #333333; line-height: 1.5;\" valign=\"top\">\r\n                                        Une lecture qui se savoure comme un jardin : \u00e9clatante, surprenante, pleine de nuances.\r\n                                    </td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" class=\"mobile-padding\" style=\"padding: 40px; background-color: #FEED2E;\">\n<h3 style=\"margin-top:0; margin-bottom:20px; font-size: 18px; text-transform:uppercase;\">D\u00e9j\u00e0 35 000 abonn\u00e9s fid\u00e8les</h3>\n<img alt=\"Avis abonn\u00e9s Epsiloon\" src=\"img_3.png\" style=\"width:100%; max-width:520px; border:0;\" width=\"520\"/>\n</td>\n</tr>\n<tr>\n<td class=\"mobile-padding\" style=\"padding: 40px 40px;\">\n<h2 style=\"font-size: 18px; color: #435e1b; margin-top: 0; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; font-weight:800;\">\r\n                                Un abonnement pour nourrir votre passion du vivant\r\n                            </h2>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"font-size: 18px; color: #435e1b;\" valign=\"top\" width=\"30\">\u2705</td>\n<td style=\"padding-bottom: 10px; font-size: 16px; color: #333333;\" valign=\"top\">\n<strong>1 num\u00e9ro chaque mois</strong> comme une plong\u00e9e dans l'actualit\u00e9\r\n                                    </td>\n</tr>\n<tr>\n<td style=\"font-size: 18px; color: #435e1b;\" valign=\"top\" width=\"30\">\u2705</td>\n<td style=\"padding-bottom: 10px; font-size: 16px; color: #333333;\" valign=\"top\">\n<strong>1 hors s\u00e9rie chaque trimestre</strong> centr\u00e9 sur un sujet cl\u00e9\r\n                                    </td>\n</tr>\n<tr>\n<td style=\"font-size: 18px; color: #435e1b;\" valign=\"top\" width=\"30\">\u2705</td>\n<td style=\"padding-bottom: 10px; font-size: 16px; color: #333333;\" valign=\"top\">\r\n                                        Acc\u00e8s illimit\u00e9 \u00e0 tous les anciens articles\r\n                                    </td>\n</tr>\n<tr>\n<td style=\"font-size: 18px; color: #435e1b;\" valign=\"top\" width=\"30\">\u2705</td>\n<td style=\"padding-bottom: 0; font-size: 16px; color: #333333;\" valign=\"top\">\r\n                                        Offre sans engagement, r\u00e9siliable \u00e0 tout moment\r\n                                    </td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td class=\"mobile-padding\" style=\"padding: 0 40px 40px 40px; text-align: center;\">\n<p style=\"font-size: 18px; font-style: italic; color: #555555; margin-bottom: 20px;\">\r\n                                \"Comme un jardin, la curiosit\u00e9 se cultive. Avec Epsiloon, elle se nourrit chaque mois.\"\r\n                            </p>\n<p style=\"font-size: 16px; color: #000000; font-weight: bold; margin-bottom: 25px;\">\r\n                                \ud83c\udf89 Profitez vite de votre offre d\u00e9couverte \u00e0 1\u20ac le premier mois !\r\n                            </p>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\">\n<a class=\"btn-primary btn-green\" data-index=\"5\" href=\"https://gtinsi.de/69450b3a91746\" style=\"color: #ffffff !important; text-decoration: none;\" target=\"_blank\">\r\n                JE M'ABONNE \u00c0 EPSILOON\r\n            </a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td class=\"mobile-padding\" style=\"padding: 30px 40px; background-color: #FEED2E; text-align: center;\">\n<p style=\"font-size: 16px; line-height: 1.5; color: #000000; margin: 0 0 20px 0;\">\r\n                                \ud83c\udf81 <strong>Et \u00e0 l'occasion des f\u00eates de fin d'ann\u00e9e</strong>, offrez \u00e0 vos proches jusqu\u2019\u00e0 deux ans de journalisme scientifique ind\u00e9pendant \u2013 vous avez bien en t\u00eate quelqu'un \u00e0 qui cela peut faire plaisir ?\r\n                            </p>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\">\n<a class=\"btn-primary btn-black\" data-index=\"6\" href=\"https://gtinsi.de/6931cdd3c9ecc\" style=\"color: #ffffff !important; text-decoration: none;\" target=\"_blank\">\r\n                J'OFFRE UN ABONNEMENT\r\n            </a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding: 30px 20px; background-color: #333333; color: #aaaaaa; font-size: 12px; line-height: 1.5;\">\n<a data-index=\"7\" href=\"https://www.monjardinbio.com/account/unsubscribe/preview\" style=\"color: inherit;\" target=\"_blank\">Se d\u00e9sabonner</a>\n<p style=\"font-size: 10px; color: #777777; margin: 0 0 30px 0; line-height: 1.4;\">\r\n                                MonJardinBio.com est \u00e9dit\u00e9 par SYNERGIE 360<br/>\r\n                                26 rue de Colmar - 68420 EGUISHEIM<br/>\r\n                                RCS Colmar TI 513 281 816\r\n                            </p>\n<a data-index=\"8\" href=\"https://gtinsi.de/69451525d3b35\" style=\"text-decoration:none; border:0;\" target=\"_blank\">\n<img alt=\"GetInside\" src=\"img_4.png\" style=\"border:0; display:inline-block; opacity:0.6;\" width=\"80\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<img alt=\"\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/>\n</body></html>\n";
+        const emailSize = 12970; // bytes
+
+        // SETUP FRAME
+        const wrapper = document.getElementById('deviceWrapper');
+        const frame = document.getElementById('emailFrame');
+
+        function initFrame() {
+            try {
+                const doc = frame.contentDocument;
+                doc.open();
+
+                // 1. Inject Viewport if missing
+                let content = emailContent;
+                if (!content.toLowerCase().includes('name="viewport"')) {
+                    content = '<meta name="viewport" content="width=device-width, initial-scale=1.0">' + content;
+                }
+
+                doc.write(content);
+                doc.close();
+
+                // 2. Inject base styles for iframe
+                const style = doc.createElement('style');
+                style.textContent = `
+                    body { margin: 0; padding: 0; font-family: sans-serif; background: white; }
+                    
+                    /* Responsive Fixes */
+                    html, body { 
+                        width: 100%; 
+                        overflow-x: hidden; 
+                        -webkit-text-size-adjust: 100%;
+                    }
+                    
+                    /* Force images/tables into viewport */
+                    img { max-width: 100% !important; height: auto !important; }
+                    table { max-width: 100% !important; }
+                    
+                    html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
+                    html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
+                    
+                    html::-webkit-scrollbar { display: none; } /* Hide SCROLLBAR in mobile mode mostly */
+                    
+                    /* Highlight classes */
+                    body.highlight-links a { 
+                        position: relative;
+                        box-shadow: 0 0 0 3px red, 0 0 10px yellow !important; 
+                        background-color: rgba(255, 255, 0, 0.2); 
+                        z-index: 9999;
+                        display: inline-block;
+                    }
+                    
+                    /* OVERLAY BADGE */
+                    .link-badge-overlay {
+                        position: absolute;
+                        z-index: 2147483647;
+                        background: #ff4444; /* Brighter red */
+                        color: white;
+                        border: 2px solid white;
+                        border-radius: 50%;
+                        width: 24px; height: 24px;
+                        font-size: 12px; font-weight: bold;
+                        display: flex; justify-content: center; align-items: center;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+                        pointer-events: none;
+                        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    }
+                    .link-badge-overlay.pulse {
+                        animation: badgePulse 1.5s 2;
+                    }
+                    @keyframes badgePulse {
+                        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+                        70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+                        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+                    }
+                `;
+                doc.head.appendChild(style);
+
+                // CHECK CLIPPING
+                if (emailSize > 102 * 1024) {
+                    wrapper.classList.add('clipped');
+                }
+            } catch (e) {
+                console.error("Failed to initialize iframe:", e);
+                // Try to at least close the document to avoid hang
+                try { frame.contentDocument.close(); } catch (err) { }
+            }
+        }
+
+        initFrame();
+
+        function focusLink(index) {
+            const doc = frame.contentDocument;
+            const link = doc.querySelector(`a[data-index="${index}"]`);
+            if (link) {
+                if (!doc.body.classList.contains('highlight-links')) toggleHighlight();
+                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const badge = Array.from(doc.querySelectorAll('.link-badge-overlay')).find(b => b.textContent == index);
+                if (badge) {
+                    badge.classList.add('pulse');
+                    setTimeout(() => badge.classList.remove('pulse'), 3000);
+                }
+            }
+        }
+
+        // ACTIONS
+        function setDevice(mode) {
+            wrapper.setAttribute('data-mode', mode);
+            document.querySelectorAll('.controls-group:first-child .btn').forEach(b => b.classList.remove('active'));
+            // Find the button (handle direct call or click event)
+            const clickedBtn = (window.event && window.event.target) ? window.event.target.closest('.btn') : document.querySelector(`.btn[onclick *= "'${mode}'"]`);
+            if (clickedBtn) clickedBtn.classList.add('active');
+
+            // Recalculate badges if highlighting is on
+            if (frame.contentDocument.body.classList.contains('highlight-links')) {
+                setTimeout(repositionBadges, 600); // Wait for transition
+            }
+        }
+
+        function repositionBadges() {
+            const doc = frame.contentDocument;
+            const body = doc.body;
+            doc.querySelectorAll('.link-badge-overlay').forEach(b => b.remove());
+
+            doc.querySelectorAll('a[data-index]').forEach(link => {
+                const rect = link.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) return;
+                const badge = doc.createElement('div');
+                badge.className = 'link-badge-overlay';
+                badge.textContent = link.getAttribute('data-index');
+                badge.style.top = (rect.top + doc.documentElement.scrollTop - 10) + 'px';
+                badge.style.left = (rect.left + doc.documentElement.scrollLeft - 10) + 'px';
+                body.appendChild(badge);
+            });
+        }
+
+        function toggleLinks() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('btn-links').classList.toggle('active');
+        }
+
+        function toggleDark() {
+            document.body.setAttribute('data-theme',
+                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+            );
+            frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
+            document.getElementById('btn-dark').classList.toggle('active');
+        }
+
+        function toggleHighlight() {
+            const btn = document.getElementById('btn-highlight');
+            const doc = frame.contentDocument;
+            const body = doc.body;
+
+            body.classList.toggle('highlight-links');
+            btn.classList.toggle('active');
+
+            const isActive = body.classList.contains('highlight-links');
+
+            if (isActive) {
+                // GENERATE OVERLAY BADGES
+                const links = doc.querySelectorAll('a[data-index]');
+                links.forEach(link => {
+                    const rect = link.getBoundingClientRect();
+                    // Ignore hidden links
+                    if (rect.width === 0 || rect.height === 0) return;
+
+                    const badge = doc.createElement('div');
+                    badge.className = 'link-badge-overlay';
+                    badge.textContent = link.getAttribute('data-index');
+                    // Absolute positioning relative to body (scrolled)
+                    badge.style.top = (rect.top + doc.documentElement.scrollTop - 10) + 'px';
+                    badge.style.left = (rect.left + doc.documentElement.scrollLeft - 10) + 'px';
+                    body.appendChild(badge);
+                });
+            } else {
+                // REMOVE BADGES
+                const badges = doc.querySelectorAll('.link-badge-overlay');
+                badges.forEach(b => b.remove());
+            }
+        }
+
+        function toggleSource() {
+            const w = window.open("", "_blank");
+            const formatted = html_beautify(emailContent);
+            w.document.write('<pre>' + formatted.replace(/</g, "&lt;") + '</pre>');
+        }
+
+        function toggleLang() {
+            const btn = document.getElementById('btn-lang');
+            const current = btn.innerText.trim().toUpperCase();
+            const next = current === 'EN' ? 'FR' : 'EN';
+            btn.innerText = next;
+
+            const map = {
+                'desktop': { 'FR': 'Bureau', 'EN': 'Desktop' },
+                'tablet': { 'FR': 'Tablette', 'EN': 'Tablet' },
+                'mobile': { 'FR': 'Mobile', 'EN': 'Mobile' },
+                'metadata': { 'FR': 'Métadonnées', 'EN': 'Metadata' },
+                'object': { 'FR': 'Objet', 'EN': 'Object' },
+                'sent date': { 'FR': "Date d'envoi", 'EN': 'Sent Date' },
+                'archived date': { 'FR': "Date d'archivage", 'EN': 'Archived Date' },
+                'reading time': { 'FR': 'Temps de lecture', 'EN': 'Reading Time' },
+                'preheader': { 'FR': 'Pré-en-tête', 'EN': 'Preheader' },
+                'links': { 'FR': 'Liens', 'EN': 'Links' }
+            };
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (map[key] && map[key][next]) {
+                    // Special case for Titles with counts
+                    if (key === 'links') {
+                        const countMatch = el.innerText.match(/\(\d+\)/);
+                        el.innerText = map[key][next] + (countMatch ? ' ' + countMatch[0] : '');
+                    } else {
+                        el.innerText = map[key][next];
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>
