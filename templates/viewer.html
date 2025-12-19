@@ -134,7 +134,10 @@
         }
 
         .device-wrapper {
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                border-radius 0.5s ease,
+                box-shadow 0.3s ease;
             background: #333;
             box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
             position: relative;
@@ -421,8 +424,10 @@
             <h3>Links ({{ links|length }})</h3>
             <ul>
                 {% for link in links %}
-                <li
-                    style="margin-bottom:10px; border:1px solid #eee; padding:5px; border-radius:4px; background:white;">
+                <li onclick="focusLink({{ link.index }})"
+                    style="margin-bottom:10px; border:1px solid #eee; padding:5px; border-radius:4px; background:white; cursor:pointer; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateX(5px)'; this.style.borderColor='var(--accent)';"
+                    onmouseout="this.style.transform='translateX(0)'; this.style.borderColor='#eee';">
                     <div style="font-size:12px; font-weight:bold;">#{{ link.index }} {{ link.txt }}</div>
                     <div style="font-size:10px; color:#666; word-break:break-all;">{{ link.original_url }}</div>
                 </li>
@@ -441,64 +446,31 @@
         const wrapper = document.getElementById('deviceWrapper');
         const frame = document.getElementById('emailFrame');
 
-        function initFrame() {
-            const doc = frame.contentDocument;
-            doc.open();
-
-            // 1. Inject Viewport if missing
-            let content = emailContent;
-            if (!content.toLowerCase().includes('name="viewport"')) {
-                content = '<meta name="viewport" content="width=device-width, initial-scale=1.0">' + content;
-            }
-
-            doc.write(content);
-            doc.close();
-
-            // 2. Inject base styles for iframe
-            const style = doc.createElement('style');
-            style.textContent = `
-                body { margin: 0; padding: 0; font-family: sans-serif; background: white; }
-                
-                /* Responsive Fixes */
-                html, body { 
-                    width: 100%; 
-                    overflow-x: hidden; 
-                    -webkit-text-size-adjust: 100%;
-                }
-                
-                /* Force images/tables into viewport */
-                img { max-width: 100% !important; height: auto !important; }
-                table { max-width: 100% !important; }
-                
-                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
-                html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
-                
-                html::-webkit-scrollbar { display: none; } /* Hide SCROLLBAR in mobile mode mostly */
-                
-                /* Highlight classes */
-                body.highlight-links a { 
-                    position: relative;
-                    box-shadow: 0 0 0 3px red, 0 0 10px yellow !important; 
-                    background-color: rgba(255, 255, 0, 0.2); 
-                    z-index: 9999;
-                    display: inline-block;
-                }
-                
                 /* OVERLAY BADGE */
-                .link-badge-overlay {
-                    position: absolute;
-                    z-index: 2147483647;
-                    background: black;
-                    color: white;
-                    border: 1px solid white;
-                    border-radius: 50%;
-                    width: 20px; height: 20px;
-                    font-size: 10px; font-weight: bold;
-                    display: flex; justify-content: center; align-items: center;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                    pointer-events: none;
+                .link - badge - overlay {
+            position: absolute;
+            z - index: 2147483647;
+            background: #ff4444; /* Brighter red */
+            color: white;
+            border: 2px solid white;
+            border - radius: 50 %;
+            width: 24px; height: 24px;
+            font - size: 12px; font - weight: bold;
+            display: flex; justify - content: center; align - items: center;
+            box - shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            pointer - events: none;
+            transition: transform 0.3s cubic - bezier(0.175, 0.885, 0.32, 1.275);
+        }
+                .link - badge - overlay.pulse {
+            animation: badgePulse 1.5s 2;
+        }
+        @keyframes badgePulse {
+            0 % { transform: scale(1); box- shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+        }
+        70 % { transform: scale(1.4); box- shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+        100 % { transform: scale(1); box- shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
                 }
-            `;
+        `;
             doc.head.appendChild(style);
 
             // CHECK CLIPPING
@@ -509,12 +481,26 @@
 
         initFrame();
 
+        function focusLink(index) {
+            const doc = frame.contentDocument;
+            const link = doc.querySelector(`a[data - index= "${index}"]`);
+            if (link) {
+                if (!doc.body.classList.contains('highlight-links')) toggleHighlight();
+                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const badge = Array.from(doc.querySelectorAll('.link-badge-overlay')).find(b => b.textContent == index);
+                if (badge) {
+                    badge.classList.add('pulse');
+                    setTimeout(() => badge.classList.remove('pulse'), 3000);
+                }
+            }
+        }
+
         // ACTIONS
         function setDevice(mode) {
             wrapper.setAttribute('data-mode', mode);
             document.querySelectorAll('.controls-group:first-child .btn').forEach(b => b.classList.remove('active'));
             // Find the button (handle direct call or click event)
-            const clickedBtn = (window.event && window.event.target) ? window.event.target.closest('.btn') : document.querySelector(`.btn[onclick*="'${mode}'"]`);
+            const clickedBtn = (window.event && window.event.target) ? window.event.target.closest('.btn') : document.querySelector(`.btn[onclick *= "'${mode}'"]`);
             if (clickedBtn) clickedBtn.classList.add('active');
 
             // Recalculate badges if highlighting is on
@@ -601,19 +587,36 @@
             const map = {
                 'desktop': { 'FR': 'Bureau', 'EN': 'Desktop' },
                 'tablet': { 'FR': 'Tablette', 'EN': 'Tablet' },
-                'mobile': { 'FR': 'Mobile', 'EN': 'Mobile' }
+                'mobile': { 'FR': 'Mobile', 'EN': 'Mobile' },
+                'metadata': { 'FR': 'Métadonnées', 'EN': 'Metadata' },
+                'object': { 'FR': 'Objet', 'EN': 'Object' },
+                'sent date': { 'FR': "Date d'envoi", 'EN': 'Sent Date' },
+                'archived date': { 'FR': "Date d'archivage", 'EN': 'Archived Date' },
+                'reading time': { 'FR': 'Temps de lecture', 'EN': 'Reading Time' },
+                'preheader': { 'FR': 'Pré-en-tête', 'EN': 'Preheader' },
+                'links': { 'FR': 'Liens', 'EN': 'Links' }
             };
 
-            document.querySelectorAll('.btn-label').forEach(el => {
-                // We use a data attibute for the key to avoid losing the original key after translation
-                let key = el.getAttribute('data-key');
-                if (!key) {
-                    key = el.innerText.toLowerCase();
-                    el.setAttribute('data-key', key);
-                }
+            // Translate labels in toolbar (btn-label) and sidebar (h3 and meta-label)
+            document.querySelectorAll('.btn-label, .meta-label, .sidebar h3').forEach(el => {
+                let text = el.innerText.replace(/[📝📅🗄️⏱️👀]/g, '').trim().toLowerCase();
+                // Special case for "Links (n)"
+                if (text.startsWith('links')) text = 'links';
+
+                let key = el.getAttribute('data-key') || text;
+                if (!el.getAttribute('data-key')) el.setAttribute('data-key', key);
 
                 if (map[key] && map[key][next]) {
-                    el.innerText = map[key][next];
+                    // Preserve icon if it exists (for h3)
+                    const iconMatch = el.innerText.match(/[📝📅🗄️⏱️👀]/);
+                    const icon = iconMatch ? iconMatch[0] + ' ' : '';
+
+                    if (key === 'links') {
+                        const count = el.innerText.match(/\(\d+\)/);
+                        el.innerText = map[key][next] + (count ? ' ' + count[0] : '');
+                    } else {
+                        el.innerText = icon + map[key][next];
+                    }
                 }
             });
         }
