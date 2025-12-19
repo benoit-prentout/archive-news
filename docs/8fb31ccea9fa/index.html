@@ -72,7 +72,6 @@
             border: 12px solid #111;
         }
 
-        /* iPhone Notch Mockup */
         .device-frame[data-mode="mobile"]::before {
             content: '';
             position: absolute;
@@ -141,17 +140,18 @@
             margin-top: 0;
         }
 
-        /* Metadata Inline Style */
         .meta-row {
             margin-bottom: 12px;
             font-size: 0.9rem;
             line-height: 1.4;
+            display: flex;
+            justify-content: space-between;
         }
 
         .meta-key {
             color: var(--text-secondary);
-            margin-right: 5px;
             font-weight: 500;
+            text-align: left;
         }
 
         .meta-key::after {
@@ -161,6 +161,9 @@
         .meta-val {
             color: var(--text-primary);
             font-weight: 400;
+            text-align: right;
+            margin-left: 10px;
+            word-break: break-word;
         }
 
         /* Links */
@@ -168,7 +171,6 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            counter-reset: link-counter;
         }
 
         .link-item {
@@ -324,17 +326,33 @@
             border-color: var(--text-primary);
         }
 
-        .device-toggles .device-btn {
-            padding: 6px 12px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: var(--text-secondary);
+        .device-toggles {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px;
+            border-radius: 10px;
         }
 
-        .device-toggles .device-btn.active {
+        .device-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .device-btn.active {
+            background: var(--bg-body);
             color: var(--text-primary);
-            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .device-toggles {
+            background: rgba(255, 255, 255, 0.05);
         }
 
         [data-theme="dark"] .pixel-header {
@@ -353,16 +371,16 @@
         <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
 
         <div class="device-toggles">
-            <button class="device-btn" onclick="setMode('mobile')">Mobile</button>
-            <button class="device-btn" onclick="setMode('tablet')">Tablet</button>
-            <button class="device-btn active" onclick="setMode('desktop')">Desktop</button>
+            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode">Mobile</button>
+            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode">Tablet</button>
+            <button class="device-btn active" onclick="setMode('desktop')" title="View in Desktop Mode">Desktop</button>
         </div>
 
         <div class="action-group">
-            <button class="action-btn" onclick="toggleLanguage()">
+            <button class="action-btn" onclick="toggleLanguage()" title="Switch Language (FR/EN)">
                 <span id="lang-toggle-text">FR</span>
             </button>
-            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()">
+            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
                 <svg class="icon icon-moon" viewBox="0 0 24 24">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
@@ -378,13 +396,14 @@
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </button>
-            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()">
+            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()"
+                title="Highlight Links in Email">
                 <svg class="icon" viewBox="0 0 24 24">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                 </svg>
             </button>
-            <button class="action-btn active" onclick="toggleSidebar()">
-                <span>Metadata</span>
+            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
+                <span data-i18n="meta_btn">Metadata</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -402,28 +421,33 @@
         </div>
 
         <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header">Metadata</div>
+            <div class="sidebar-header" data-i18n="meta_header">Metadata</div>
             <div class="sidebar-content">
-                <div class="section-title">General Info</div>
+                <div class="section-title" data-i18n="meta_section_gen">General Info</div>
                 <div class="meta-row">
-                    <span class="meta-key">Subject</span>
+                    <span class="meta-key" data-i18n="meta_label_subject">Subject</span>
                     <span class="meta-val">🎁 95€ offerts + un bonus savoureux</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key">Sender</span>
+                    <span class="meta-key" data-i18n="meta_label_sender">Sender</span>
                     <span class="meta-val">benoit@getinside.fr</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key">Date</span>
+                    <span class="meta-key" data-i18n="meta_label_date">Received</span>
                     <span class="meta-val">24/11/2025 à 05:48</span>
                 </div>
+                <div class="meta-row">
+                    <span class="meta-key" data-i18n="meta_label_archived">Archived</span>
+                    <span class="meta-val">19/12/2025 à 21:58</span>
+                </div>
 
-                <div class="section-title">Technical</div>
+                <div class="section-title" data-i18n="meta_section_tech">Technical</div>
                 
-                <div style="color:var(--text-tertiary); font-size:0.85rem;">No tracking pixels detected.</div>
+                <div style="color:var(--text-tertiary); font-size:0.85rem;" data-i18n="pixels_none">No tracking pixels
+                    detected.</div>
                 
 
-                <div class="section-title">Links (20)</div>
+                <div class="section-title"><span data-i18n="meta_section_links">Links</span> (20)</div>
                 <ul class="link-list">
                     
                     <li class="link-item" onclick="highlightLink(1)">
@@ -604,37 +628,49 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Inject styles to hide scrollbars on mobile/tablet
-            // and apply basic reset
+            // Aggressively hide scrollbars for mobile/tablet via CSS specific to the mode class if possible.
+            // But since we can't easily toggle classes on <html> inside iframe dynamically from outside css (well we can via js).
+            // We'll insert a robust scrollbar hider.
             doc.write(`
                 <style>
                     body { margin: 0; font-family: sans-serif; background: #fff; }
                     img { max-width: 100%; height: auto; }
-                    /* Scrollbar hiding logic handled by iframe width/height usually, 
-                       but if iframe scrolls, we want to hide bars in mobile mode */
-                    .hide-scroll::-webkit-scrollbar { width: 0px; background: transparent; }
+                    
+                    /* Universal scrollbar hide utility */
+                    html.hide-scroll::-webkit-scrollbar, 
+                    html.hide-scroll body::-webkit-scrollbar { 
+                        width: 0px !important; 
+                        height: 0px !important; 
+                        background: transparent !important; 
+                        display: none !important;
+                    }
+                    html.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
                 </style>
                 ` + content);
             doc.close();
 
-            // Apply theme
+            // Re-apply theme
             const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') applyTheme('dark');
+            if (theme === 'dark') applyTheme('theme');
         }
 
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
             frameEl.setAttribute('data-mode', mode);
 
-            // Add padding for notch if mobile
             const doc = frame.contentDocument;
-            if (doc && doc.body) {
-                if (mode === 'mobile') {
-                    doc.body.style.paddingTop = '40px'; // Safe area for notch
-                    doc.documentElement.classList.add('hide-scroll'); // Try to hide scrollbars
+            if (doc && doc.documentElement) {
+                if (mode !== 'desktop') {
+                    // Mobile/Tablet: Safe area + Hide Scrollbars
+                    doc.documentElement.classList.add('hide-scroll');
+                    if (mode === 'mobile') {
+                        if (doc.body) doc.body.style.paddingTop = '40px';
+                    } else {
+                        if (doc.body) doc.body.style.paddingTop = '0px';
+                    }
                 } else {
-                    doc.body.style.paddingTop = '0px';
                     doc.documentElement.classList.remove('hide-scroll');
+                    if (doc.body) doc.body.style.paddingTop = '0px';
                 }
             }
 
