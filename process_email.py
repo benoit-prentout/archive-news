@@ -10,7 +10,7 @@ import json
 # CONFIG
 GMAIL_USER = os.environ.get("GMAIL_USER")
 GMAIL_PASSWORD = os.environ.get("GMAIL_PASSWORD")
-TARGET_LABEL = "archive-newsletter"
+TARGET_LABEL = "Github/archive-newsletters"
 OUTPUT_FOLDER = "docs"
 BATCH_SIZE = 9999
 FORCE_UPDATE = os.environ.get("FORCE_UPDATE", "false").lower() == "true"

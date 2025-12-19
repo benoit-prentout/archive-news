@@ -21,6 +21,13 @@ class EmailFetcher:
         self.mail.login(self.user, self.password)
         rv, _ = self.mail.select(f'"{self.label}"')
         if rv != 'OK':
+            # Diagnostic: List labels
+            print(f"Error: Label {self.label} not found.")
+            print("Listing available labels:")
+            status, labels = self.mail.list()
+            if status == 'OK':
+                for l in labels:
+                    print(f" - {l.decode('utf-8')}")
             raise Exception(f"Label {self.label} not found")
 
     def search_all(self):
@@ -59,8 +66,16 @@ class EmailFetcher:
 
     def close(self):
         if self.mail:
-            self.mail.close()
-            self.mail.logout()
+            try:
+                # CLOSE is only allowed in SELECTED state
+                if self.mail.state == 'SELECTED':
+                    self.mail.close()
+            except:
+                pass
+            try:
+                self.mail.logout()
+            except:
+                pass
 
     # --- HELPERS ---
     @staticmethod
