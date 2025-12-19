@@ -5,6 +5,7 @@ import datetime
 from src.imap_client import EmailFetcher
 from src.parser import EmailParser
 from src.generator import generate_viewer, generate_index
+from email.utils import parsedate_to_datetime
 import json
 
 # CONFIG
@@ -29,6 +30,7 @@ def process_emails():
     try:
         fetcher.connect()
         ids = fetcher.search_all()
+        ids.reverse() # Process newest first
         print(f"Found {len(ids)} emails.")
         
         # 2. Sync / Phase 1
@@ -75,18 +77,22 @@ def process_emails():
             date_str = msg.get('Date')
             if date_str:
                 try:
-                    dt = datetime.datetime.strptime(date_str.split(',')[1].strip().split(' (')[0], '%d %b %Y %H:%M:%S %z')
+                    dt = parsedate_to_datetime(date_str)
                     date_rec = dt.strftime('%d/%m/%Y à %H:%M')
+                    date_iso = dt.isoformat()
                 except:
                     date_rec = date_str
+                    date_iso = datetime.datetime.now().isoformat()
             else:
                 date_rec = datetime.datetime.now().strftime('%d/%m/%Y à %H:%M')
+                date_iso = datetime.datetime.now().isoformat()
             
             # Metadata structure
             metadata = {
                 'id': f_id,
                 'subject': fetcher.get_decoded_subject(msg), 
                 'date_rec': date_rec,
+                'date_iso': date_iso,
                 'sender': msg['From'],
                 'date_arch': datetime.datetime.now().strftime('%d/%m/%Y à %H:%M'),
                 'preheader': parser.preheader,
@@ -107,8 +113,8 @@ def process_emails():
             )
             
         # 4. Generate Main Index
-        # Sort by date rec (descending) - simple string sort for now but could be better
-        all_metadata.sort(key=lambda x: x.get('date_rec', ''), reverse=True)
+        # Sort by date ISO (descending)
+        all_metadata.sort(key=lambda x: x.get('date_iso', ''), reverse=True)
         generate_index(all_metadata, os.path.join(OUTPUT_FOLDER, "index.html"))
         print("Main index generated.")
         
