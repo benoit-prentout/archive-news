@@ -14,6 +14,7 @@ import shutil
 import json
 import html
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # --- CONFIGURATION ---
 GMAIL_USER = os.environ["GMAIL_USER"]
@@ -21,6 +22,7 @@ GMAIL_PASSWORD = os.environ["GMAIL_PASSWORD"]
 TARGET_LABEL = "Github/archive-newsletters"
 OUTPUT_FOLDER = "docs"
 BATCH_SIZE = 9999
+RESOLVE_REDIRECTS = False  # Set to False to stop visiting links (fixes tracking/analytics issues)
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -160,6 +162,10 @@ updateLanguage(currentLang);
 def resolve_redirect_chain(start_url, max_redirects=5):
     if not start_url: return start_url, []
     if start_url.startswith("mailto:") or start_url.startswith("tel:"): return start_url, []
+
+    # If resolution is disabled, return immediately
+    if not RESOLVE_REDIRECTS:
+        return start_url, []
 
     chain = [start_url]
     current_url = start_url
@@ -600,6 +606,13 @@ def process_emails():
             print(f"Mise à jour de {len(folders_to_process)} emails (batch)...")
 
             for f_id in folders_to_process:
+                # INCREMENTAL BUILD CHECK
+                newsletter_path = os.path.join(OUTPUT_FOLDER, f_id)
+                index_path = os.path.join(newsletter_path, "index.html")
+                if os.path.exists(index_path):
+                    print(f"Skipping (Already exists): {f_id}")
+                    continue
+
                 num = email_map[f_id]
                 try:
                     status, msg_data = mail.fetch(num, '(RFC822)')
@@ -749,14 +762,18 @@ def process_emails():
                         </li>
                         '''
 
-                    # --- IMAGES LOCALES ---
+                    # --- IMAGES LOCALES (PARALLEL) ---
                     img_counter = 0
+                    images_to_download = []
+
+                    # 1. Collect potential Images
                     for img in soup.find_all("img"):
+                        # Handle lazy loading attributes
                         lazy_attrs = ['data-src', 'data-original', 'data-lazy', 'data-url']
                         for attr in lazy_attrs:
                             if img.get(attr):
-                                img['src'] = img[attr] 
-                                del img[attr] 
+                                img['src'] = img[attr]
+                                del img[attr]
                                 break
                         
                         if img.get('srcset'):
@@ -765,29 +782,45 @@ def process_emails():
                                     first_url = img['srcset'].split(',')[0].split(' ')[0]
                                     img['src'] = first_url
                                 except: pass
-                            del img['srcset'] 
+                            del img['srcset']
 
                         src = img.get("src")
                         if not src or src.startswith("data:") or src.startswith("cid:"): continue
+                        if src.startswith("//"): src = "https:" + src
                         
+                        # Prepare for download
+                        images_to_download.append((img, src))
+
+                    # 2. Define download function
+                    def download_image(img_obj, url, counter):
                         try:
-                            if src.startswith("//"): src = "https:" + src
-                            r = requests.get(src, headers=HEADERS, timeout=10)
+                            r = requests.get(url, headers=HEADERS, timeout=10)
                             if r.status_code == 200:
                                 content_type = r.headers.get('content-type', '')
-                                ext = mimetypes.guess_extension(content_type)
-                                if not ext: ext = ".jpg"
+                                ext = mimetypes.guess_extension(content_type) or ".jpg"
                                 if ext == ".jpe": ext = ".jpg"
-
-                                local_name = f"img_{img_counter}{ext}"
+                                
+                                local_name = f"img_{counter}{ext}"
                                 local_path = os.path.join(newsletter_path, local_name)
                                 with open(local_path, "wb") as f: f.write(r.content)
-                                img['src'] = local_name
-                                img['loading'] = 'lazy'
-                                img_counter += 1
-                        except Exception: pass
+                                return img_obj, local_name
+                        except Exception: 
+                            pass
+                        return img_obj, None
 
-                    # CSS inline images
+                    # 3. Execute in parallel
+                    with ThreadPoolExecutor(max_workers=10) as executor:
+                        future_to_img = {
+                            executor.submit(download_image, img_data[0], img_data[1], idx): img_data 
+                            for idx, img_data in enumerate(images_to_download)
+                        }
+                        for future in as_completed(future_to_img):
+                            img_element, local_filename = future.result()
+                            if local_filename:
+                                img_element['src'] = local_filename
+                                img_element['loading'] = 'lazy'
+
+                    # CSS inline images (Keep sequential for now as regex replacing on same string is tricky in parallel)
                     css_url_pattern = re.compile(r'url\s*\((?:["\']?)(.*?)(?:["\']?)\)', re.IGNORECASE)
                     for tag in soup.find_all(style=True):
                         style = tag['style']
@@ -798,18 +831,22 @@ def process_emails():
                             for url in matches:
                                 original_url = url.strip()
                                 if original_url.startswith("data:") or any(p in original_url for p in TRACKING_PATTERNS): continue
+                                
                                 target_url = original_url
                                 if target_url.startswith("//"): target_url = "https:" + target_url
                                 try:
-                                    r = requests.get(target_url, headers=HEADERS, timeout=10)
+                                    r = requests.get(target_url, headers=HEADERS, timeout=5) # Reduced timeout
                                     if r.status_code == 200:
                                         content_type = r.headers.get('content-type', '')
                                         ext = mimetypes.guess_extension(content_type) or ".jpg"
-                                        local_name = f"bg_{img_counter}{ext}"
+                                        local_name = f"bg_{img_counter}{ext}" # Use separate counter or just unique name
+                                        # Simple unique name based on hash to avoid counter collision if mixed
+                                        local_hash = hashlib.md5(target_url.encode()).hexdigest()[:8]
+                                        local_name = f"bg_{local_hash}{ext}"
+                                        
                                         local_path = os.path.join(newsletter_path, local_name)
                                         with open(local_path, "wb") as f: f.write(r.content)
                                         new_style = new_style.replace(original_url, local_name)
-                                        img_counter += 1
                                         modified = True
                                 except: pass
                             if modified: tag['style'] = new_style
