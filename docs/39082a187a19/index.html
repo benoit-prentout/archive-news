@@ -28,7 +28,7 @@
             display: flex;
             position: relative;
             overflow: hidden;
-            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            background: var(--bg-body);
         }
 
         .device-stage {
@@ -66,8 +66,8 @@
             width: 90%;
             height: 90%;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
             background: #fff;
         }
 
@@ -75,7 +75,6 @@
             width: 375px;
             height: 812px;
             max-height: 90vh;
-            /* Adjust for small screens */
             border-radius: 40px;
             border: 12px solid #111;
         }
@@ -105,7 +104,7 @@
 
         /* Sidebar Glass */
         .meta-sidebar {
-            width: 350px;
+            width: 400px;
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-left: 1px solid var(--border-color);
@@ -114,6 +113,7 @@
             position: relative;
             z-index: 20;
             transition: transform 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
         }
 
         .meta-sidebar.closed {
@@ -121,29 +121,6 @@
             width: 0;
             padding: 0;
             border: none;
-        }
-
-        .back-nav {
-            margin-bottom: 30px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.5);
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background: white;
-            color: var(--accent-color);
-            box-shadow: var(--shadow-sm);
         }
 
         .meta-group {
@@ -160,10 +137,20 @@
         }
 
         .meta-value {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-primary);
             font-weight: 500;
             word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .meta-preheader {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 10px;
+            border-radius: 8px;
         }
 
         .pill {
@@ -171,7 +158,7 @@
             padding: 4px 12px;
             border-radius: 12px;
             background: rgba(59, 130, 246, 0.1);
-            color: var(--accent-color);
+            color: var(--text-primary);
             font-size: 0.85rem;
         }
 
@@ -189,25 +176,30 @@
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
             cursor: pointer;
             transition: all 0.2s;
             font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .link-item:hover {
+            border-color: var(--border-hover);
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .link-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .link-item:hover {
-            background: white;
-            border-color: var(--accent-color);
-            transform: translateX(5px);
-            box-shadow: var(--shadow-sm);
-        }
-
         .link-idx {
-            background: var(--accent-color);
-            color: white;
+            background: var(--text-secondary);
+            color: var(--bg-body);
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -224,6 +216,39 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        .link-url {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Pixels */
+        .pixel-list {
+            background: rgba(255, 99, 71, 0.1);
+            border: 1px solid rgba(255, 99, 71, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .pixel-item {
+            font-size: 0.75rem;
+            color: #d63031;
+            /* Red for warning/tracking */
+            word-break: break-all;
+            margin-bottom: 4px;
+            display: list-item;
+            list-style-position: inside;
+        }
+
+        [data-theme="dark"] .pixel-item {
+            color: #ff7675;
         }
 
         /* Header Controls for Viewer */
@@ -244,10 +269,12 @@
             background: rgba(0, 0, 0, 0.05);
             padding: 4px;
             border-radius: 12px;
+            margin: 0 auto;
+            /* Center */
         }
 
         .device-btn {
-            padding: 6px 12px;
+            padding: 6px 16px;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -259,9 +286,9 @@
         }
 
         .device-btn.active {
-            background: white;
+            background: var(--bg-body);
             color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
         }
 
         .action-btn {
@@ -281,17 +308,33 @@
 
         .action-btn:hover,
         .action-btn.active {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .brand-title {
+            font-family: var(--font-header);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .viewer-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
         }
     </style>
 </head>
 
 <body>
     <div class="viewer-header">
-        <div class="back-nav" style="margin:0;">
-            <a href="../index.html" class="back-btn">← <span data-i18n="back">Back</span></a>
+        <div class="brand-title">
+            Newsletter Archive
         </div>
 
         <div class="device-toggles">
@@ -300,15 +343,35 @@
             <button class="device-btn active" onclick="setMode('desktop')">Desktop</button>
         </div>
 
-        <div style="display:flex;">
-            <button class="action-btn" onclick="toggleSidebar()" title="Toggle Info">
+        <div style="display:flex; align-items: center; gap: 8px;">
+            <!-- Reusing Main.js logic requires matching IDs -->
+            <button id="lang-toggle" onclick="toggleLanguage()" class="action-btn" title="Switch Language">
+                <span id="lang-toggle-text" style="font-size: 0.8rem; font-weight: bold;">FR</span>
+            </button>
+            <button id="theme-toggle" onclick="toggleTheme()" class="action-btn" title="Toggle Theme">
+                <svg class="icon icon-moon" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+
+            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Info">
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 </svg>
             </button>
-            <!-- Add highlighting toggle here later -->
         </div>
     </div>
 
@@ -324,90 +387,143 @@
                 <span class="meta-label">Subject</span>
                 <div class="meta-value">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</div>
             </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Preheader</span>
+                <div class="meta-value meta-preheader">[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...</div>
+            </div>
+
             <div class="meta-group">
                 <span class="meta-label">Sender</span>
                 <div class="pill">"Sophie d'Ultra Premium Direct" <sophie@info.ultrapremiumdirect.com></div>
             </div>
+
+            
             <div class="meta-group">
-                <span class="meta-label">Date</span>
-                <div class="meta-value">04/12/2025 à 11:02</div>
+                <span class="meta-label">Tracking Pixels Found</span>
+                <div class="pixel-list">
+                    
+                    <div class="pixel-item">https://click.info.ultrapremiumdirect.com/open.aspx?ffcb10-fec1157875630d78-fe5f12747561017f741d-fe3a11717564047d761c74-ff9a1071-fe2215767363017f7c1677-ff63167974&d=500020&bmt=0</div>
+                    
+                </div>
             </div>
-            <div class="meta-group">
-                <span class="meta-label">Reading Time</span>
-                <div class="meta-value">~2 min</div>
-            </div>
+            
 
             <hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;">
 
-            <h3 style="font-size:1rem; margin-bottom:15px;">Links (13)</h3>
+            <h3 style="font-size:1rem; margin-bottom:15px; color: var(--text-secondary);">Links (13)
+            </h3>
             <ul class="link-list">
                 
                 <li class="link-item" onclick="highlightLink(1)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">1</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">1</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(2)">
-                    <div class="link-txt">En savoir plus</div>
-                    <div class="link-idx">2</div>
+                    <div class="link-top">
+                        <div class="link-txt">En savoir plus</div>
+                        <div class="link-idx">2</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(3)">
-                    <div class="link-txt">Commander le coffret</div>
-                    <div class="link-idx">3</div>
+                    <div class="link-top">
+                        <div class="link-txt">Commander le coffret</div>
+                        <div class="link-idx">3</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(4)">
-                    <div class="link-txt">Commander le coffret</div>
-                    <div class="link-idx">4</div>
+                    <div class="link-top">
+                        <div class="link-txt">Commander le coffret</div>
+                        <div class="link-idx">4</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(5)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">5</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">5</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(6)">
-                    <div class="link-txt">En savoir plus</div>
-                    <div class="link-idx">6</div>
+                    <div class="link-top">
+                        <div class="link-txt">En savoir plus</div>
+                        <div class="link-idx">6</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(7)">
-                    <div class="link-txt">05.64.25.03.08</div>
-                    <div class="link-idx">7</div>
+                    <div class="link-top">
+                        <div class="link-txt">05.64.25.03.08</div>
+                        <div class="link-idx">7</div>
+                    </div>
+                    <div class="link-url">tel:0564250308</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(8)">
-                    <div class="link-txt">contact@ultrapremiumdirect.com</div>
-                    <div class="link-idx">8</div>
+                    <div class="link-top">
+                        <div class="link-txt">contact@ultrapremiumdirect.com</div>
+                        <div class="link-idx">8</div>
+                    </div>
+                    <div class="link-url">mailto:contact@ultrapremiumdirect.com</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(9)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">9</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">9</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(10)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">10</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">10</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(11)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">11</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">11</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(12)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">12</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">12</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(13)">
-                    <div class="link-txt">Ne plus recevoir de mail de notre part</div>
-                    <div class="link-idx">13</div>
+                    <div class="link-top">
+                        <div class="link-txt">Ne plus recevoir de mail de notre part</div>
+                        <div class="link-idx">13</div>
+                    </div>
+                    <div class="link-url">https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170</div>
                 </li>
                 
             </ul>
+
+            <div class="viewer-footer">
+                &copy; 2025 Benoît Prentout. <span data-i18n="footer_rights">All rights reserved.</span>
+            </div>
         </div>
     </div>
 
@@ -430,6 +546,12 @@
             `;
             doc.write(baseStyles + content);
             doc.close();
+
+            // Apply Dark Mode to Iframe if active
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                // For now, we don't invert iframe content to preserve email design,
+                // but we could add a filter if requested.
+            }
         }
 
         function setMode(mode) {
