@@ -4,9 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Metadata extraction -->
-    <meta name="creation_date" content="24/11/2025 à 05:21">
-    <meta name="sender" content="benoit@getinside.fr">
     <title>On a un cadeau pour votre chat 🐱</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,17 +37,13 @@
             transition: all 0.5s ease;
         }
 
-        /* Realistic Device Frame */
         .device-frame {
             background: #111;
-            border-radius: 40px;
-            box-shadow:
-                0 0 0 2px #333,
-                0 0 0 6px #000,
-                0 20px 50px -10px rgba(0, 0, 0, 0.5);
-            position: relative;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .device-frame iframe {
@@ -58,17 +51,15 @@
             height: 100%;
             border: none;
             background: white;
-            display: block;
+            flex: 1;
         }
 
-        /* Modes */
         .device-frame[data-mode="desktop"] {
-            width: 90%;
-            height: 90%;
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            background: #fff;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
         }
 
         .device-frame[data-mode="mobile"] {
@@ -79,179 +70,140 @@
             border: 12px solid #111;
         }
 
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 25px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 10;
-        }
-
         .device-frame[data-mode="tablet"] {
             width: 768px;
             height: 1024px;
             max-height: 90vh;
-            max-width: 90vw;
             border-radius: 24px;
             border: 12px solid #111;
         }
 
-        /* Sidebar Glass */
+        /* Sidebar */
         .meta-sidebar {
             width: 400px;
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-left: 1px solid var(--border-color);
-            padding: 30px;
+            padding: 0;
             overflow-y: auto;
-            position: relative;
-            z-index: 20;
+            display: flex;
+            flex-direction: column;
             transition: transform 0.3s ease;
-            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
         }
 
         .meta-sidebar.closed {
             transform: translateX(100%);
             width: 0;
-            padding: 0;
             border: none;
         }
 
-        .meta-group {
-            margin-bottom: 24px;
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-header);
+            font-weight: 700;
+            font-size: 1.2rem;
         }
 
-        .meta-label {
+        .sidebar-content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .section-title {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-tertiary);
-            margin-bottom: 8px;
-            display: block;
+            margin: 25px 0 10px 0;
+            font-weight: 700;
         }
 
-        .meta-value {
-            font-size: 0.95rem;
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .meta-key {
+            color: var(--text-secondary);
+        }
+
+        .meta-val {
             color: var(--text-primary);
             font-weight: 500;
-            word-break: break-word;
-            line-height: 1.5;
-        }
-
-        .meta-preheader {
-            font-style: italic;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            background: rgba(0, 0, 0, 0.03);
-            padding: 10px;
-            border-radius: 8px;
+            text-align: right;
         }
 
         .pill {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--text-primary);
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 0.85rem;
         }
 
-        /* Link List */
-        .link-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
+        /* Links */
         .link-item {
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
+            margin-bottom: 8px;
             background: var(--bg-card);
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            transition: 0.2s;
         }
 
         .link-item:hover {
-            border-color: var(--border-hover);
-            transform: translateX(5px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .link-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .link-idx {
-            background: var(--text-secondary);
-            color: var(--bg-body);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 10px;
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-
-        .link-txt {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 600;
+            border-color: var(--accent-color);
+            transform: translateX(2px);
         }
 
         .link-url {
             font-size: 0.75rem;
             color: var(--text-tertiary);
-            word-break: break-all;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
             overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-top: 4px;
         }
 
         /* Pixels */
-        .pixel-list {
-            background: rgba(255, 99, 71, 0.1);
-            border: 1px solid rgba(255, 99, 71, 0.2);
-            border-radius: 8px;
+        .pixel-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
 
-        .pixel-item {
-            font-size: 0.75rem;
-            color: #d63031;
-            /* Red for warning/tracking */
-            word-break: break-all;
-            margin-bottom: 4px;
-            display: list-item;
-            list-style-position: inside;
+        .pixel-msg {
+            color: #2980b9;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
-        [data-theme="dark"] .pixel-item {
-            color: #ff7675;
+        /* Viewer Footer */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
         }
 
-        /* Header Controls for Viewer */
+        .sidebar-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px dotted currentColor;
+        }
+
+        /* Header Controls */
         .viewer-header {
             height: 60px;
             display: flex;
@@ -260,49 +212,31 @@
             padding: 0 20px;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            z-index: 50;
         }
 
-        .device-toggles {
+        /* Centered Buttons & Labels */
+        .action-group {
             display: flex;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 4px;
-            border-radius: 12px;
-            margin: 0 auto;
-            /* Center */
-        }
-
-        .device-btn {
-            padding: 6px 16px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
+            gap: 10px;
+            align-items: center;
         }
 
         .action-btn {
-            width: 36px;
             height: 36px;
-            border-radius: 10px;
+            padding: 0 12px;
+            /* Changed to padding for label support */
+            min-width: 36px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             background: transparent;
-            display: flex;
-            alignItems: center;
-            justifyContent: center;
-            cursor: pointer;
             color: var(--text-secondary);
-            margin-left: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
             transition: all 0.2s;
         }
 
@@ -313,29 +247,28 @@
             border-color: var(--text-primary);
         }
 
-        .brand-title {
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--text-primary);
+        .device-toggles .device-btn {
+            padding: 6px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--text-secondary);
         }
 
-        .viewer-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
+        .device-toggles .device-btn.active {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        [data-theme="dark"] .pixel-msg {
+            color: #8be9fd;
         }
     </style>
 </head>
 
 <body>
     <div class="viewer-header">
-        <div class="brand-title">
-            Newsletter Archive
-        </div>
+        <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
 
         <div class="device-toggles">
             <button class="device-btn" onclick="setMode('mobile')">Mobile</button>
@@ -343,12 +276,11 @@
             <button class="device-btn active" onclick="setMode('desktop')">Desktop</button>
         </div>
 
-        <div style="display:flex; align-items: center; gap: 8px;">
-            <!-- Reusing Main.js logic requires matching IDs -->
-            <button id="lang-toggle" onclick="toggleLanguage()" class="action-btn" title="Switch Language">
-                <span id="lang-toggle-text" style="font-size: 0.8rem; font-weight: bold;">FR</span>
+        <div class="action-group">
+            <button class="action-btn" onclick="toggleLanguage()">
+                <span id="lang-toggle-text">FR</span>
             </button>
-            <button id="theme-toggle" onclick="toggleTheme()" class="action-btn" title="Toggle Theme">
+            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()">
                 <svg class="icon icon-moon" viewBox="0 0 24 24">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
@@ -364,8 +296,13 @@
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </button>
-
-            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Info">
+            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+            </button>
+            <button class="action-btn active" onclick="toggleSidebar()">
+                <span>Infos</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -383,154 +320,111 @@
         </div>
 
         <div class="meta-sidebar" id="sidebar">
-            <div class="meta-group">
-                <span class="meta-label">Subject</span>
-                <div class="meta-value">On a un cadeau pour votre chat 🐱</div>
-            </div>
-
-            <div class="meta-group">
-                <span class="meta-label">Preheader</span>
-                <div class="meta-value meta-preheader">Promis, on peut tout vous expliquer ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...</div>
-            </div>
-
-            <div class="meta-group">
-                <span class="meta-label">Sender</span>
-                <div class="pill">benoit@getinside.fr</div>
-            </div>
-
-            
-            <div class="meta-group">
-                <span class="meta-label">Tracking Pixels Found</span>
-                <div class="pixel-list">
-                    
-                    <div class="pixel-item">https://ci3.googleusercontent.com/meips/ADKq_NZOqhIfilEEpjjc1z9nVGDnOaJm-4N0CaTuckNK6M42RK0CYDxbLT_e1r13W5u7lIKNx6WqJQjxS44IDp6dNAcVrSvRrSUGsrK90zQH8ljBh0x2ys7frrgWWgfBnMk=s0-d-e1-ft#https://trk.newsletter.lespetitsculottes.fr/o/01K6YY7BZMHFZR0EK14T1A2VWG</div>
-                    
+            <div class="sidebar-header">Metadata</div>
+            <div class="sidebar-content">
+                <div class="section-title">General Info</div>
+                <div class="meta-row">
+                    <span class="meta-key">Subject</span>
+                    <span class="meta-val">On a un cadeau pour votre chat 🐱</span>
                 </div>
-            </div>
-            
+                <div class="meta-row">
+                    <span class="meta-key">Sender</span>
+                    <span class="meta-val">benoit@getinside.fr</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Date</span>
+                    <span class="meta-val">24/11/2025 à 05:21</span>
+                </div>
 
-            <hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;">
-
-            <h3 style="font-size:1rem; margin-bottom:15px; color: var(--text-secondary);">Links (14)
-            </h3>
-            <ul class="link-list">
+                <div class="section-title">Technical</div>
                 
-                <li class="link-item" onclick="highlightLink(1)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">1</div>
+                <div class="pixel-box">
+                    <div class="pixel-msg">Needs Analysis (1)</div>
+                    <div style="font-size:0.75rem;">
+                        
+                        <div style="word-break:break-all; margin-bottom:5px;">• https://ci3.googleusercontent.com/meips/ADKq_NZOqhIfilEEpjjc1z9nVGDnOaJm-4N0CaTuckNK6M42RK0CYDxbLT_e1r13W5u7lIKNx6WqJQjxS44IDp6dNAcVrSvRrSUGsrK90zQH8ljBh0x2ys7frrgWWgfBnMk=s0-d-e1-ft#https://trk.newsletter.lespetitsculottes.fr/o/01K6YY7BZMHFZR0EK14T1A2VWG</div>
+                        
                     </div>
+                </div>
+                
+
+                <div class="section-title">Links (14)</div>
+                
+                <div class="link-item" onclick="highlightLink(1)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9e9_b1cd0b6f</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(2)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">2</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(2)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ea_4e9352bb</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(3)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">3</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(3)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9eb_c7cf0817</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(4)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">4</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(4)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ec_2081e4e0</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(5)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">5</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(5)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ed_c280ee4b</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(6)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">6</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(6)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ee_18e31003</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(7)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">7</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(7)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ef_f09352c0</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(8)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">8</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(8)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9eg_5324b784</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(9)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">9</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(9)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9eh_fb093e17</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(10)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">10</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(10)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ei_637b428d</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(11)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">11</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(11)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ej_b88c89f1</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(12)">
-                    <div class="link-top">
-                        <div class="link-txt"></div>
-                        <div class="link-idx">12</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(12)">
+                    <div style="font-weight:600; font-size:0.85rem;"></div>
                     <div class="link-url">https://bitli.pro/2C9ek_7665dc63</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(13)">
-                    <div class="link-top">
-                        <div class="link-txt">serviceclient@lespetitsculottes.fr</div>
-                        <div class="link-idx">13</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(13)">
+                    <div style="font-weight:600; font-size:0.85rem;">serviceclient@lespetitsculottes.fr</div>
                     <div class="link-url">mailto:serviceclient@lespetitsculottes.fr</div>
-                </li>
+                </div>
                 
-                <li class="link-item" onclick="highlightLink(14)">
-                    <div class="link-top">
-                        <div class="link-txt">Me désinscrire</div>
-                        <div class="link-idx">14</div>
-                    </div>
+                <div class="link-item" onclick="highlightLink(14)">
+                    <div style="font-weight:600; font-size:0.85rem;">Me désinscrire</div>
                     <div class="link-url">https://bitli.pro/2C9el_23ce0ca4</div>
-                </li>
+                </div>
                 
-            </ul>
+            </div>
 
-            <div class="viewer-footer">
-                &copy; 2025 Benoît Prentout. <span data-i18n="footer_rights">All rights reserved.</span>
+            <div class="sidebar-footer">
+                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. <span
+                    data-i18n="footer_rights">All rights reserved.</span>
             </div>
         </div>
     </div>
@@ -543,23 +437,19 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Inject cleaner styles for iframe
-            const baseStyles = `
+            // Inject styles
+            doc.write(`
                 <style>
                     body { margin: 0; font-family: sans-serif; background: #fff; }
                     img { max-width: 100%; height: auto; }
-                    /* Scrollbar hide */
-                    ::-webkit-scrollbar { width: 0px; background: transparent; }
+                    ::-webkit-scrollbar { width: 0px; }
                 </style>
-            `;
-            doc.write(baseStyles + content);
+                ` + content);
             doc.close();
 
-            // Apply Dark Mode to Iframe if active
-            if (document.body.getAttribute('data-theme') === 'dark') {
-                // For now, we don't invert iframe content to preserve email design,
-                // but we could add a filter if requested.
-            }
+            // Re-apply theme if dark
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') applyTheme('dark');
         }
 
         function setMode(mode) {
@@ -573,7 +463,6 @@
             event.currentTarget.classList.toggle('active');
         }
 
-        // Initialize
         init();
     </script>
 </body>
