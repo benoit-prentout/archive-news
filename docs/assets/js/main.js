@@ -74,10 +74,10 @@ function filterList() {
         const sender = items[i].querySelector('.sender-pill')?.textContent || "";
 
         if (title.toLowerCase().includes(filter) || sender.toLowerCase().includes(filter)) {
-            items[i].parentElement.style.display = "";
+            items[i].style.display = "";
             visibleCount++;
         } else {
-            items[i].parentElement.style.display = "none";
+            items[i].style.display = "none";
         }
     }
 
