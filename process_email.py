@@ -67,7 +67,7 @@ def process_emails():
             
             # GENERATE
             metadata = {
-                'subject': msg['Subject'], # Needs decoding but keeping simple for now
+                'subject': fetcher.get_decoded_subject(msg), 
                 'date_rec': datetime.datetime.now().strftime('%Y-%m-%d'),
                 'sender': msg['From'],
                 'date_arch': datetime.datetime.now().strftime('%Y-%m-%d'),

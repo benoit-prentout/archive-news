@@ -39,7 +39,7 @@ class EmailFetcher:
             try:
                 status, msg_data = self.mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
                 msg_header = email.message_from_bytes(msg_data[0][1])
-                subject = self._get_decoded_subject(msg_header)
+                subject = self.get_decoded_subject(msg_header)
                 clean_subj = self._clean_subject_prefixes(subject)
                 f_id = self._get_deterministic_id(clean_subj)
                 email_map[f_id] = num
@@ -56,8 +56,9 @@ class EmailFetcher:
             self.mail.logout()
 
     # --- HELPERS ---
-    def _get_decoded_subject(self, msg):
-        subject_header = msg["Subject"]
+    @staticmethod
+    def get_decoded_subject(msg):
+        subject_header = msg.get("Subject", "")
         if not subject_header: return "Untitled"
         decoded_list = decode_header(subject_header)
         full_subject = ""
