@@ -28,7 +28,7 @@
             display: flex;
             position: relative;
             overflow: hidden;
-            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            background: var(--bg-body);
         }
 
         .device-stage {
@@ -66,8 +66,8 @@
             width: 90%;
             height: 90%;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
             background: #fff;
         }
 
@@ -75,7 +75,6 @@
             width: 375px;
             height: 812px;
             max-height: 90vh;
-            /* Adjust for small screens */
             border-radius: 40px;
             border: 12px solid #111;
         }
@@ -105,7 +104,7 @@
 
         /* Sidebar Glass */
         .meta-sidebar {
-            width: 350px;
+            width: 400px;
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-left: 1px solid var(--border-color);
@@ -114,6 +113,7 @@
             position: relative;
             z-index: 20;
             transition: transform 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
         }
 
         .meta-sidebar.closed {
@@ -121,29 +121,6 @@
             width: 0;
             padding: 0;
             border: none;
-        }
-
-        .back-nav {
-            margin-bottom: 30px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.5);
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background: white;
-            color: var(--accent-color);
-            box-shadow: var(--shadow-sm);
         }
 
         .meta-group {
@@ -160,10 +137,20 @@
         }
 
         .meta-value {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-primary);
             font-weight: 500;
             word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .meta-preheader {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 10px;
+            border-radius: 8px;
         }
 
         .pill {
@@ -171,7 +158,7 @@
             padding: 4px 12px;
             border-radius: 12px;
             background: rgba(59, 130, 246, 0.1);
-            color: var(--accent-color);
+            color: var(--text-primary);
             font-size: 0.85rem;
         }
 
@@ -189,25 +176,30 @@
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
             cursor: pointer;
             transition: all 0.2s;
             font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .link-item:hover {
+            border-color: var(--border-hover);
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .link-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .link-item:hover {
-            background: white;
-            border-color: var(--accent-color);
-            transform: translateX(5px);
-            box-shadow: var(--shadow-sm);
-        }
-
         .link-idx {
-            background: var(--accent-color);
-            color: white;
+            background: var(--text-secondary);
+            color: var(--bg-body);
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -224,6 +216,39 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        .link-url {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Pixels */
+        .pixel-list {
+            background: rgba(255, 99, 71, 0.1);
+            border: 1px solid rgba(255, 99, 71, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .pixel-item {
+            font-size: 0.75rem;
+            color: #d63031;
+            /* Red for warning/tracking */
+            word-break: break-all;
+            margin-bottom: 4px;
+            display: list-item;
+            list-style-position: inside;
+        }
+
+        [data-theme="dark"] .pixel-item {
+            color: #ff7675;
         }
 
         /* Header Controls for Viewer */
@@ -244,10 +269,12 @@
             background: rgba(0, 0, 0, 0.05);
             padding: 4px;
             border-radius: 12px;
+            margin: 0 auto;
+            /* Center */
         }
 
         .device-btn {
-            padding: 6px 12px;
+            padding: 6px 16px;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -259,9 +286,9 @@
         }
 
         .device-btn.active {
-            background: white;
+            background: var(--bg-body);
             color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
         }
 
         .action-btn {
@@ -281,17 +308,33 @@
 
         .action-btn:hover,
         .action-btn.active {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .brand-title {
+            font-family: var(--font-header);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .viewer-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
         }
     </style>
 </head>
 
 <body>
     <div class="viewer-header">
-        <div class="back-nav" style="margin:0;">
-            <a href="../index.html" class="back-btn">← <span data-i18n="back">Back</span></a>
+        <div class="brand-title">
+            Newsletter Archive
         </div>
 
         <div class="device-toggles">
@@ -300,15 +343,35 @@
             <button class="device-btn active" onclick="setMode('desktop')">Desktop</button>
         </div>
 
-        <div style="display:flex;">
-            <button class="action-btn" onclick="toggleSidebar()" title="Toggle Info">
+        <div style="display:flex; align-items: center; gap: 8px;">
+            <!-- Reusing Main.js logic requires matching IDs -->
+            <button id="lang-toggle" onclick="toggleLanguage()" class="action-btn" title="Switch Language">
+                <span id="lang-toggle-text" style="font-size: 0.8rem; font-weight: bold;">FR</span>
+            </button>
+            <button id="theme-toggle" onclick="toggleTheme()" class="action-btn" title="Toggle Theme">
+                <svg class="icon icon-moon" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+
+            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Info">
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 </svg>
             </button>
-            <!-- Add highlighting toggle here later -->
         </div>
     </div>
 
@@ -324,160 +387,246 @@
                 <span class="meta-label">Subject</span>
                 <div class="meta-value">EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS</div>
             </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Preheader</span>
+                <div class="meta-value meta-preheader">Téléchargez l’app Wash, rechargez votre compte et faites des économies ! Version en ligne EN EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS * sur l’applic...</div>
+            </div>
+
             <div class="meta-group">
                 <span class="meta-label">Sender</span>
                 <div class="pill">benoit@getinside.fr</div>
             </div>
-            <div class="meta-group">
-                <span class="meta-label">Date</span>
-                <div class="meta-value">27/11/2025 à 03:53</div>
-            </div>
-            <div class="meta-group">
-                <span class="meta-label">Reading Time</span>
-                <div class="meta-value">~1 min</div>
-            </div>
+
+            
 
             <hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;">
 
-            <h3 style="font-size:1rem; margin-bottom:15px;">Links (27)</h3>
+            <h3 style="font-size:1rem; margin-bottom:15px; color: var(--text-secondary);">Links (27)
+            </h3>
             <ul class="link-list">
                 
                 <li class="link-item" onclick="highlightLink(1)">
-                    <div class="link-txt">Téléchargez l’app Wash, rechargez votre compte et </div>
-                    <div class="link-idx">1</div>
+                    <div class="link-top">
+                        <div class="link-txt">Téléchargez l’app Wash, rechargez votre compte et </div>
+                        <div class="link-idx">1</div>
+                    </div>
+                    <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(2)">
-                    <div class="link-txt">Version en ligne</div>
-                    <div class="link-idx">2</div>
+                    <div class="link-top">
+                        <div class="link-txt">Version en ligne</div>
+                        <div class="link-idx">2</div>
+                    </div>
+                    <div class="link-url">https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/%%view_email_url%%</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(3)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">3</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">3</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(4)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">4</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">4</div>
+                    </div>
+                    <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(5)">
-                    <div class="link-txt">Je profite de 10€ offerts</div>
-                    <div class="link-idx">5</div>
+                    <div class="link-top">
+                        <div class="link-txt">Je profite de 10€ offerts</div>
+                        <div class="link-idx">5</div>
+                    </div>
+                    <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(6)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">6</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">6</div>
+                    </div>
+                    <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(7)">
-                    <div class="link-txt">Je lave ma voiture gratuitement</div>
-                    <div class="link-idx">7</div>
+                    <div class="link-top">
+                        <div class="link-txt">Je lave ma voiture gratuitement</div>
+                        <div class="link-idx">7</div>
+                    </div>
+                    <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(8)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">8</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">8</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(9)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">9</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">9</div>
+                    </div>
+                    <div class="link-url">https://instagram.com/showroomprive/</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(10)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">10</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">10</div>
+                    </div>
+                    <div class="link-url">https://www.facebook.com/showroomprivecom</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(11)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">11</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">11</div>
+                    </div>
+                    <div class="link-url">https://www.tiktok.com/@showroomprive</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(12)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">12</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">12</div>
+                    </div>
+                    <div class="link-url">https://fr.linkedin.com/company/showroomprive-com</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(13)">
-                    <div class="link-txt"></div>
-                    <div class="link-idx">13</div>
+                    <div class="link-top">
+                        <div class="link-txt"></div>
+                        <div class="link-idx">13</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=mobile.aspx</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(14)">
-                    <div class="link-txt">Mes commandes</div>
-                    <div class="link-idx">14</div>
+                    <div class="link-top">
+                        <div class="link-txt">Mes commandes</div>
+                        <div class="link-idx">14</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/Mescommandes.aspx</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(15)">
-                    <div class="link-txt">Mes bons d'achat</div>
-                    <div class="link-idx">15</div>
+                    <div class="link-top">
+                        <div class="link-txt">Mes bons d'achat</div>
+                        <div class="link-idx">15</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/mesba.aspx</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(16)">
-                    <div class="link-txt">Mes communications</div>
-                    <div class="link-idx">16</div>
+                    <div class="link-top">
+                        <div class="link-txt">Mes communications</div>
+                        <div class="link-idx">16</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(17)">
-                    <div class="link-txt">Mode</div>
-                    <div class="link-idx">17</div>
+                    <div class="link-top">
+                        <div class="link-txt">Mode</div>
+                        <div class="link-idx">17</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/mode%3fu%3d1%3Fwebview%3D1</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(18)">
-                    <div class="link-txt">Maison</div>
-                    <div class="link-idx">18</div>
+                    <div class="link-top">
+                        <div class="link-txt">Maison</div>
+                        <div class="link-idx">18</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universmaison%3fu%3d4%3Fwebview%3D1</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(19)">
-                    <div class="link-txt">Voyage</div>
-                    <div class="link-idx">19</div>
+                    <div class="link-top">
+                        <div class="link-txt">Voyage</div>
+                        <div class="link-idx">19</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilvoyage.aspx%3fu%3d5</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(20)">
-                    <div class="link-txt">Beauté</div>
-                    <div class="link-idx">20</div>
+                    <div class="link-top">
+                        <div class="link-txt">Beauté</div>
+                        <div class="link-idx">20</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universbeaute%3fu%3d6%3Fwebview%3D1</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(21)">
-                    <div class="link-txt">Enfant</div>
-                    <div class="link-idx">21</div>
+                    <div class="link-top">
+                        <div class="link-txt">Enfant</div>
+                        <div class="link-idx">21</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/enfant%3fu%3d3%3Fwebview%3D1</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(22)">
-                    <div class="link-txt">Hi-tech</div>
-                    <div class="link-idx">22</div>
+                    <div class="link-top">
+                        <div class="link-txt">Hi-tech</div>
+                        <div class="link-idx">22</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(23)">
-                    <div class="link-txt">Electromenager</div>
-                    <div class="link-idx">23</div>
+                    <div class="link-top">
+                        <div class="link-txt">Electromenager</div>
+                        <div class="link-idx">23</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(24)">
-                    <div class="link-txt">Loisirs</div>
-                    <div class="link-idx">24</div>
+                    <div class="link-top">
+                        <div class="link-txt">Loisirs</div>
+                        <div class="link-idx">24</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilbilletterie.aspx%3fu%3d9</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(25)">
-                    <div class="link-txt">Marché</div>
-                    <div class="link-idx">25</div>
+                    <div class="link-top">
+                        <div class="link-txt">Marché</div>
+                        <div class="link-idx">25</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/legrandmarche%3fu%3d161</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(26)">
-                    <div class="link-txt">Outlet</div>
-                    <div class="link-idx">26</div>
+                    <div class="link-top">
+                        <div class="link-txt">Outlet</div>
+                        <div class="link-idx">26</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=outlet.aspx%3fu%3d8</div>
                 </li>
                 
                 <li class="link-item" onclick="highlightLink(27)">
-                    <div class="link-txt">ici</div>
-                    <div class="link-idx">27</div>
+                    <div class="link-top">
+                        <div class="link-txt">ici</div>
+                        <div class="link-idx">27</div>
+                    </div>
+                    <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx</div>
                 </li>
                 
             </ul>
+
+            <div class="viewer-footer">
+                &copy; 2025 Benoît Prentout. <span data-i18n="footer_rights">All rights reserved.</span>
+            </div>
         </div>
     </div>
 
@@ -500,6 +649,12 @@
             `;
             doc.write(baseStyles + content);
             doc.close();
+
+            // Apply Dark Mode to Iframe if active
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                // For now, we don't invert iframe content to preserve email design,
+                // but we could add a filter if requested.
+            }
         }
 
         function setMode(mode) {
