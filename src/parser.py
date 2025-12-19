@@ -33,12 +33,14 @@ class EmailParser:
             height = img.get("height")
             
             # Detect by pattern OR dimensions (1x1)
-            is_pixel = any(pattern in src for pattern in TRACKING_PATTERNS)
-            if not is_pixel and width == "1" and height == "1":
-                is_pixel = True
+            reason = None
+            if any(pattern in src for pattern in TRACKING_PATTERNS):
+                reason = "Known Tracking Domain"
+            elif width == "1" and height == "1":
+                reason = "1x1 Pixel Dimensions"
                 
-            if is_pixel:
-                self.detected_pixels.append(src)
+            if reason:
+                self.detected_pixels.append({'url': src, 'reason': reason})
                 img['src'] = "" 
                 img['style'] = "display:none !important;"
         
