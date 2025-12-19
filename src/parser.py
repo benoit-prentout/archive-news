@@ -69,6 +69,18 @@ class EmailParser:
             
         def _download(img_obj, url, idx):
             try:
+                # Determine extension first (guess or default)
+                # Optimization: We can't know the exact ext without HEAD/GET usually, 
+                # but if we look at existing files in output_folder matching img_{idx}.*, we can skip.
+                # Use a simple heuristics or just check common extensions.
+                
+                # Check for existing file with standard extensions
+                for ext in ['.jpg', '.png', '.gif', '.jpeg', '.webp']:
+                    potential_name = f"img_{idx}{ext}"
+                    potential_path = os.path.join(self.output_folder, potential_name)
+                    if os.path.exists(potential_path):
+                        return img_obj, potential_name
+
                 r = requests.get(url, headers=HEADERS, timeout=10)
                 if r.status_code == 200:
                     ext = mimetypes.guess_extension(r.headers.get('content-type', '')) or ".jpg"

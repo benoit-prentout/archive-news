@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update existing newsletters (re-generate HTML)'
+        required: false
+        default: 'false'
+        type: boolean
 
 permissions:
   contents: write
@@ -28,6 +34,7 @@ jobs:
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          FORCE_UPDATE: ${{ github.event.inputs.force_update }}
         run: python process_email.py
 
       - name: Commit and Push changes

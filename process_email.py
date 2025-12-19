@@ -13,6 +13,7 @@ GMAIL_PASSWORD = os.environ.get("GMAIL_PASSWORD")
 TARGET_LABEL = "Github/archive-newsletters"
 OUTPUT_FOLDER = "docs"
 BATCH_SIZE = 9999
+FORCE_UPDATE = os.environ.get("FORCE_UPDATE", "false").lower() == "true"
 
 def process_emails():
     if not GMAIL_USER or not GMAIL_PASSWORD:
@@ -38,7 +39,7 @@ def process_emails():
         # 3. Process
         for f_id, num in list(email_map.items())[:BATCH_SIZE]:
             folder_path = os.path.join(OUTPUT_FOLDER, f_id)
-            if os.path.exists(os.path.join(folder_path, "index.html")):
+            if os.path.exists(os.path.join(folder_path, "index.html")) and not FORCE_UPDATE:
                 print(f"Skipping {f_id}")
                 continue
                 
