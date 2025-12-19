@@ -37,13 +37,20 @@ class EmailFetcher:
         email_map = {}
         for num in email_ids:
             try:
-                status, msg_data = self.mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
+                # Fetch Subject, Date and Message-ID for better uniqueness
+                status, msg_data = self.mail.fetch(num, '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE MESSAGE-ID)])')
                 msg_header = email.message_from_bytes(msg_data[0][1])
+                
                 subject = self.get_decoded_subject(msg_header)
+                date_header = msg_header.get("Date", "")
+                msg_id = msg_header.get("Message-ID", "")
+                
                 clean_subj = self._clean_subject_prefixes(subject)
-                f_id = self._get_deterministic_id(clean_subj)
+                # Combine subject with date and msg_id for uniqueness
+                f_id = self._get_deterministic_id(clean_subj, date_header, msg_id)
                 email_map[f_id] = num
-            except: pass
+            except Exception as e:
+                print(f"Error fetching headers for msg {num}: {e}")
         return email_map
 
     def fetch_full_message(self, num):
@@ -77,7 +84,9 @@ class EmailFetcher:
             cleaned = re.sub(pattern, '', cleaned, flags=re.IGNORECASE)
         return cleaned.strip()
 
-    def _get_deterministic_id(self, subject):
+    def _get_deterministic_id(self, subject, date_str="", msg_id=""):
         if not subject: subject = "sans_titre"
-        hash_object = hashlib.sha256(subject.encode('utf-8', errors='ignore'))
+        # We combine subject, date and msg_id for high uniqueness
+        combined = f"{subject}|{date_str}|{msg_id}"
+        hash_object = hashlib.sha256(combined.encode('utf-8', errors='ignore'))
         return hash_object.hexdigest()[:12]

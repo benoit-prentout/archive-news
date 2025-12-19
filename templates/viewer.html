@@ -50,7 +50,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
-            z-index: 100;
+            z-index: 200;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
         }
 
@@ -447,77 +447,83 @@
         const frame = document.getElementById('emailFrame');
 
         function initFrame() {
-            const doc = frame.contentDocument;
-            doc.open();
+            try {
+                const doc = frame.contentDocument;
+                doc.open();
 
-            // 1. Inject Viewport if missing
-            let content = emailContent;
-            if (!content.toLowerCase().includes('name="viewport"')) {
-                content = '<meta name="viewport" content="width=device-width, initial-scale=1.0">' + content;
-            }
+                // 1. Inject Viewport if missing
+                let content = emailContent;
+                if (!content.toLowerCase().includes('name="viewport"')) {
+                    content = '<meta name="viewport" content="width=device-width, initial-scale=1.0">' + content;
+                }
 
-            doc.write(content);
-            doc.close();
+                doc.write(content);
+                doc.close();
 
-            // 2. Inject base styles for iframe
-            const style = doc.createElement('style');
-            style.textContent = `
-                body { margin: 0; padding: 0; font-family: sans-serif; background: white; }
-                
-                /* Responsive Fixes */
-                html, body { 
-                    width: 100%; 
-                    overflow-x: hidden; 
-                    -webkit-text-size-adjust: 100%;
-                }
-                
-                /* Force images/tables into viewport */
-                img { max-width: 100% !important; height: auto !important; }
-                table { max-width: 100% !important; }
-                
-                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
-                html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
-                
-                html::-webkit-scrollbar { display: none; } /* Hide SCROLLBAR in mobile mode mostly */
-                
-                /* Highlight classes */
-                body.highlight-links a { 
-                    position: relative;
-                    box-shadow: 0 0 0 3px red, 0 0 10px yellow !important; 
-                    background-color: rgba(255, 255, 0, 0.2); 
-                    z-index: 9999;
-                    display: inline-block;
-                }
-                
-                /* OVERLAY BADGE */
-                .link-badge-overlay {
-                    position: absolute;
-                    z-index: 2147483647;
-                    background: #ff4444; /* Brighter red */
-                    color: white;
-                    border: 2px solid white;
-                    border-radius: 50%;
-                    width: 24px; height: 24px;
-                    font-size: 12px; font-weight: bold;
-                    display: flex; justify-content: center; align-items: center;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-                    pointer-events: none;
-                    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                }
-                .link-badge-overlay.pulse {
-                    animation: badgePulse 1.5s 2;
-                }
-                @keyframes badgePulse {
-                    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
-                    70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
-                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
-                }
-            `;
-            doc.head.appendChild(style);
+                // 2. Inject base styles for iframe
+                const style = doc.createElement('style');
+                style.textContent = `
+                    body { margin: 0; padding: 0; font-family: sans-serif; background: white; }
+                    
+                    /* Responsive Fixes */
+                    html, body { 
+                        width: 100%; 
+                        overflow-x: hidden; 
+                        -webkit-text-size-adjust: 100%;
+                    }
+                    
+                    /* Force images/tables into viewport */
+                    img { max-width: 100% !important; height: auto !important; }
+                    table { max-width: 100% !important; }
+                    
+                    html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
+                    html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
+                    
+                    html::-webkit-scrollbar { display: none; } /* Hide SCROLLBAR in mobile mode mostly */
+                    
+                    /* Highlight classes */
+                    body.highlight-links a { 
+                        position: relative;
+                        box-shadow: 0 0 0 3px red, 0 0 10px yellow !important; 
+                        background-color: rgba(255, 255, 0, 0.2); 
+                        z-index: 9999;
+                        display: inline-block;
+                    }
+                    
+                    /* OVERLAY BADGE */
+                    .link-badge-overlay {
+                        position: absolute;
+                        z-index: 2147483647;
+                        background: #ff4444; /* Brighter red */
+                        color: white;
+                        border: 2px solid white;
+                        border-radius: 50%;
+                        width: 24px; height: 24px;
+                        font-size: 12px; font-weight: bold;
+                        display: flex; justify-content: center; align-items: center;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+                        pointer-events: none;
+                        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    }
+                    .link-badge-overlay.pulse {
+                        animation: badgePulse 1.5s 2;
+                    }
+                    @keyframes badgePulse {
+                        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+                        70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+                        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+                    }
+                `;
+                doc.head.appendChild(style);
 
-            // CHECK CLIPPING
-            if (emailSize > 102 * 1024) {
-                wrapper.classList.add('clipped');
+                // CHECK CLIPPING
+                if (emailSize > 102 * 1024) {
+                    wrapper.classList.add('clipped');
+                }
+            } catch (e) {
+                console.error("Failed to initialize iframe:", e);
+                // Try to at least close the document to avoid hang
+                try { frame.contentDocument.close(); } catch (err) { }
             }
         }
 

@@ -18,7 +18,8 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr'):
     # Calculate size for Gmail clipping warning
     email_size = len(html_content.encode('utf-8'))
     
-    safe_html_json = json.dumps(html_content)
+    # Escape </script> to avoid breaking the viewer's script tag
+    safe_html_json = json.dumps(html_content).replace('</script>', r'<\/script>')
     
     rendered_html = template.render(
         subject=metadata.get('subject', 'No Subject'),
