@@ -168,6 +168,8 @@
             border: 12px solid #333;
         }
 
+        /* Iframe styling to fill container and hide scrollbar via parent overlay if needed,
+           but 'border-radius: inherit' helps clipping. */
         iframe {
             width: 100%;
             height: 100%;
@@ -357,6 +359,7 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-section">
             <h3>Metadata</h3>
+            <div class="meta-item"><span class="meta-label">📝 Object</span>{{ subject }}</div>
             <div class="meta-item"><span class="meta-label">📅 Sent Date</span>{{ format_date(email_date) }}</div>
             <div class="meta-item"><span class="meta-label">🗄️ Archived Date</span>{{ format_date(archiving_date) }}
             </div>
@@ -443,15 +446,20 @@
         function setDevice(mode) {
             wrapper.setAttribute('data-mode', mode);
             document.querySelectorAll('.controls-group:first-child .btn').forEach(b => b.classList.remove('active'));
-            const clickedBtn = event.currentTarget;
-            clickedBtn.classList.add('active');
+            const clickedBtn = event.currentTarget || document.querySelector(`.btn[onclick="setDevice('${mode}')"]`);
+            if (clickedBtn) clickedBtn.classList.add('active');
 
-            // Adjust scrollbar visibility for mobile/tablet in iframe if possible
+            // Fix scrollbar visibility without disabling scroll
+            // The injected CSS 'html::-webkit-scrollbar { display: none; }' handles the visual part.
+            // We just need to ensure overflow is auto/scroll, NOT hidden.
             if (mode === 'mobile' || mode === 'tablet') {
-                frame.contentDocument.documentElement.style.overflow = 'hidden';
-                frame.contentDocument.body.style.overflow = 'auto'; // Or specific container
-                // Actually difficult to hide scrollbar cross-browser inside iframe without access
-                // But appending style helps
+                frame.contentDocument.documentElement.style.overflow = ''; // Reset to default (auto)
+                frame.contentDocument.body.style.overflow = '';
+                // Adjust iframe width slightly to cover borders if needed? 
+                // Actually the gap is likely due to the iframe background being white vs transparent or border radius clipping.
+                // Let's force iframe to be full size
+                frame.style.width = '100%';
+                frame.style.height = '100%';
             }
         }
 
@@ -508,24 +516,28 @@
         }
 
         function toggleLang() {
-            // Simple reload with different lang param if backend supported it, 
-            // but here it is static. So we might need JS translation mapping like before.
-            // For now, let's just toggle the text content of labels using a dictionary.
-            const current = document.getElementById('btn-lang').innerText.trim().toLowerCase();
-            const next = current === 'en' ? 'fr' : 'en';
-            document.getElementById('btn-lang').innerText = next.toUpperCase();
+            const btn = document.getElementById('btn-lang');
+            const current = btn.innerText.trim().toUpperCase();
+            const next = current === 'EN' ? 'FR' : 'EN';
+            btn.innerText = next;
 
-            // Basic example mapping
             const map = {
-                'desktop': { 'en': 'Desktop', 'fr': 'Bureau' },
-                'tablet': { 'en': 'Tablet', 'fr': 'Tablette' },
-                'mobile': { 'en': 'Mobile', 'fr': 'Mobile' }
+                'desktop': { 'FR': 'Bureau', 'EN': 'Desktop' },
+                'tablet': { 'FR': 'Tablette', 'EN': 'Tablet' },
+                'mobile': { 'FR': 'Mobile', 'EN': 'Mobile' }
             };
 
             document.querySelectorAll('.btn-label').forEach(el => {
-                const key = el.innerText.toLowerCase();
-                // This is a bit weak for robust translation but works for the toolbar labels requested.
-                // A proper implementation would use data-i18n attributes.
+                // We use a data attibute for the key to avoid losing the original key after translation
+                let key = el.getAttribute('data-key');
+                if (!key) {
+                    key = el.innerText.toLowerCase();
+                    el.setAttribute('data-key', key);
+                }
+
+                if (map[key] && map[key][next]) {
+                    el.innerText = map[key][next];
+                }
             });
         }
 
