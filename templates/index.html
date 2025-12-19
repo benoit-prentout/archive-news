@@ -54,7 +54,17 @@
         </div>
 
         <div class="stats-row">
-            <span class="stat-simple">{{ emails|length }} <span data-i18n="stat_newsletters">Newsletters</span></span>
+            <span class="stat-pill">
+                <span class="stat-val">{{ stats.count }}</span> Newsletters
+            </span>
+            <span class="stat-pill">
+                <span class="stat-label">Updated:</span>
+                <span class="stat-val">{{ stats.last_updated }}</span>
+            </span>
+            <span class="stat-pill">
+                <span class="stat-label">Size:</span>
+                <span class="stat-val">{{ stats.archive_size }}</span>
+            </span>
         </div>
 
         <ul class="news-grid" id="newsList">

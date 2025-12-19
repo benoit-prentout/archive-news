@@ -37,12 +37,18 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr', detec
     
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(rendered_html)
-def generate_index(emails_metadata, output_path):
+def generate_index(emails_metadata, output_path, stats=None):
     """
     Generates the main index.html landing page.
     """
     template = env.get_template('index.html')
-    rendered_html = template.render(emails=emails_metadata)
+    # Sort by date desc
+    sorted_emails = sorted(emails_metadata, key=lambda x: x.get('date_obj', ''), reverse=True)
+    
+    rendered_html = template.render(
+        emails=sorted_emails,
+        stats=stats or {}
+    )
     
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(rendered_html)
