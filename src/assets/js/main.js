@@ -6,9 +6,19 @@ const TRANSLATIONS = {
         "search_placeholder": "Search by title, sender...",
         "switch_lang": "FR",
         "stat_newsletters": "Newsletters",
-        "no_results": "No results found.",
         "footer_rights": "All rights reserved.",
-        "legal_text": "A premium archive of newsletters."
+        "legal_text": "A premium archive of newsletters.",
+        "meta_btn": "Metadata",
+        "meta_header": "Metadata",
+        "meta_section_gen": "General Info",
+        "meta_label_subject": "Subject",
+        "meta_label_sender": "Sender",
+        "meta_label_date": "Received",
+        "meta_label_archived": "Archived",
+        "meta_section_tech": "Technical",
+        "meta_section_links": "Links",
+        "pixels_found": "Tracking Detected",
+        "pixels_none": "No tracking pixels detected."
     },
     "fr": {
         "page_title": "Archives Newsletters",
@@ -17,7 +27,18 @@ const TRANSLATIONS = {
         "stat_newsletters": "Newsletters",
         "no_results": "Aucun résultat trouvé.",
         "footer_rights": "Tous droits réservés.",
-        "legal_text": "Une archive premium de newsletters."
+        "legal_text": "Une archive premium de newsletters.",
+        "meta_btn": "Métadonnées",
+        "meta_header": "Métadonnées",
+        "meta_section_gen": "Infos Générales",
+        "meta_label_subject": "Sujet",
+        "meta_label_sender": "Expéditeur",
+        "meta_label_date": "Reçu le",
+        "meta_label_archived": "Archivé le",
+        "meta_section_tech": "Technique",
+        "meta_section_links": "Liens",
+        "pixels_found": "Tracking Détecté",
+        "pixels_none": "Aucun pixel de tracking."
     }
 };
 
