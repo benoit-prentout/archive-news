@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -60,7 +60,6 @@
             width: 100%;
             height: 100%;
             max-width: 1200px;
-            /* Reduced width for realism */
             border-radius: 12px;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border-color);
@@ -329,17 +328,33 @@
             border-color: var(--text-primary);
         }
 
-        .device-toggles .device-btn {
-            padding: 6px 12px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: var(--text-secondary);
+        .device-toggles {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px;
+            border-radius: 10px;
         }
 
-        .device-toggles .device-btn.active {
+        .device-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .device-btn.active {
+            background: var(--bg-body);
             color: var(--text-primary);
-            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .device-toggles {
+            background: rgba(255, 255, 255, 0.05);
         }
 
         [data-theme="dark"] .pixel-header {
@@ -349,6 +364,68 @@
 
         [data-theme="dark"] .pixel-box {
             border-color: rgba(139, 233, 253, 0.2);
+        }
+
+        /* Modal for Source */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            background: var(--bg-body);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .source-area {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: none;
+            background: var(--bg-body);
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
         }
     </style>
 </head>
@@ -365,14 +442,11 @@
         </div>
 
         <div class="action-group">
-            <button class="action-btn" onclick="openRawHtml()" title="open raw html">
+            <button class="action-btn" onclick="openSourceModal()" title="View Source Code">
                 <svg class="icon" viewBox="0 0 24 24">
                     <polyline points="16 18 22 12 16 6"></polyline>
                     <polyline points="8 6 2 12 8 18"></polyline>
                 </svg>
-            </button>
-            <button class="action-btn" onclick="toggleLanguage()" title="Switch Language (FR/EN)">
-                <span id="lang-toggle-text">FR</span>
             </button>
             <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
                 <svg class="icon icon-moon" viewBox="0 0 24 24">
@@ -397,7 +471,7 @@
                 </svg>
             </button>
             <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
-                <span data-i18n="meta_btn">Metadata</span>
+                <span>Metadata</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -415,33 +489,37 @@
         </div>
 
         <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header" data-i18n="meta_header">Metadata</div>
+            <div class="sidebar-header">Metadata</div>
             <div class="sidebar-content">
-                <div class="section-title" data-i18n="meta_section_gen">General Info</div>
+                <div class="section-title">General Info</div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_subject">Subject</span>
+                    <span class="meta-key">Subject</span>
                     <span class="meta-val">Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_sender">Sender</span>
+                    <span class="meta-key">Sender</span>
                     <span class="meta-val">benoit@getinside.fr</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_date">Received</span>
+                    <span class="meta-key">Received</span>
                     <span class="meta-val">26/11/2025 à 13:22</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_archived">Archived</span>
-                    <span class="meta-val">19/12/2025 à 22:06</span>
+                    <span class="meta-key">Archived</span>
+                    <span class="meta-val">19/12/2025 à 22:15</span>
                 </div>
 
-                <div class="section-title" data-i18n="meta_section_tech">Technical</div>
+                <div class="section-title">Technical</div>
                 
-                <div style="color:var(--text-tertiary); font-size:0.85rem;" data-i18n="pixels_none">No tracking pixels
-                    detected.</div>
+                <div style="color:var(--text-tertiary); font-size:0.85rem;">No tracking pixels detected.</div>
                 
 
-                <div class="section-title"><span data-i18n="meta_section_links">Links</span> (30)</div>
+                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Links (30)</span>
+                    <button onclick="copyLinks([{'index': 1, 'txt': 'Si vous ne visualisez pas correctement ce message,', 'original_url': 'https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg', 'final_url': 'https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg'}, {'index': 2, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg', 'final_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg'}, {'index': 3, 'txt': "TOUTE L'OFFRE", 'original_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg', 'final_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg'}, {'index': 4, 'txt': "L'ARMURERIE", 'original_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE', 'final_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE'}, {'index': 5, 'txt': 'BONS PLANS', 'original_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo', 'final_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo'}, {'index': 6, 'txt': 'MARQUES', 'original_url': 'https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs', 'final_url': 'https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs'}, {'index': 7, 'txt': 'VIDÉOS', 'original_url': 'https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD', 'final_url': 'https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD'}, {'index': 8, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo', 'final_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo'}, {'index': 9, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk', 'final_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk'}, {'index': 10, 'txt': 'Je découvre', 'original_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU', 'final_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU'}, {'index': 11, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw'}, {'index': 12, 'txt': 'Voir', 'original_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0', 'final_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0'}, {'index': 13, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM'}, {'index': 14, 'txt': 'Voir', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI'}, {'index': 15, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs'}, {'index': 16, 'txt': 'Voir', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE'}, {'index': 17, 'txt': 'DES EXPERTS À VOTRE ÉCOUTE', 'original_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg', 'final_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg'}, {'index': 18, 'txt': 'LIVRAISON SUR MESURE', 'original_url': 'https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g', 'final_url': 'https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g'}, {'index': 19, 'txt': "CHANGEZ D'AVIS FACILEMENT", 'original_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE', 'final_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE'}, {'index': 20, 'txt': '3-4 FOIS SANS FRAIS PAR CB', 'original_url': 'https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc', 'final_url': 'https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc'}, {'index': 21, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw'}, {'index': 22, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw'}, {'index': 23, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw'}, {'index': 24, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ'}, {'index': 25, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ', 'final_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ'}, {'index': 26, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4', 'final_url': 'https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4'}, {'index': 27, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao', 'final_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao'}, {'index': 28, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo', 'final_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo'}, {'index': 29, 'txt': "Mes préférences d'abonnement", 'original_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI', 'final_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI'}, {'index': 30, 'txt': 'Me désabonner', 'original_url': 'https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1', 'final_url': 'https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1'}])"
+                        style="border:none; background:none; color:var(--accent-color); cursor:pointer; font-size:0.7em; font-weight:600;">COPY
+                        ALL</button>
+                </div>
                 <ul class="link-list">
                     
                     <li class="link-item" onclick="highlightLink(1)">
@@ -688,8 +766,21 @@
             </div>
 
             <div class="sidebar-footer">
-                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. <span
-                    data-i18n="footer_rights">All rights reserved.</span>
+                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. All rights
+                reserved.
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Modal -->
+    <div id="sourceModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>HTML Source</span>
+                <button class="close-btn" onclick="closeSourceModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="sourceText" class="source-area" readonly></textarea>
             </div>
         </div>
     </div>
@@ -702,32 +793,25 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Aggressive mobile fix: max-width 100%
-            doc.write(`
-                <style>
-                    body { margin: 0; font-family: sans-serif; background: #fff; }
-                    
-                    /* Universal Scrollbar Hide */
-                    html.hide-scroll::-webkit-scrollbar, 
-                    html.hide-scroll body::-webkit-scrollbar { 
-                        width: 0px !important; display: none !important; 
-                    }
-                    html.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-                    
-                    /* Responsive Force Fix */
-                    html.force-responsive table, 
-                    html.force-responsive img, 
-                    html.force-responsive div {
-                        max-width: 100% !important;
-                        height: auto !important;
-                        box-sizing: border-box !important;
-                    }
-                </style>
-                ` + content);
+            doc.write(content);
             doc.close();
 
+            // Apply base styles
+            applyFrameStyles(doc);
+
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
+        }
+
+        function applyFrameStyles(doc) {
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+                /* Universal Scrollbar Hide */
+                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
+             `;
+            doc.head.appendChild(style);
         }
 
         function setMode(mode) {
@@ -735,15 +819,42 @@
             frameEl.setAttribute('data-mode', mode);
 
             const doc = frame.contentDocument;
-            if (doc && doc.documentElement) {
+            if (doc) {
                 if (mode !== 'desktop') {
-                    doc.documentElement.classList.add('hide-scroll');
-                    doc.documentElement.classList.add('force-responsive'); // Activate responsive fix
+                    // Aggressive Responsive Fix
+                    // We inject a style block specifically for mobile mode
+                    let mobileStyle = doc.getElementById('mobile-fix');
+                    if (!mobileStyle) {
+                        mobileStyle = doc.createElement('style');
+                        mobileStyle.id = 'mobile-fix';
+                        mobileStyle.innerHTML = `
+                            html, body { width: 100% !important; overflow-x: hidden !important; }
+                            table, img, div, span, p { max-width: 100% !important; height: auto !important; box-sizing: border-box !important; }
+                            /* Force tables to be blocks to avoid width issues */
+                            table { display: block !important; width: 100% !important; }
+                            tbody, tr, td { display: block !important; width: 100% !important; } 
+                         `;
+                        // display: block on tables breaks layout often but ensures fitting.
+                        // A better approach is max-width: 100% and allow table layout
+                        mobileStyle.innerHTML = `
+                            html, body { 
+                                width: 100% !important; 
+                                margin:0 !important; padding:0 !important;
+                            }
+                            table { width: 100% !important; max-width: 100% !important; }
+                            img { max-width: 100% !important; height: auto !important; }
+                         `;
+                        doc.head.appendChild(mobileStyle);
+                    }
 
-                    if (doc.body) doc.body.style.paddingTop = (mode === 'mobile') ? '40px' : '0';
+                    if (mode === 'mobile') {
+                        if (doc.body) doc.body.style.paddingTop = '40px';
+                    } else {
+                        if (doc.body) doc.body.style.paddingTop = '0px';
+                    }
                 } else {
-                    doc.documentElement.classList.remove('hide-scroll');
-                    doc.documentElement.classList.remove('force-responsive');
+                    const s = doc.getElementById('mobile-fix');
+                    if (s) s.remove();
                     if (doc.body) doc.body.style.paddingTop = '0';
                 }
             }
@@ -757,10 +868,13 @@
             event.currentTarget.classList.toggle('active');
         }
 
-        function openRawHtml() {
-            const blob = new Blob([content], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
+        function openSourceModal() {
+            document.getElementById('sourceText').value = content;
+            document.getElementById('sourceModal').style.display = 'flex';
+        }
+
+        function closeSourceModal() {
+            document.getElementById('sourceModal').style.display = 'none';
         }
 
         init();

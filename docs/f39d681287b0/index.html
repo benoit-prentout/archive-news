@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -60,7 +60,6 @@
             width: 100%;
             height: 100%;
             max-width: 1200px;
-            /* Reduced width for realism */
             border-radius: 12px;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border-color);
@@ -329,17 +328,33 @@
             border-color: var(--text-primary);
         }
 
-        .device-toggles .device-btn {
-            padding: 6px 12px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: var(--text-secondary);
+        .device-toggles {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px;
+            border-radius: 10px;
         }
 
-        .device-toggles .device-btn.active {
+        .device-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .device-btn.active {
+            background: var(--bg-body);
             color: var(--text-primary);
-            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .device-toggles {
+            background: rgba(255, 255, 255, 0.05);
         }
 
         [data-theme="dark"] .pixel-header {
@@ -349,6 +364,68 @@
 
         [data-theme="dark"] .pixel-box {
             border-color: rgba(139, 233, 253, 0.2);
+        }
+
+        /* Modal for Source */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            background: var(--bg-body);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .source-area {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: none;
+            background: var(--bg-body);
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
         }
     </style>
 </head>
@@ -365,14 +442,11 @@
         </div>
 
         <div class="action-group">
-            <button class="action-btn" onclick="openRawHtml()" title="open raw html">
+            <button class="action-btn" onclick="openSourceModal()" title="View Source Code">
                 <svg class="icon" viewBox="0 0 24 24">
                     <polyline points="16 18 22 12 16 6"></polyline>
                     <polyline points="8 6 2 12 8 18"></polyline>
                 </svg>
-            </button>
-            <button class="action-btn" onclick="toggleLanguage()" title="Switch Language (FR/EN)">
-                <span id="lang-toggle-text">FR</span>
             </button>
             <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
                 <svg class="icon icon-moon" viewBox="0 0 24 24">
@@ -397,7 +471,7 @@
                 </svg>
             </button>
             <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
-                <span data-i18n="meta_btn">Metadata</span>
+                <span>Metadata</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -415,33 +489,37 @@
         </div>
 
         <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header" data-i18n="meta_header">Metadata</div>
+            <div class="sidebar-header">Metadata</div>
             <div class="sidebar-content">
-                <div class="section-title" data-i18n="meta_section_gen">General Info</div>
+                <div class="section-title">General Info</div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_subject">Subject</span>
+                    <span class="meta-key">Subject</span>
                     <span class="meta-val">EXCLUSIVITÉ AVEC SHOWROOMPRIVÉ 10€ de lavage OFFERTS</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_sender">Sender</span>
+                    <span class="meta-key">Sender</span>
                     <span class="meta-val">benoit@getinside.fr</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_date">Received</span>
+                    <span class="meta-key">Received</span>
                     <span class="meta-val">27/11/2025 à 03:53</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-key" data-i18n="meta_label_archived">Archived</span>
-                    <span class="meta-val">19/12/2025 à 22:06</span>
+                    <span class="meta-key">Archived</span>
+                    <span class="meta-val">19/12/2025 à 22:14</span>
                 </div>
 
-                <div class="section-title" data-i18n="meta_section_tech">Technical</div>
+                <div class="section-title">Technical</div>
                 
-                <div style="color:var(--text-tertiary); font-size:0.85rem;" data-i18n="pixels_none">No tracking pixels
-                    detected.</div>
+                <div style="color:var(--text-tertiary); font-size:0.85rem;">No tracking pixels detected.</div>
                 
 
-                <div class="section-title"><span data-i18n="meta_section_links">Links</span> (27)</div>
+                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Links (27)</span>
+                    <button onclick="copyLinks([{'index': 1, 'txt': 'Téléchargez l’app Wash, rechargez votre compte et ', 'original_url': 'https://gtinsi.de/68d28cab3de3e', 'final_url': 'https://gtinsi.de/68d28cab3de3e'}, {'index': 2, 'txt': 'Version en ligne', 'original_url': 'https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/%%view_email_url%%', 'final_url': 'https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/%%view_email_url%%'}, {'index': 3, 'txt': '', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx'}, {'index': 4, 'txt': '', 'original_url': 'https://gtinsi.de/68d28cab3de3e', 'final_url': 'https://gtinsi.de/68d28cab3de3e'}, {'index': 5, 'txt': 'Je profite de 10€ offerts', 'original_url': 'https://gtinsi.de/68d28cab3de3e', 'final_url': 'https://gtinsi.de/68d28cab3de3e'}, {'index': 6, 'txt': '', 'original_url': 'https://gtinsi.de/68d28cab3de3e', 'final_url': 'https://gtinsi.de/68d28cab3de3e'}, {'index': 7, 'txt': 'Je lave ma voiture gratuitement', 'original_url': 'https://gtinsi.de/68d28cab3de3e', 'final_url': 'https://gtinsi.de/68d28cab3de3e'}, {'index': 8, 'txt': '', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx'}, {'index': 9, 'txt': '', 'original_url': 'https://instagram.com/showroomprive/', 'final_url': 'https://instagram.com/showroomprive/'}, {'index': 10, 'txt': '', 'original_url': 'https://www.facebook.com/showroomprivecom', 'final_url': 'https://www.facebook.com/showroomprivecom'}, {'index': 11, 'txt': '', 'original_url': 'https://www.tiktok.com/@showroomprive', 'final_url': 'https://www.tiktok.com/@showroomprive'}, {'index': 12, 'txt': '', 'original_url': 'https://fr.linkedin.com/company/showroomprive-com', 'final_url': 'https://fr.linkedin.com/company/showroomprive-com'}, {'index': 13, 'txt': '', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=mobile.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=mobile.aspx'}, {'index': 14, 'txt': 'Mes commandes', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/Mescommandes.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/Mescommandes.aspx'}, {'index': 15, 'txt': "Mes bons d'achat", 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/mesba.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/mesba.aspx'}, {'index': 16, 'txt': 'Mes communications', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx'}, {'index': 17, 'txt': 'Mode', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/mode%3fu%3d1%3Fwebview%3D1', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/mode%3fu%3d1%3Fwebview%3D1'}, {'index': 18, 'txt': 'Maison', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universmaison%3fu%3d4%3Fwebview%3D1', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universmaison%3fu%3d4%3Fwebview%3D1'}, {'index': 19, 'txt': 'Voyage', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilvoyage.aspx%3fu%3d5', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilvoyage.aspx%3fu%3d5'}, {'index': 20, 'txt': 'Beauté', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universbeaute%3fu%3d6%3Fwebview%3D1', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universbeaute%3fu%3d6%3Fwebview%3D1'}, {'index': 21, 'txt': 'Enfant', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/enfant%3fu%3d3%3Fwebview%3D1', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/enfant%3fu%3d3%3Fwebview%3D1'}, {'index': 22, 'txt': 'Hi-tech', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1'}, {'index': 23, 'txt': 'Electromenager', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1'}, {'index': 24, 'txt': 'Loisirs', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilbilletterie.aspx%3fu%3d9', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilbilletterie.aspx%3fu%3d9'}, {'index': 25, 'txt': 'Marché', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/legrandmarche%3fu%3d161', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/legrandmarche%3fu%3d161'}, {'index': 26, 'txt': 'Outlet', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=outlet.aspx%3fu%3d8', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=outlet.aspx%3fu%3d8'}, {'index': 27, 'txt': 'ici', 'original_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx', 'final_url': 'https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx'}])"
+                        style="border:none; background:none; color:var(--accent-color); cursor:pointer; font-size:0.7em; font-weight:600;">COPY
+                        ALL</button>
+                </div>
                 <ul class="link-list">
                     
                     <li class="link-item" onclick="highlightLink(1)">
@@ -664,8 +742,21 @@
             </div>
 
             <div class="sidebar-footer">
-                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. <span
-                    data-i18n="footer_rights">All rights reserved.</span>
+                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. All rights
+                reserved.
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Modal -->
+    <div id="sourceModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span>HTML Source</span>
+                <button class="close-btn" onclick="closeSourceModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="sourceText" class="source-area" readonly></textarea>
             </div>
         </div>
     </div>
@@ -678,32 +769,25 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Aggressive mobile fix: max-width 100%
-            doc.write(`
-                <style>
-                    body { margin: 0; font-family: sans-serif; background: #fff; }
-                    
-                    /* Universal Scrollbar Hide */
-                    html.hide-scroll::-webkit-scrollbar, 
-                    html.hide-scroll body::-webkit-scrollbar { 
-                        width: 0px !important; display: none !important; 
-                    }
-                    html.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-                    
-                    /* Responsive Force Fix */
-                    html.force-responsive table, 
-                    html.force-responsive img, 
-                    html.force-responsive div {
-                        max-width: 100% !important;
-                        height: auto !important;
-                        box-sizing: border-box !important;
-                    }
-                </style>
-                ` + content);
+            doc.write(content);
             doc.close();
 
+            // Apply base styles
+            applyFrameStyles(doc);
+
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
+        }
+
+        function applyFrameStyles(doc) {
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+                /* Universal Scrollbar Hide */
+                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
+             `;
+            doc.head.appendChild(style);
         }
 
         function setMode(mode) {
@@ -711,15 +795,42 @@
             frameEl.setAttribute('data-mode', mode);
 
             const doc = frame.contentDocument;
-            if (doc && doc.documentElement) {
+            if (doc) {
                 if (mode !== 'desktop') {
-                    doc.documentElement.classList.add('hide-scroll');
-                    doc.documentElement.classList.add('force-responsive'); // Activate responsive fix
+                    // Aggressive Responsive Fix
+                    // We inject a style block specifically for mobile mode
+                    let mobileStyle = doc.getElementById('mobile-fix');
+                    if (!mobileStyle) {
+                        mobileStyle = doc.createElement('style');
+                        mobileStyle.id = 'mobile-fix';
+                        mobileStyle.innerHTML = `
+                            html, body { width: 100% !important; overflow-x: hidden !important; }
+                            table, img, div, span, p { max-width: 100% !important; height: auto !important; box-sizing: border-box !important; }
+                            /* Force tables to be blocks to avoid width issues */
+                            table { display: block !important; width: 100% !important; }
+                            tbody, tr, td { display: block !important; width: 100% !important; } 
+                         `;
+                        // display: block on tables breaks layout often but ensures fitting.
+                        // A better approach is max-width: 100% and allow table layout
+                        mobileStyle.innerHTML = `
+                            html, body { 
+                                width: 100% !important; 
+                                margin:0 !important; padding:0 !important;
+                            }
+                            table { width: 100% !important; max-width: 100% !important; }
+                            img { max-width: 100% !important; height: auto !important; }
+                         `;
+                        doc.head.appendChild(mobileStyle);
+                    }
 
-                    if (doc.body) doc.body.style.paddingTop = (mode === 'mobile') ? '40px' : '0';
+                    if (mode === 'mobile') {
+                        if (doc.body) doc.body.style.paddingTop = '40px';
+                    } else {
+                        if (doc.body) doc.body.style.paddingTop = '0px';
+                    }
                 } else {
-                    doc.documentElement.classList.remove('hide-scroll');
-                    doc.documentElement.classList.remove('force-responsive');
+                    const s = doc.getElementById('mobile-fix');
+                    if (s) s.remove();
                     if (doc.body) doc.body.style.paddingTop = '0';
                 }
             }
@@ -733,10 +844,13 @@
             event.currentTarget.classList.toggle('active');
         }
 
-        function openRawHtml() {
-            const blob = new Blob([content], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
+        function openSourceModal() {
+            document.getElementById('sourceText').value = content;
+            document.getElementById('sourceModal').style.display = 'flex';
+        }
+
+        function closeSourceModal() {
+            document.getElementById('sourceModal').style.display = 'none';
         }
 
         init();
