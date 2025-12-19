@@ -44,6 +44,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .device-frame iframe {
@@ -54,6 +55,7 @@
             flex: 1;
         }
 
+        /* Device Modes */
         .device-frame[data-mode="desktop"] {
             width: 100%;
             height: 100%;
@@ -68,6 +70,22 @@
             max-height: 90vh;
             border-radius: 40px;
             border: 12px solid #111;
+        }
+
+        /* iPhone Notch Mockup */
+        .device-frame[data-mode="mobile"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #111;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 999;
+            pointer-events: none;
         }
 
         .device-frame[data-mode="tablet"] {
@@ -123,31 +141,36 @@
             margin-top: 0;
         }
 
+        /* Metadata Inline Style */
         .meta-row {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 12px;
             font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         .meta-key {
             color: var(--text-secondary);
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .meta-key::after {
+            content: ":";
         }
 
         .meta-val {
             color: var(--text-primary);
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .pill {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            font-weight: 400;
         }
 
         /* Links */
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: link-counter;
+        }
+
         .link-item {
             padding: 10px;
             border: 1px solid var(--border-color);
@@ -156,6 +179,9 @@
             background: var(--bg-card);
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
         }
 
         .link-item:hover {
@@ -163,32 +189,85 @@
             transform: translateX(2px);
         }
 
+        .link-num {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        [data-theme="dark"] .link-num {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .link-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .link-txt {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
         .link-url {
             font-size: 0.75rem;
             color: var(--text-tertiary);
-            overflow: hidden;
             white-space: nowrap;
+            overflow: hidden;
             text-overflow: ellipsis;
-            margin-top: 4px;
         }
 
         /* Pixels */
         .pixel-box {
             background: rgba(59, 130, 246, 0.05);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 10px;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
+            overflow: hidden;
         }
 
-        .pixel-msg {
-            color: #2980b9;
+        .pixel-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 12px;
             font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #2980b9;
         }
 
-        /* Viewer Footer */
+        .pixel-row {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .pixel-row:last-child {
+            border-bottom: none;
+        }
+
+        .pixel-reason {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .pixel-url {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Footer */
         .sidebar-footer {
             padding: 20px;
             border-top: 1px solid var(--border-color);
@@ -214,7 +293,6 @@
             background: var(--bg-glass);
         }
 
-        /* Centered Buttons & Labels */
         .action-group {
             display: flex;
             gap: 10px;
@@ -224,7 +302,6 @@
         .action-btn {
             height: 36px;
             padding: 0 12px;
-            /* Changed to padding for label support */
             min-width: 36px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
@@ -260,8 +337,13 @@
             font-weight: 700;
         }
 
-        [data-theme="dark"] .pixel-msg {
+        [data-theme="dark"] .pixel-header {
             color: #8be9fd;
+            background: rgba(139, 233, 253, 0.1);
+        }
+
+        [data-theme="dark"] .pixel-box {
+            border-color: rgba(139, 233, 253, 0.2);
         }
     </style>
 </head>
@@ -302,7 +384,7 @@
                 </svg>
             </button>
             <button class="action-btn active" onclick="toggleSidebar()">
-                <span>Infos</span>
+                <span>Metadata</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -339,84 +421,129 @@
                 <div class="section-title">Technical</div>
                 
                 <div class="pixel-box">
-                    <div class="pixel-msg">Needs Analysis (2)</div>
-                    <div style="font-size:0.75rem;">
-                        
-                        <div style="word-break:break-all; margin-bottom:5px;">• https://api.getinside.media/v1/emails/track/6917544cbd485</div>
-                        
-                        <div style="word-break:break-all; margin-bottom:5px;">• https://ctrk.klclick.com/o/01KBQKYKGF7KPGNF8GVSKVME77</div>
-                        
+                    <div class="pixel-header">Needs Analysis (2)</div>
+                    
+                    <div class="pixel-row">
+                        <div class="pixel-reason">Known Tracking Domain</div>
+                        <div class="pixel-url">https://api.getinside.media/v1/emails/track/6917544cbd485</div>
                     </div>
+                    
+                    <div class="pixel-row">
+                        <div class="pixel-reason">1x1 Pixel Dimensions</div>
+                        <div class="pixel-url">https://ctrk.klclick.com/o/01KBQKYKGF7KPGNF8GVSKVME77</div>
+                    </div>
+                    
                 </div>
                 
 
                 <div class="section-title">Links (13)</div>
-                
-                <div class="link-item" onclick="highlightLink(1)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_0</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(2)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_1</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(3)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_2</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(4)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_3</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(5)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_4</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(6)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_5</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(7)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_6</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(8)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_7</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(9)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_8</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(10)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_9</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(11)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_10</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(12)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_11</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(13)">
-                    <div style="font-weight:600; font-size:0.85rem;">Vous pouvez vous désinscrire ici.</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_12</div>
-                </div>
-                
+                <ul class="link-list">
+                    
+                    <li class="link-item" onclick="highlightLink(1)">
+                        <div class="link-num">1</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_0</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(2)">
+                        <div class="link-num">2</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_1</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(3)">
+                        <div class="link-num">3</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_2</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(4)">
+                        <div class="link-num">4</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_3</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(5)">
+                        <div class="link-num">5</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_4</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(6)">
+                        <div class="link-num">6</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_5</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(7)">
+                        <div class="link-num">7</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_6</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(8)">
+                        <div class="link-num">8</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_7</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(9)">
+                        <div class="link-num">9</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_8</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(10)">
+                        <div class="link-num">10</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_9</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(11)">
+                        <div class="link-num">11</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_10</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(12)">
+                        <div class="link-num">12</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_11</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(13)">
+                        <div class="link-num">13</div>
+                        <div class="link-content">
+                            <div class="link-txt">Vous pouvez vous désinscrire ici.</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBQKYKGF7KPGNF8GVSKVME77_12</div>
+                        </div>
+                    </li>
+                    
+                </ul>
             </div>
 
             <div class="sidebar-footer">
@@ -434,23 +561,40 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Inject styles
+            // Inject styles to hide scrollbars on mobile/tablet
+            // and apply basic reset
             doc.write(`
                 <style>
                     body { margin: 0; font-family: sans-serif; background: #fff; }
                     img { max-width: 100%; height: auto; }
-                    ::-webkit-scrollbar { width: 0px; }
+                    /* Scrollbar hiding logic handled by iframe width/height usually, 
+                       but if iframe scrolls, we want to hide bars in mobile mode */
+                    .hide-scroll::-webkit-scrollbar { width: 0px; background: transparent; }
                 </style>
                 ` + content);
             doc.close();
 
-            // Re-apply theme if dark
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
         function setMode(mode) {
-            document.getElementById('deviceFrame').setAttribute('data-mode', mode);
+            const frameEl = document.getElementById('deviceFrame');
+            frameEl.setAttribute('data-mode', mode);
+
+            // Add padding for notch if mobile
+            const doc = frame.contentDocument;
+            if (doc && doc.body) {
+                if (mode === 'mobile') {
+                    doc.body.style.paddingTop = '40px'; // Safe area for notch
+                    doc.documentElement.classList.add('hide-scroll'); // Try to hide scrollbars
+                } else {
+                    doc.body.style.paddingTop = '0px';
+                    doc.documentElement.classList.remove('hide-scroll');
+                }
+            }
+
             document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
