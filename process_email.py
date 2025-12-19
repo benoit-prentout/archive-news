@@ -116,28 +116,28 @@ def process_emails():
         # 4. Generate Main Index
         # Sort by date ISO (descending)
         all_metadata.sort(key=lambda x: x.get('date_iso', ''), reverse=True)
-    print("Generating index...")
-    
-    # Calculate Stats
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(OUTPUT_FOLDER):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            if not os.path.islink(fp):
-                total_size += os.path.getsize(fp)
-    
-    size_mb = f"{total_size / (1024*1024):.1f} MB"
-    last_updated = datetime.now().strftime("%d %b %Y, %H:%M")
-    
-    stats = {
-        'last_updated': last_updated,
-        'archive_size': size_mb,
-        'count': len(all_metadata)
-    }
+        print("Generating index...")
+        
+        # Calculate Stats
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(OUTPUT_FOLDER):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                if not os.path.islink(fp):
+                    total_size += os.path.getsize(fp)
+        
+        size_mb = f"{total_size / (1024*1024):.1f} MB"
+        last_updated = datetime.now().strftime("%d %b %Y, %H:%M")
+        
+        stats = {
+            'last_updated': last_updated,
+            'archive_size': size_mb,
+            'count': len(all_metadata)
+        }
 
-    generate_index(all_metadata, os.path.join(OUTPUT_FOLDER, "index.html"), stats)
-    
-    print("Done!")
+        generate_index(all_metadata, os.path.join(OUTPUT_FOLDER, "index.html"), stats)
+        
+        print("Done!")
         
         # 5. Copy Assets
         from src.generator import copy_assets
