@@ -135,19 +135,20 @@
 
         .device-wrapper {
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            background: white;
+            background: #333;
+            /* Match device border to fix corner gaps */
             box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: hidden !important;
-            /* Fix corner gap */
+            border-radius: 4px;
         }
 
-        /* Desktop (Default) */
+        /* Desktop (Default) needs white background inside */
         .device-wrapper[data-mode="desktop"] {
+            background: white;
             width: 1000px;
             height: 100%;
             max-height: 90vh;
-            border-radius: 4px;
             border: 1px solid #ddd;
         }
 
@@ -176,7 +177,7 @@
             border: none;
             display: block;
             border-radius: inherit;
-            background: white;
+            background: transparent;
         }
 
         /* OUTLOOK QUIRKS MODE (Apply to iframe content via JS injections or wrapper class) */
@@ -396,13 +397,32 @@
         function initFrame() {
             const doc = frame.contentDocument;
             doc.open();
-            doc.write(emailContent);
+
+            // 1. Inject Viewport if missing
+            let content = emailContent;
+            if (!content.toLowerCase().includes('name="viewport"')) {
+                content = '<meta name="viewport" content="width=device-width, initial-scale=1.0">' + content;
+            }
+
+            doc.write(content);
             doc.close();
 
-            // Inject base styles for iframe
+            // 2. Inject base styles for iframe
             const style = doc.createElement('style');
             style.textContent = `
-                body { margin: 0; padding: 0; font-family: sans-serif; }
+                body { margin: 0; padding: 0; font-family: sans-serif; background: white; }
+                
+                /* Responsive Fixes */
+                html, body { 
+                    width: 100%; 
+                    overflow-x: hidden; 
+                    -webkit-text-size-adjust: 100%;
+                }
+                
+                /* Force images/tables into viewport */
+                img { max-width: 100% !important; height: auto !important; }
+                table { max-width: 100% !important; }
+                
                 html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
                 html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
                 
