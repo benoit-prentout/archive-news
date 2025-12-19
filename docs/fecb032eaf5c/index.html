@@ -44,6 +44,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .device-frame iframe {
@@ -54,6 +55,7 @@
             flex: 1;
         }
 
+        /* Device Modes */
         .device-frame[data-mode="desktop"] {
             width: 100%;
             height: 100%;
@@ -68,6 +70,22 @@
             max-height: 90vh;
             border-radius: 40px;
             border: 12px solid #111;
+        }
+
+        /* iPhone Notch Mockup */
+        .device-frame[data-mode="mobile"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #111;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 999;
+            pointer-events: none;
         }
 
         .device-frame[data-mode="tablet"] {
@@ -123,31 +141,36 @@
             margin-top: 0;
         }
 
+        /* Metadata Inline Style */
         .meta-row {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 12px;
             font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         .meta-key {
             color: var(--text-secondary);
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .meta-key::after {
+            content: ":";
         }
 
         .meta-val {
             color: var(--text-primary);
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .pill {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            font-weight: 400;
         }
 
         /* Links */
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: link-counter;
+        }
+
         .link-item {
             padding: 10px;
             border: 1px solid var(--border-color);
@@ -156,6 +179,9 @@
             background: var(--bg-card);
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
         }
 
         .link-item:hover {
@@ -163,32 +189,85 @@
             transform: translateX(2px);
         }
 
+        .link-num {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        [data-theme="dark"] .link-num {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .link-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .link-txt {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
         .link-url {
             font-size: 0.75rem;
             color: var(--text-tertiary);
-            overflow: hidden;
             white-space: nowrap;
+            overflow: hidden;
             text-overflow: ellipsis;
-            margin-top: 4px;
         }
 
         /* Pixels */
         .pixel-box {
             background: rgba(59, 130, 246, 0.05);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 10px;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
+            overflow: hidden;
         }
 
-        .pixel-msg {
-            color: #2980b9;
+        .pixel-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 12px;
             font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #2980b9;
         }
 
-        /* Viewer Footer */
+        .pixel-row {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .pixel-row:last-child {
+            border-bottom: none;
+        }
+
+        .pixel-reason {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .pixel-url {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Footer */
         .sidebar-footer {
             padding: 20px;
             border-top: 1px solid var(--border-color);
@@ -214,7 +293,6 @@
             background: var(--bg-glass);
         }
 
-        /* Centered Buttons & Labels */
         .action-group {
             display: flex;
             gap: 10px;
@@ -224,7 +302,6 @@
         .action-btn {
             height: 36px;
             padding: 0 12px;
-            /* Changed to padding for label support */
             min-width: 36px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
@@ -260,8 +337,13 @@
             font-weight: 700;
         }
 
-        [data-theme="dark"] .pixel-msg {
+        [data-theme="dark"] .pixel-header {
             color: #8be9fd;
+            background: rgba(139, 233, 253, 0.1);
+        }
+
+        [data-theme="dark"] .pixel-box {
+            border-color: rgba(139, 233, 253, 0.2);
         }
     </style>
 </head>
@@ -302,7 +384,7 @@
                 </svg>
             </button>
             <button class="action-btn active" onclick="toggleSidebar()">
-                <span>Infos</span>
+                <span>Metadata</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -342,37 +424,57 @@
                 
 
                 <div class="section-title">Links (6)</div>
-                
-                <div class="link-item" onclick="highlightLink(1)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(2)">
-                    <div style="font-weight:600; font-size:0.85rem;">Je réserve ma place</div>
-                    <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(3)">
-                    <div style="font-weight:600; font-size:0.85rem;">Je réserve ma place</div>
-                    <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(4)">
-                    <div style="font-weight:600; font-size:0.85rem;">www.bebeboutik-prive.fr</div>
-                    <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(5)">
-                    <div style="font-weight:600; font-size:0.85rem;">cliquez ici</div>
-                    <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(6)">
-                    <div style="font-weight:600; font-size:0.85rem;">Mentions légales</div>
-                    <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~</div>
-                </div>
-                
+                <ul class="link-list">
+                    
+                    <li class="link-item" onclick="highlightLink(1)">
+                        <div class="link-num">1</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(2)">
+                        <div class="link-num">2</div>
+                        <div class="link-content">
+                            <div class="link-txt">Je réserve ma place</div>
+                            <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(3)">
+                        <div class="link-num">3</div>
+                        <div class="link-content">
+                            <div class="link-txt">Je réserve ma place</div>
+                            <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(4)">
+                        <div class="link-num">4</div>
+                        <div class="link-content">
+                            <div class="link-txt">www.bebeboutik-prive.fr</div>
+                            <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(5)">
+                        <div class="link-num">5</div>
+                        <div class="link-content">
+                            <div class="link-txt">cliquez ici</div>
+                            <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(6)">
+                        <div class="link-num">6</div>
+                        <div class="link-content">
+                            <div class="link-txt">Mentions légales</div>
+                            <div class="link-url">https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~</div>
+                        </div>
+                    </li>
+                    
+                </ul>
             </div>
 
             <div class="sidebar-footer">
@@ -390,23 +492,40 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Inject styles
+            // Inject styles to hide scrollbars on mobile/tablet
+            // and apply basic reset
             doc.write(`
                 <style>
                     body { margin: 0; font-family: sans-serif; background: #fff; }
                     img { max-width: 100%; height: auto; }
-                    ::-webkit-scrollbar { width: 0px; }
+                    /* Scrollbar hiding logic handled by iframe width/height usually, 
+                       but if iframe scrolls, we want to hide bars in mobile mode */
+                    .hide-scroll::-webkit-scrollbar { width: 0px; background: transparent; }
                 </style>
                 ` + content);
             doc.close();
 
-            // Re-apply theme if dark
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
         function setMode(mode) {
-            document.getElementById('deviceFrame').setAttribute('data-mode', mode);
+            const frameEl = document.getElementById('deviceFrame');
+            frameEl.setAttribute('data-mode', mode);
+
+            // Add padding for notch if mobile
+            const doc = frame.contentDocument;
+            if (doc && doc.body) {
+                if (mode === 'mobile') {
+                    doc.body.style.paddingTop = '40px'; // Safe area for notch
+                    doc.documentElement.classList.add('hide-scroll'); // Try to hide scrollbars
+                } else {
+                    doc.body.style.paddingTop = '0px';
+                    doc.documentElement.classList.remove('hide-scroll');
+                }
+            }
+
             document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }

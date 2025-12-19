@@ -44,6 +44,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .device-frame iframe {
@@ -54,6 +55,7 @@
             flex: 1;
         }
 
+        /* Device Modes */
         .device-frame[data-mode="desktop"] {
             width: 100%;
             height: 100%;
@@ -68,6 +70,22 @@
             max-height: 90vh;
             border-radius: 40px;
             border: 12px solid #111;
+        }
+
+        /* iPhone Notch Mockup */
+        .device-frame[data-mode="mobile"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #111;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 999;
+            pointer-events: none;
         }
 
         .device-frame[data-mode="tablet"] {
@@ -123,31 +141,36 @@
             margin-top: 0;
         }
 
+        /* Metadata Inline Style */
         .meta-row {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 12px;
             font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         .meta-key {
             color: var(--text-secondary);
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .meta-key::after {
+            content: ":";
         }
 
         .meta-val {
             color: var(--text-primary);
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .pill {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            font-weight: 400;
         }
 
         /* Links */
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: link-counter;
+        }
+
         .link-item {
             padding: 10px;
             border: 1px solid var(--border-color);
@@ -156,6 +179,9 @@
             background: var(--bg-card);
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
         }
 
         .link-item:hover {
@@ -163,32 +189,85 @@
             transform: translateX(2px);
         }
 
+        .link-num {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        [data-theme="dark"] .link-num {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .link-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .link-txt {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
         .link-url {
             font-size: 0.75rem;
             color: var(--text-tertiary);
-            overflow: hidden;
             white-space: nowrap;
+            overflow: hidden;
             text-overflow: ellipsis;
-            margin-top: 4px;
         }
 
         /* Pixels */
         .pixel-box {
             background: rgba(59, 130, 246, 0.05);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 10px;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
+            overflow: hidden;
         }
 
-        .pixel-msg {
-            color: #2980b9;
+        .pixel-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 12px;
             font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #2980b9;
         }
 
-        /* Viewer Footer */
+        .pixel-row {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .pixel-row:last-child {
+            border-bottom: none;
+        }
+
+        .pixel-reason {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .pixel-url {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Footer */
         .sidebar-footer {
             padding: 20px;
             border-top: 1px solid var(--border-color);
@@ -214,7 +293,6 @@
             background: var(--bg-glass);
         }
 
-        /* Centered Buttons & Labels */
         .action-group {
             display: flex;
             gap: 10px;
@@ -224,7 +302,6 @@
         .action-btn {
             height: 36px;
             padding: 0 12px;
-            /* Changed to padding for label support */
             min-width: 36px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
@@ -260,8 +337,13 @@
             font-weight: 700;
         }
 
-        [data-theme="dark"] .pixel-msg {
+        [data-theme="dark"] .pixel-header {
             color: #8be9fd;
+            background: rgba(139, 233, 253, 0.1);
+        }
+
+        [data-theme="dark"] .pixel-box {
+            border-color: rgba(139, 233, 253, 0.2);
         }
     </style>
 </head>
@@ -302,7 +384,7 @@
                 </svg>
             </button>
             <button class="action-btn active" onclick="toggleSidebar()">
-                <span>Infos</span>
+                <span>Metadata</span>
                 <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -339,142 +421,220 @@
                 <div class="section-title">Technical</div>
                 
                 <div class="pixel-box">
-                    <div class="pixel-msg">Needs Analysis (1)</div>
-                    <div style="font-size:0.75rem;">
-                        
-                        <div style="word-break:break-all; margin-bottom:5px;">• https://ctrk.klclick.com/o/01KBJ3YPQJQ58H4S9YNGCE0FDB</div>
-                        
+                    <div class="pixel-header">Needs Analysis (1)</div>
+                    
+                    <div class="pixel-row">
+                        <div class="pixel-reason">1x1 Pixel Dimensions</div>
+                        <div class="pixel-url">https://ctrk.klclick.com/o/01KBJ3YPQJQ58H4S9YNGCE0FDB</div>
                     </div>
+                    
                 </div>
                 
 
                 <div class="section-title">Links (25)</div>
-                
-                <div class="link-item" onclick="highlightLink(1)">
-                    <div style="font-weight:600; font-size:0.85rem;">Visualiser cet email en ligne</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_0</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(2)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_1</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(3)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_2</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(4)">
-                    <div style="font-weight:600; font-size:0.85rem;">TOUTES NOS IDÉES CADEAUX</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_3</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(5)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_4</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(6)">
-                    <div style="font-weight:600; font-size:0.85rem;">t-shirts</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_5</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(7)">
-                    <div style="font-weight:600; font-size:0.85rem;">sweats</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_6</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(8)">
-                    <div style="font-weight:600; font-size:0.85rem;">hoodie</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_7</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(9)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_8</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(10)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_9</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(11)">
-                    <div style="font-weight:600; font-size:0.85rem;">affiches</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_10</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(12)">
-                    <div style="font-weight:600; font-size:0.85rem;">mugs</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_11</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(13)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_12</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(14)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_13</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(15)">
-                    <div style="font-weight:600; font-size:0.85rem;">+50 IDÉES CADEAUX NOËL</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_14</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(16)">
-                    <div style="font-weight:600; font-size:0.85rem;">NOUS REJOINDRE 🤝</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_15</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(17)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_16</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(18)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_17</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(19)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_18</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(20)">
-                    <div style="font-weight:600; font-size:0.85rem;">boutique,</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_19</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(21)">
-                    <div style="font-weight:600; font-size:0.85rem;">On recrute !</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_20</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(22)">
-                    <div style="font-weight:600; font-size:0.85rem;">Se désabonner</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_21</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(23)">
-                    <div style="font-weight:600; font-size:0.85rem;">Gérer mes préférences</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_22</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(24)">
-                    <div style="font-weight:600; font-size:0.85rem;"></div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_23</div>
-                </div>
-                
-                <div class="link-item" onclick="highlightLink(25)">
-                    <div style="font-weight:600; font-size:0.85rem;">Avis-vérifiés</div>
-                    <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_24</div>
-                </div>
-                
+                <ul class="link-list">
+                    
+                    <li class="link-item" onclick="highlightLink(1)">
+                        <div class="link-num">1</div>
+                        <div class="link-content">
+                            <div class="link-txt">Visualiser cet email en ligne</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_0</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(2)">
+                        <div class="link-num">2</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_1</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(3)">
+                        <div class="link-num">3</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_2</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(4)">
+                        <div class="link-num">4</div>
+                        <div class="link-content">
+                            <div class="link-txt">TOUTES NOS IDÉES CADEAUX</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_3</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(5)">
+                        <div class="link-num">5</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_4</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(6)">
+                        <div class="link-num">6</div>
+                        <div class="link-content">
+                            <div class="link-txt">t-shirts</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_5</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(7)">
+                        <div class="link-num">7</div>
+                        <div class="link-content">
+                            <div class="link-txt">sweats</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_6</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(8)">
+                        <div class="link-num">8</div>
+                        <div class="link-content">
+                            <div class="link-txt">hoodie</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_7</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(9)">
+                        <div class="link-num">9</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_8</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(10)">
+                        <div class="link-num">10</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_9</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(11)">
+                        <div class="link-num">11</div>
+                        <div class="link-content">
+                            <div class="link-txt">affiches</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_10</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(12)">
+                        <div class="link-num">12</div>
+                        <div class="link-content">
+                            <div class="link-txt">mugs</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_11</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(13)">
+                        <div class="link-num">13</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_12</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(14)">
+                        <div class="link-num">14</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_13</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(15)">
+                        <div class="link-num">15</div>
+                        <div class="link-content">
+                            <div class="link-txt">+50 IDÉES CADEAUX NOËL</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_14</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(16)">
+                        <div class="link-num">16</div>
+                        <div class="link-content">
+                            <div class="link-txt">NOUS REJOINDRE 🤝</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_15</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(17)">
+                        <div class="link-num">17</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_16</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(18)">
+                        <div class="link-num">18</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_17</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(19)">
+                        <div class="link-num">19</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_18</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(20)">
+                        <div class="link-num">20</div>
+                        <div class="link-content">
+                            <div class="link-txt">boutique,</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_19</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(21)">
+                        <div class="link-num">21</div>
+                        <div class="link-content">
+                            <div class="link-txt">On recrute !</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_20</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(22)">
+                        <div class="link-num">22</div>
+                        <div class="link-content">
+                            <div class="link-txt">Se désabonner</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_21</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(23)">
+                        <div class="link-num">23</div>
+                        <div class="link-content">
+                            <div class="link-txt">Gérer mes préférences</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_22</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(24)">
+                        <div class="link-num">24</div>
+                        <div class="link-content">
+                            <div class="link-txt"></div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_23</div>
+                        </div>
+                    </li>
+                    
+                    <li class="link-item" onclick="highlightLink(25)">
+                        <div class="link-num">25</div>
+                        <div class="link-content">
+                            <div class="link-txt">Avis-vérifiés</div>
+                            <div class="link-url">https://ctrk.klclick.com/l/01KBJ3YPQJQ58H4S9YNGCE0FDB_24</div>
+                        </div>
+                    </li>
+                    
+                </ul>
             </div>
 
             <div class="sidebar-footer">
@@ -492,23 +652,40 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Inject styles
+            // Inject styles to hide scrollbars on mobile/tablet
+            // and apply basic reset
             doc.write(`
                 <style>
                     body { margin: 0; font-family: sans-serif; background: #fff; }
                     img { max-width: 100%; height: auto; }
-                    ::-webkit-scrollbar { width: 0px; }
+                    /* Scrollbar hiding logic handled by iframe width/height usually, 
+                       but if iframe scrolls, we want to hide bars in mobile mode */
+                    .hide-scroll::-webkit-scrollbar { width: 0px; background: transparent; }
                 </style>
                 ` + content);
             doc.close();
 
-            // Re-apply theme if dark
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
         function setMode(mode) {
-            document.getElementById('deviceFrame').setAttribute('data-mode', mode);
+            const frameEl = document.getElementById('deviceFrame');
+            frameEl.setAttribute('data-mode', mode);
+
+            // Add padding for notch if mobile
+            const doc = frame.contentDocument;
+            if (doc && doc.body) {
+                if (mode === 'mobile') {
+                    doc.body.style.paddingTop = '40px'; // Safe area for notch
+                    doc.documentElement.classList.add('hide-scroll'); // Try to hide scrollbars
+                } else {
+                    doc.body.style.paddingTop = '0px';
+                    doc.documentElement.classList.remove('hide-scroll');
+                }
+            }
+
             document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
