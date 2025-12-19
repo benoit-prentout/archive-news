@@ -59,9 +59,11 @@
         .device-frame[data-mode="desktop"] {
             width: 100%;
             height: 100%;
-            border-radius: 0;
-            box-shadow: none;
-            border: none;
+            max-width: 1200px;
+            /* Reduced width for realism */
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
         }
 
         .device-frame[data-mode="mobile"] {
@@ -249,6 +251,7 @@
         .pixel-row {
             padding: 8px 12px;
             border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            cursor: help;
         }
 
         .pixel-row:last-child {
@@ -326,33 +329,17 @@
             border-color: var(--text-primary);
         }
 
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
+        .device-toggles .device-btn {
+            padding: 6px 12px;
             border: none;
-            background: transparent;
+            background: none;
             cursor: pointer;
             color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
         }
 
-        .device-btn.active {
-            background: var(--bg-body);
+        .device-toggles .device-btn.active {
             color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
+            font-weight: 700;
         }
 
         [data-theme="dark"] .pixel-header {
@@ -371,12 +358,19 @@
         <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
 
         <div class="device-toggles">
-            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode">Mobile</button>
-            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode">Tablet</button>
-            <button class="device-btn active" onclick="setMode('desktop')" title="View in Desktop Mode">Desktop</button>
+            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
+            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
+            <button class="device-btn active" onclick="setMode('desktop')"
+                title="View in Desktop Mode (Filtered)">Desktop</button>
         </div>
 
         <div class="action-group">
+            <button class="action-btn" onclick="openRawHtml()" title="open raw html">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+            </button>
             <button class="action-btn" onclick="toggleLanguage()" title="Switch Language (FR/EN)">
                 <span id="lang-toggle-text">FR</span>
             </button>
@@ -438,7 +432,7 @@
                 </div>
                 <div class="meta-row">
                     <span class="meta-key" data-i18n="meta_label_archived">Archived</span>
-                    <span class="meta-val">19/12/2025 à 21:58</span>
+                    <span class="meta-val">19/12/2025 à 22:06</span>
                 </div>
 
                 <div class="section-title" data-i18n="meta_section_tech">Technical</div>
@@ -447,7 +441,7 @@
                     <div class="pixel-header" data-i18n="pixels_found">Tracking Detected (1)
                     </div>
                     
-                    <div class="pixel-row">
+                    <div class="pixel-row" title="This 1x1 image or known tracking URL was blocked.">
                         <div class="pixel-reason">1x1 Pixel Dimensions</div>
                         <div class="pixel-url">https://img.newsletter.megara.fr/im/sh/u7bSNM2hmCpF.jpg?u=92pJLo34vnrQtbd6Rinzc3J5MxjKg5wZpCR</div>
                     </div>
@@ -564,30 +558,32 @@
         function init() {
             const doc = frame.contentDocument;
             doc.open();
-            // Aggressively hide scrollbars for mobile/tablet via CSS specific to the mode class if possible.
-            // But since we can't easily toggle classes on <html> inside iframe dynamically from outside css (well we can via js).
-            // We'll insert a robust scrollbar hider.
+            // Aggressive mobile fix: max-width 100%
             doc.write(`
                 <style>
                     body { margin: 0; font-family: sans-serif; background: #fff; }
-                    img { max-width: 100%; height: auto; }
                     
-                    /* Universal scrollbar hide utility */
+                    /* Universal Scrollbar Hide */
                     html.hide-scroll::-webkit-scrollbar, 
                     html.hide-scroll body::-webkit-scrollbar { 
-                        width: 0px !important; 
-                        height: 0px !important; 
-                        background: transparent !important; 
-                        display: none !important;
+                        width: 0px !important; display: none !important; 
                     }
                     html.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+                    
+                    /* Responsive Force Fix */
+                    html.force-responsive table, 
+                    html.force-responsive img, 
+                    html.force-responsive div {
+                        max-width: 100% !important;
+                        height: auto !important;
+                        box-sizing: border-box !important;
+                    }
                 </style>
                 ` + content);
             doc.close();
 
-            // Re-apply theme
             const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') applyTheme('theme');
+            if (theme === 'dark') applyTheme('dark');
         }
 
         function setMode(mode) {
@@ -597,16 +593,14 @@
             const doc = frame.contentDocument;
             if (doc && doc.documentElement) {
                 if (mode !== 'desktop') {
-                    // Mobile/Tablet: Safe area + Hide Scrollbars
                     doc.documentElement.classList.add('hide-scroll');
-                    if (mode === 'mobile') {
-                        if (doc.body) doc.body.style.paddingTop = '40px';
-                    } else {
-                        if (doc.body) doc.body.style.paddingTop = '0px';
-                    }
+                    doc.documentElement.classList.add('force-responsive'); // Activate responsive fix
+
+                    if (doc.body) doc.body.style.paddingTop = (mode === 'mobile') ? '40px' : '0';
                 } else {
                     doc.documentElement.classList.remove('hide-scroll');
-                    if (doc.body) doc.body.style.paddingTop = '0px';
+                    doc.documentElement.classList.remove('force-responsive');
+                    if (doc.body) doc.body.style.paddingTop = '0';
                 }
             }
 
@@ -617,6 +611,12 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('closed');
             event.currentTarget.classList.toggle('active');
+        }
+
+        function openRawHtml() {
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
         }
 
         init();
