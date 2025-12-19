@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="creation_date" content="{{ email_date }}">
+    <meta name="sender" content="{{ sender_name }}">
+    <meta name="archiving_date" content="{{ archiving_date }}">
+    <meta name="preheader" content="{{ preheader }}">
+    <meta name="reading_time" content="{{ reading_time }}">
+    <title>{{ subject }}</title>
+    <style>
+        :root {
+            --bg-body: #eef2f5; --bg-header: #ffffff; --text-main: #333; --border: #ddd;
+            --accent: #0070f3;
+        }
+        [data-theme="dark"] {
+            --bg-body: #121212; --bg-header: #1e1e1e; --text-main: #e0e0e0; --border: #333;
+            --accent: #4da3ff;
+        }
+
+        body { margin: 0; padding: 0; background: var(--bg-body); font-family: Roboto, Helvetica, Arial, sans-serif; overflow: hidden; color: var(--text-main); transition: background 0.3s; }
+        
+        /* HEADER with Toolbar */
+        .header { 
+            position: fixed; top: 0; left: 0; right: 0; height: 60px; 
+            background: var(--bg-header); border-bottom: 1px solid var(--border); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02); 
+        }
+        .title { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px; flex: 1; }
+        
+        .controls-group { display: flex; gap: 10px; border-right: 1px solid var(--border); padding-right: 10px; margin-right: 10px; }
+        .controls-group:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+        .controls { display: flex; align-items: center; }
+
+        .btn { 
+            padding: 6px 10px; border: 1px solid var(--border); background: transparent; 
+            border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-main);
+            display: flex; align-items: center; justify-content: center; gap: 6px; 
+            transition: all 0.2s; min-width: 32px;
+        }
+        .btn:hover { background: rgba(0,0,0,0.05); }
+        .btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        
+        /* MAIN VIEW - Device Simulation */
+        .main-view { 
+            margin-top: 60px; height: calc(100vh - 60px); 
+            display: flex; justify-content: center; align-items: flex-start; 
+            overflow: auto; padding: 40px; box-sizing: border-box; 
+        }
+        
+        .device-wrapper {
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: white;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* Desktop (Default) */
+        .device-wrapper[data-mode="desktop"] { width: 1000px; height: 100%; max-height: 90vh; border-radius: 4px; border: 1px solid #ddd;}
+        
+        /* Mobile */
+        .device-wrapper[data-mode="mobile"] { 
+            width: 375px; height: 812px; 
+            border-radius: 40px; 
+            border: 12px solid #333; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        /* Tablet */
+        .device-wrapper[data-mode="tablet"] { 
+            width: 768px; height: 1024px; 
+            border-radius: 20px; 
+            border: 12px solid #333; 
+        }
+
+        iframe { width: 100%; height: 100%; border: none; display: block; border-radius: inherit; background: white; }
+
+        /* OUTLOOK QUIRKS MODE (Apply to iframe content via JS injections or wrapper class) */
+        /* Note: We can't easily change internal rendering engine, but we can restrict CSS via JS inside iframe */
+
+        /* SIDEBAR (Metadata) */
+        .sidebar { 
+            position: fixed; top: 60px; right: -420px; width: 420px; height: calc(100vh - 60px); 
+            background: var(--bg-header); border-left: 1px solid var(--border); 
+            transition: right 0.3s; overflow-y: auto; z-index: 90; padding: 20px; 
+            box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; 
+        }
+        .sidebar.open { right: 0; }
+        .sidebar h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; gap: 8px; }
+
+        /* Utility classes from previous version */
+        .meta-item { margin-bottom: 12px; font-size: 13px; color: #555; }
+        [data-theme="dark"] .meta-item { color: #aaa; }
+        .meta-label { font-weight: 600; display: block; margin-bottom: 3px; }
+        .preheader-box { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 6px; font-style: italic; font-size: 12px; }
+        
+        /* Icons */
+        .icon { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* CLIP WARNING */
+        .clip-warning {
+            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+            background: #fff3cd; color: #856404; border: 1px solid #ffeeba;
+            padding: 8px 16px; border-radius: 20px; font-size: 12px;
+            display: flex; align-items: center; gap: 6px; white-space: nowrap;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .device-wrapper.clipped .clip-warning { opacity: 1; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="title">{{ subject }}</div>
+        
+        <div class="controls">
+            <!-- Device Toolbar -->
+            <div class="controls-group">
+                <button class="btn active" onclick="setDevice('desktop')" title="Desktop View">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                </button>
+                <button class="btn" onclick="setDevice('tablet')" title="Tablet View">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </button>
+                <button class="btn" onclick="setDevice('mobile')" title="Mobile View">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Analysis Toolbar -->
+            <div class="controls-group">
+                <button class="btn" onclick="toggleLinks()" id="btn-links" title="Toggle Info Sidebar">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    &nbsp;Info
+                </button>
+                <button class="btn" onclick="toggleHighlight()" id="btn-highlight" title="Highlight Links">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+                </button>
+                <button class="btn" onclick="toggleDark()" id="btn-dark" title="Toggle Dark Mode">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                 <button class="btn" onclick="toggleSource()" id="btn-source" title="View Source">
+                    <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                </button>
+            </div>
+             <div class="controls-group">
+                <button class="btn" onclick="toggleLang()" id="btn-lang">
+                   {{ lang|upper }}
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-view">
+        <div class="device-wrapper" id="deviceWrapper" data-mode="desktop">
+            <div class="clip-warning">⚠️ Gmail Clipping Warning (>102KB)</div>
+            <iframe id="emailFrame"></iframe>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <h3>Metadata</h3>
+            <div class="meta-item"><span class="meta-label">📅 Sent Date</span>{{ format_date(email_date) }}</div>
+            <div class="meta-item"><span class="meta-label">🗄️ Archived Date</span>{{ format_date(archiving_date) }}</div>
+            <div class="meta-item"><span class="meta-label">⏱️ Reading Time</span>{{ reading_time }}</div>
+            <div class="meta-item"><span class="meta-label">👀 Preheader</span><div class="preheader-box">{{ preheader }}</div></div>
+        </div>
+        
+        <div class="sidebar-section">
+            <h3>Links ({{ links|length }})</h3>
+            <ul>
+                {% for link in links %}
+                <li style="margin-bottom:10px; border:1px solid #eee; padding:5px; border-radius:4px; background:white;">
+                    <div style="font-size:12px; font-weight:bold;">#{{ link.index }} {{ link.txt }}</div>
+                    <div style="font-size:10px; color:#666; word-break:break-all;">{{ link.original_url }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js"></script>
+    <script>
+        // INJECTED CONTENT
+        const emailContent = {{ safe_html }};
+        const emailSize = {{ email_size }}; // bytes
+        
+        // SETUP FRAME
+        const wrapper = document.getElementById('deviceWrapper');
+        const frame = document.getElementById('emailFrame');
+        
+        function initFrame() {
+            const doc = frame.contentDocument;
+            doc.open();
+            doc.write(emailContent);
+            doc.close();
+            
+            // Inject base styles for iframe
+            const style = doc.createElement('style');
+            style.textContent = `
+                body { margin: 0; padding: 0; font-family: sans-serif; }
+                html.dark-mode-internal { filter: invert(1) hue-rotate(180deg); }
+                html.dark-mode-internal img, html.dark-mode-internal video { filter: invert(1) hue-rotate(180deg); }
+                
+                /* Highlight classes */
+                body.highlight-links a { 
+                    box-shadow: 0 0 0 3px red; 
+                    background: rgba(255,255,0,0.2); 
+                }
+            `;
+            doc.head.appendChild(style);
+
+             // CHECK CLIPPING
+            if (emailSize > 102 * 1024) {
+               wrapper.classList.add('clipped');
+            }
+        }
+        
+        initFrame();
+
+        // ACTIONS
+        function setDevice(mode) {
+            wrapper.setAttribute('data-mode', mode);
+            document.querySelectorAll('.controls-group:first-child .btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleLinks() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('btn-links').classList.toggle('active');
+        }
+
+        function toggleDark() {
+            document.body.setAttribute('data-theme', 
+                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+            );
+            frame.contentDocument.documentElement.classList.toggle('dark-mode-internal');
+            document.getElementById('btn-dark').classList.toggle('active');
+        }
+
+        function toggleHighlight() {
+            frame.contentDocument.body.classList.toggle('highlight-links');
+            document.getElementById('btn-highlight').classList.toggle('active');
+        }
+        
+        function toggleSource() {
+             const w = window.open("", "_blank");
+             const formatted = html_beautify(emailContent);
+             w.document.write('<pre>' + formatted.replace(/</g, "&lt;") + '</pre>');
+        }
+        
+        function toggleLang() {
+            // Placeholder for lang toggle logic
+        }
+
+    </script>
+</body>
+</html>
