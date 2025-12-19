@@ -35,3 +35,12 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr'):
     
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(rendered_html)
+def generate_index(emails_metadata, output_path):
+    """
+    Generates the main index.html landing page.
+    """
+    template = env.get_template('index.html')
+    rendered_html = template.render(emails=emails_metadata)
+    
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(rendered_html)

@@ -35,7 +35,11 @@ class EmailParser:
                 img['style'] = "display:none !important;"
         
         # 2. Extract Preheader (Text approximation)
+        # Strip invisible characters like zero-width joiners and spacing characters used in emails
         text = self.soup.get_text(separator=" ", strip=True)
+        text = re.sub(r'[\u200b\u200c\u200d\u200e\u200f\ufeff\u2007\u034f\u2060\u2061\u2062\u2063\u2064\u206a\u206b\u206c\u206d\u206e\u206f]', '', text)
+        text = re.sub(r'\s+', ' ', text).strip()
+        
         self.preheader = text[:160] + "..." if len(text) > 160 else text
         self.reading_time = f"{max(1, round(len(text.split()) / 200))} min"
 
