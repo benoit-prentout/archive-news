@@ -29,7 +29,15 @@ class EmailParser:
         # 1. Pixel Detection & Cleanup
         for img in self.soup.find_all("img"):
             src = img.get("src", "")
-            if any(pattern in src for pattern in TRACKING_PATTERNS):
+            width = img.get("width")
+            height = img.get("height")
+            
+            # Detect by pattern OR dimensions (1x1)
+            is_pixel = any(pattern in src for pattern in TRACKING_PATTERNS)
+            if not is_pixel and width == "1" and height == "1":
+                is_pixel = True
+                
+            if is_pixel:
                 self.detected_pixels.append(src)
                 img['src'] = "" 
                 img['style'] = "display:none !important;"

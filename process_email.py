@@ -109,7 +109,8 @@ def process_emails():
                 metadata, 
                 parser.get_html(), 
                 parser.links, 
-                os.path.join(folder_path, "index.html")
+                os.path.join(folder_path, "index.html"),
+                detected_pixels=parser.detected_pixels
             )
             
         # 4. Generate Main Index

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,47 +8,59 @@
     <meta name="description" content="A premium archive of curated newsletters.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1 class="logo">Newsletter Archive</h1>
-            <p class="subtitle" data-i18n="legal_text">A personal collection of inspiring emails.</p>
         </header>
 
-        <div class="controls-bar glass">
+        <div class="controls-bar">
             <div class="search-wrapper">
-                <svg class="icon search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search..." data-i18n="search_placeholder">
+                <svg class="icon search-icon" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search..."
+                    data-i18n="search_placeholder">
             </div>
-            
+
             <div class="actions">
-                 <button id="lang-toggle" onclick="toggleLanguage()" class="btn-icon" title="Switch Language">
+                <button id="lang-toggle" onclick="toggleLanguage()" class="btn-icon" title="Switch Language">
                     <span id="lang-toggle-text">FR</span>
-                 </button>
-                 <button id="theme-toggle" onclick="toggleTheme()" class="btn-icon" title="Toggle Theme">
-                    <svg class="icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                    <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                 </button>
+                </button>
+                <button id="theme-toggle" onclick="toggleTheme()" class="btn-icon" title="Toggle Theme">
+                    <svg class="icon icon-moon" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
             </div>
         </div>
 
         <div class="stats-row">
-            <div class="stat-card glass">
-                <span class="stat-value">{{ emails|length }}</span>
-                <span class="stat-label" data-i18n="stat_newsletters">Newsletters</span>
-            </div>
-            <!-- Additional stats can be added here -->
-            <div class="stat-card glass">
-                 <span class="stat-value" id="totalTime">0</span>
-                 <span class="stat-label" data-i18n="stat_reading_time">Reading Time</span>
-             </div>
+            <span class="stat-simple">{{ emails|length }} <span data-i18n="stat_newsletters">Newsletters</span></span>
         </div>
 
         <ul class="news-grid" id="newsList">
-            <div id="noResults" style="display:none; grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);" data-i18n="no_results">
+            <div id="noResults"
+                style="display:none; grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);"
+                data-i18n="no_results">
                 No results found.
             </div>
             {% for email in emails %}
@@ -61,7 +74,10 @@
                     <p class="card-preview">{{ email.preheader }}</p>
                     <div class="card-footer">
                         <div class="read-time">
-                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
                             <span>{{ email.reading_time }}</span>
                         </div>
                         <span class="arrow">→</span>
@@ -72,22 +88,24 @@
         </ul>
 
         <footer>
-            <p>&copy; 2025 <a href="https://github.com/benoit-prentout">Benoît Prentout</a>. <span data-i18n="footer_rights">All rights reserved.</span></p>
+            <p>&copy; 2025 <a href="https://github.com/benoit-prentout">Benoît Prentout</a>. <span
+                    data-i18n="footer_rights">All rights reserved.</span></p>
         </footer>
     </div>
     <script src="assets/js/main.js"></script>
     <script>
         // Simple aggregate for reading time
         document.addEventListener("DOMContentLoaded", () => {
-             const items = document.querySelectorAll('.news-card .read-time span');
-             let total = 0;
-             items.forEach(i => {
-                 const t = parseInt(i.innerText);
-                 if(!isNaN(t)) total += t;
-             });
-             const totalEl = document.getElementById('totalTime');
-             if(totalEl) totalEl.innerText = total + " min";
+            const items = document.querySelectorAll('.news-card .read-time span');
+            let total = 0;
+            items.forEach(i => {
+                const t = parseInt(i.innerText);
+                if (!isNaN(t)) total += t;
+            });
+            const totalEl = document.getElementById('totalTime');
+            if (totalEl) totalEl.innerText = total + " min";
         });
     </script>
 </body>
+
 </html>
