@@ -5,22 +5,28 @@
 
 :root {
     /* Dracula Light Theme (Default) */
-    --bg-body: #f8f8f2;
-    --bg-card: #ffffff;
-    --bg-glass: rgba(255, 255, 255, 0.7);
-    --text-primary: #282a36;
+    --bg-body: #F8F8F2;
+    /* Off-white */
+    --bg-card: #FFFFFF;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    --text-primary: #282A36;
+    /* Dracula Background as Text */
     --text-secondary: #44475a;
+    /* Current Line */
     --text-tertiary: #6272a4;
-    --accent-color: #ff79c6;
-    /* Aligned with Dracula Pink */
-    --accent-secondary: #bd93f9;
-    /* Dracula Purple */
-    --accent-gradient: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
+    /* Comment */
+    --meta-label: #6272a4;
+    --meta-value: #282A36;
+    --accent-color: #BD93F9;
+    /* Purple */
+    --accent-secondary: #FF79C6;
+    /* Pink */
+    --accent-gradient: linear-gradient(135deg, #BD93F9 0%, #FF79C6 100%);
     --border-color: rgba(40, 42, 54, 0.1);
-    --border-hover: #ff79c6;
+    --border-hover: #BD93F9;
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 8px 16px rgba(40, 42, 54, 0.08);
-    --shadow-lg: 0 16px 32px rgba(40, 42, 54, 0.12);
+    --shadow-md: 0 4px 12px rgba(40, 42, 54, 0.08);
+    --shadow-lg: 0 10px 25px rgba(40, 42, 54, 0.12);
     --blur-strength: 12px;
     --radius-md: 12px;
     --radius-lg: 24px;
@@ -30,17 +36,22 @@
 
 [data-theme="dark"] {
     /* Dracula Dark Theme */
-    --bg-body: #282a36;
-    --bg-card: #44475a;
+    --bg-body: #282A36;
+    --bg-card: #343746;
+    /* Slightly lighter than bg */
     --bg-glass: rgba(40, 42, 54, 0.82);
-    --text-primary: #f8f8f2;
-    --text-secondary: #bd93f9;
+    --text-primary: #F8F8F2;
+    --text-secondary: #BD93F9;
+    /* Purple text for secondary */
     --text-tertiary: #6272a4;
-    --accent-color: #ff79c6;
-    --accent-secondary: #bd93f9;
-    --accent-gradient: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
-    --border-color: rgba(98, 114, 164, 0.4);
-    --border-hover: #ff79c6;
+    --meta-label: #BD93F9;
+    --meta-value: #F8F8F2;
+    --accent-color: #FF79C6;
+    /* Pink */
+    --accent-secondary: #BD93F9;
+    --accent-gradient: linear-gradient(135deg, #BD93F9 0%, #FF79C6 100%);
+    --border-color: rgba(248, 248, 242, 0.1);
+    --border-hover: #FF79C6;
     --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
@@ -391,4 +402,392 @@ footer a {
     stroke-linejoin: round;
     width: 20px;
     height: 20px;
+}
+
+/* 
+   Overrides for Viewer Specifics (injected via global CSS) 
+   Ideally these would be in the viewer style block, but for quick 
+   fixes across all generated files, we put them here.
+*/
+
+/* Global Scrollbar Hide for Frames */
+.device-frame iframe {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.device-frame iframe::-webkit-scrollbar {
+    display: none;
+}
+
+/* Transitions for Device Mode Switching */
+.device-stage {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-frame {
+    transition: width 0.4s ease-in-out, max-width 0.4s ease-in-out, height 0.4s ease-in-out, border-radius 0.4s;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Device Frames (Centralized) */
+.device-frame {
+    margin: 0 auto;
+    background: white;
+    position: relative;
+    transition: width 0.4s ease-in-out, max-width 0.4s ease-in-out, height 0.4s ease-in-out, border-radius 0.4s;
+}
+
+.device-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+.device-frame[data-mode="desktop"] {
+    width: 100%;
+    height: 100%;
+    max-width: 1000px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid #FEFEFC !important;
+}
+
+.device-frame[data-mode="mobile"] {
+    width: 100%;
+    height: 812px;
+    max-width: 375px;
+    max-height: 90vh;
+    border-radius: 40px;
+    border: 12px solid #111;
+}
+
+.device-frame[data-mode="mobile"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #111;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.device-frame[data-mode="tablet"] {
+    width: 100%;
+    height: 1024px;
+    max-width: 768px;
+    max-height: 90vh;
+    border-radius: 24px;
+    border: 12px solid #111;
+}
+
+/* Dracula Dark Overrides */
+[data-theme="dark"] .device-frame[data-mode="desktop"] {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Copy Buttons */
+.copy-btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.copy-btn-icon:hover {
+    color: var(--accent-color);
+    background: rgba(0, 0, 0, 0.05);
+    opacity: 1;
+}
+
+.copy-source-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    margin-right: 10px;
+}
+
+.copy-source-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+/* Metadata Colors */
+.meta-key {
+    color: var(--meta-label) !important;
+    font-weight: 500;
+}
+
+.meta-val {
+    color: var(--meta-value) !important;
+    font-weight: 600;
+}
+
+/* --- Comprehensive Viewer Components --- */
+
+.viewer-header {
+    height: 70px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--blur-strength));
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    z-index: 1001;
+}
+
+.viewer-container {
+    display: flex;
+    height: calc(100vh - 70px);
+    overflow: hidden;
+}
+
+.device-stage {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: var(--bg-body);
+}
+
+.meta-sidebar {
+    width: 400px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--blur-strength));
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s;
+    z-index: 1000;
+}
+
+.meta-sidebar.closed {
+    transform: translateX(100%);
+    width: 0;
+    border-left: none;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    margin: 25px 0 12px 0;
+    font-weight: 700;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.85rem;
+}
+
+/* Pixel / Tracking Box */
+.pixel-box {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .pixel-box {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.pixel-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    margin-bottom: 8px;
+}
+
+.pixel-row {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.pixel-row:last-child {
+    border: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Link List */
+.link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.link-item {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+[data-theme="dark"] .link-item {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.link-item:hover {
+    background: var(--bg-card);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.link-num {
+    background: var(--accent-color);
+    color: white;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.link-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.link-txt {
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+
+.link-url {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal {
+    width: 100%;
+    max-width: 800px;
+    height: 80vh;
+    background: var(--bg-card);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: rgba(0, 0, 0, 0.02);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+}
+
+.source-area {
+    flex: 1;
+    width: 100%;
+    padding: 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    resize: none;
+}
+
+.source-area:focus {
+    outline: none;
+}
+
+/* Responsive adjustments for the layout */
+@media (max-width: 1000px) {
+    .meta-sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+    }
 }

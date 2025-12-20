@@ -11,7 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=3">
 </head>
 
 <body>
@@ -65,13 +65,12 @@
         </div>
 
         <div class="stats-row">
-<<<<<<< HEAD
             <div class="stat-pill">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                     <polyline points="9 22 9 12 15 12 15 22" />
                 </svg>
-                <span class="stat-val">25</span>
+                <span class="stat-val" id="newsletterCount">0</span>
                 <span class="stat-label">Newsletters</span>
             </div>
             <div class="stat-pill">
@@ -80,29 +79,16 @@
                     <polyline points="12 6 12 12 16 14" />
                 </svg>
                 <span class="stat-label">Updated:</span>
-                <span class="stat-val">20 Dec 2025, 10:42</span>
+                <span class="stat-val" id="lastUpdated">...</span>
             </div>
             <div class="stat-pill">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path
                         d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                 </svg>
-                <span class="stat-label">Size:</span>
-                <span class="stat-val">50.1 MB</span>
+                <span class="stat-label">Total Read Time:</span>
+                <span class="stat-val" id="totalTime">0 min</span>
             </div>
-=======
-            <span class="stat-pill">
-                <span class="stat-val">25</span> Newsletters
-            </span>
-            <span class="stat-pill">
-                <span class="stat-label">Updated:</span>
-                <span class="stat-val">20 Dec 2025, 13:25</span>
-            </span>
-            <span class="stat-pill">
-                <span class="stat-label">Size:</span>
-                <span class="stat-val">50.1 MB</span>
-            </span>
->>>>>>> 098c98b5aad24b16f5029f8e5ef2d05557394f67
         </div>
 
         <ul class="news-grid" id="newsList">
@@ -112,31 +98,10 @@
                 No results found.
             </div>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
-                <a href="b86901725817/index.html" class="news-link">
-                    <div class="card-header">
-                        <span class="date">19/12/2025 à 14:18</span>
-                    </div>
-                    <div class="sender-pill">"MonJardinBio.com" <contact@monjardinbio.com>
-                    </div>
-                    <h2 class="card-title">[TEST] {prénom} découvrez Epsiloon pour 1€ seulement 🌿</h2>
-                    <p class="card-preview">Epsiloon x MonJardinBio Le magazine scientifique pour voir le monde
-                        autrement : offre exclusive ! ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­...
-                    </p>
-                    <div class="card-footer">
-                        <div class="read-time">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                            <span>1 min</span>
-                        </div>
-                        <span class="arrow">→</span>
-                    </div>
-                </a>
-            </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+
+
+            <li class="news-card glass" data-date="2025-12-09T17:04:00" data-sender="MonJardinBio.com">
                 <a href="0095a3e7cf89/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">09/12/2025 à 17:04</span>
@@ -160,7 +125,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-08T17:32:00" data-sender="MonJardinBio.com">
                 <a href="07b1ca3050ce/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">08/12/2025 à 17:32</span>
@@ -183,7 +148,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-08T09:05:00" data-sender="MonJardinBio.com">
                 <a href="8d07c49db9b0/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">08/12/2025 à 09:05</span>
@@ -207,7 +172,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-05T16:01:00" data-sender="MonJardinBio.com">
                 <a href="70b400a5618d/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">05/12/2025 à 16:01</span>
@@ -230,7 +195,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-05T15:33:00" data-sender="MonJardinBio.com">
                 <a href="7cf147a3ee88/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">05/12/2025 à 15:33</span>
@@ -253,7 +218,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-04T11:02:00" data-sender="MonJardinBio.com">
                 <a href="39082a187a19/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">04/12/2025 à 11:02</span>
@@ -276,7 +241,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-03T13:05:00" data-sender="MonJardinBio.com">
                 <a href="918b15c59154/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">03/12/2025 à 13:05</span>
@@ -299,7 +264,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-12-03T11:58:00" data-sender="MonJardinBio.com">
                 <a href="9969f0b76404/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">03/12/2025 à 11:58</span>
@@ -322,7 +287,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-30T06:00:00" data-sender="MonJardinBio.com">
                 <a href="3189f73bc0cb/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">30/11/2025 à 06:00</span>
@@ -345,7 +310,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-29T06:00:00" data-sender="MonJardinBio.com">
                 <a href="a08b20ec6f01/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">29/11/2025 à 06:00</span>
@@ -367,7 +332,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-28T17:40:00" data-sender="MonJardinBio.com">
                 <a href="63f98f0ad806/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">28/11/2025 à 17:40</span>
@@ -391,7 +356,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-28T14:09:00" data-sender="MonJardinBio.com">
                 <a href="b201ec85b9da/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">28/11/2025 à 14:09</span>
@@ -414,7 +379,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-28T10:17:00" data-sender="MonJardinBio.com">
                 <a href="780984cf9365/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">28/11/2025 à 10:17</span>
@@ -438,7 +403,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-28T08:37:00" data-sender="MonJardinBio.com">
                 <a href="be20b468f3ac/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">28/11/2025 à 08:37</span>
@@ -461,7 +426,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-28T08:36:00" data-sender="MonJardinBio.com">
                 <a href="0a7817c3400c/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">28/11/2025 à 08:36</span>
@@ -485,7 +450,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-27T03:53:00" data-sender="MonJardinBio.com">
                 <a href="f39d681287b0/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">27/11/2025 à 03:53</span>
@@ -507,7 +472,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-26T13:22:00" data-sender="MonJardinBio.com">
                 <a href="084229ed0e81/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">26/11/2025 à 13:22</span>
@@ -530,7 +495,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-26T13:20:00" data-sender="MonJardinBio.com">
                 <a href="fecb032eaf5c/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">26/11/2025 à 13:20</span>
@@ -552,7 +517,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-24T05:48:00" data-sender="MonJardinBio.com">
                 <a href="8fb31ccea9fa/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">24/11/2025 à 05:48</span>
@@ -574,7 +539,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-24T05:24:00" data-sender="MonJardinBio.com">
                 <a href="667f1f1b378c/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">24/11/2025 à 05:24</span>
@@ -596,7 +561,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-24T05:21:00" data-sender="MonJardinBio.com">
                 <a href="1aebb73dd87d/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">24/11/2025 à 05:21</span>
@@ -618,7 +583,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-20T10:01:00" data-sender="MonJardinBio.com">
                 <a href="db3fd63ac9d5/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">20/11/2025 à 10:01</span>
@@ -642,7 +607,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-11-17T18:10:00" data-sender="MonJardinBio.com">
                 <a href="fdf5fd94e9da/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">17/11/2025 à 18:10</span>
@@ -664,7 +629,7 @@
                 </a>
             </li>
 
-            <li class="news-card glass" data-date="2025-12-19T14:18:00" data-sender="MonJardinBio.com">
+            <li class="news-card glass" data-date="2025-09-19T14:23:00" data-sender="MonJardinBio.com">
                 <a href="8eb0a0b995a0/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">19/09/2025 à 14:23</span>
@@ -697,16 +662,40 @@
     </div>
     <script src="assets/js/main.js"></script>
     <script>
-        // Simple aggregate for reading time
+        // Simple aggregate for stats
         document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll('.news-card');
+
+            // Count
+            document.getElementById('newsletterCount').innerText = cards.length;
+
+            // Updated Date (Latest)
+            let latestDate = 0;
+            cards.forEach(card => {
+                const d = new Date(card.getAttribute('data-date')).getTime();
+                if (d > latestDate) latestDate = d;
+            });
+            if (latestDate > 0) {
+                const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('lastUpdated').innerText = new Date(latestDate).toLocaleDateString('fr-FR', options);
+            }
+
+            // Read Time
             const items = document.querySelectorAll('.news-card .read-time span');
             let total = 0;
             items.forEach(i => {
                 const t = parseInt(i.innerText);
                 if (!isNaN(t)) total += t;
             });
+            // Convert to hours/min if > 60
+            let timeStr = total + " min";
+            if (total > 60) {
+                const h = Math.floor(total / 60);
+                const m = total % 60;
+                timeStr = `${h}h ${m}min`;
+            }
             const totalEl = document.getElementById('totalTime');
-            if (totalEl) totalEl.innerText = total + " min";
+            if (totalEl) totalEl.innerText = timeStr;
         });
     </script>
 </body>

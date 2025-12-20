@@ -11,423 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        /* Viewer Specific Styles */
-        body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewer-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .device-stage {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-
-        .device-frame {
-            background: #111;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .device-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            flex: 1;
-        }
-
-        /* Device Modes */
-        .device-frame[data-mode="desktop"] {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-        }
-
-        .device-frame[data-mode="mobile"] {
-            width: 375px;
-            height: 812px;
-            max-height: 90vh;
-            border-radius: 40px;
-            border: 12px solid #111;
-        }
-
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .device-frame[data-mode="tablet"] {
-            width: 768px;
-            height: 1024px;
-            max-height: 90vh;
-            border-radius: 24px;
-            border: 12px solid #111;
-        }
-
-        /* Sidebar */
-        .meta-sidebar {
-            width: 400px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border-color);
-            padding: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-
-        .meta-sidebar.closed {
-            transform: translateX(100%);
-            width: 0;
-            border: none;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin: 25px 0 10px 0;
-            font-weight: 700;
-        }
-
-        .section-title:first-child {
-            margin-top: 0;
-        }
-
-        .meta-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .meta-key {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-align: left;
-        }
-
-        .meta-key::after {
-            content: ":";
-        }
-
-        .meta-val {
-            color: var(--text-primary);
-            font-weight: 400;
-            text-align: right;
-            margin-left: 10px;
-            word-break: break-word;
-        }
-
-        /* Links */
-        .link-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .link-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .link-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(2px);
-        }
-
-        .link-num {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-secondary);
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        [data-theme="dark"] .link-num {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .link-content {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .link-txt {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .link-url {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Pixels */
-        .pixel-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-        }
-
-        .pixel-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 8px 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2980b9;
-        }
-
-        .pixel-row {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            cursor: help;
-        }
-
-        .pixel-row:last-child {
-            border-bottom: none;
-        }
-
-        .pixel-reason {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .pixel-url {
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.75rem;
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-        }
-
-        .sidebar-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dotted currentColor;
-        }
-
-        /* Header Controls */
-        .viewer-header {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-glass);
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .action-btn {
-            height: 36px;
-            padding: 0 12px;
-            min-width: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover,
-        .action-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="dark"] .pixel-header {
-            color: #8be9fd;
-            background: rgba(139, 233, 253, 0.1);
-        }
-
-        [data-theme="dark"] .pixel-box {
-            border-color: rgba(139, 233, 253, 0.2);
-        }
-
-        /* Modal for Source */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            width: 80%;
-            max-width: 800px;
-            height: 80vh;
-            background: var(--bg-body);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body {
-            flex: 1;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .source-area {
-            width: 100%;
-            height: 100%;
-            border: none;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            resize: none;
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-    </style>
+    <!-- Inline Viewer Styles Moved to style.css -->
 </head>
 
 <body>
@@ -510,18 +94,29 @@
                     <span class="meta-val">19/12/2025 à 22:14</span>
                 </div>
 
-                <div class="section-title">Technical</div>
+                
+                <div class="meta-row">
+                    <span class="meta-key">Email Size</span>
+                    <span class="meta-val">0.04 MB</span>
+                </div>
+                
+                <div class="meta-row">
+                    <span class="meta-key">CRM</span>
+                    <span class="meta-val">Klaviyo</span>
+                </div><div class="section-title">Technical</div>
                 
                 <div class="pixel-box">
                     <div class="pixel-header">Tracking Detected (2)</div>
                     
                     <div class="pixel-row" title="This 1x1 image or known tracking URL was blocked.">
                         <div class="pixel-reason">Known Tracking Domain</div>
+                        <div class="pixel-desc">Blocked because the domain is on a known list of email trackers.</div>
                         <div class="pixel-url">https://api.getinside.media/v1/emails/track/6917534bcf7b1</div>
                     </div>
                     
                     <div class="pixel-row" title="This 1x1 image or known tracking URL was blocked.">
                         <div class="pixel-reason">1x1 Pixel Dimensions</div>
+<div class="pixel-desc">Standard tracking pixel (Blocked).</div>
                         <div class="pixel-url">https://ctrk.klclick.com/o/01KC2086ZE3MRK04KHPRCPWZXZ</div>
                     </div>
                     
@@ -537,7 +132,12 @@
                 <ul class="link-list">
                     
                     <li class="link-item" onclick="highlightLink(1)">
-                        <div class="link-num">1</div>
+                        <div class="link-num">1</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_0', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_0</div>
@@ -545,7 +145,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(2)">
-                        <div class="link-num">2</div>
+                        <div class="link-num">2</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_1</div>
@@ -553,7 +158,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(3)">
-                        <div class="link-num">3</div>
+                        <div class="link-num">3</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_2', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_2</div>
@@ -561,7 +171,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(4)">
-                        <div class="link-num">4</div>
+                        <div class="link-num">4</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_3', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">J'offre un colis</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_3</div>
@@ -569,7 +184,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(5)">
-                        <div class="link-num">5</div>
+                        <div class="link-num">5</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_4', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Je fais un don</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_4</div>
@@ -577,7 +197,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(6)">
-                        <div class="link-num">6</div>
+                        <div class="link-num">6</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_5', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_5</div>
@@ -585,7 +210,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(7)">
-                        <div class="link-num">7</div>
+                        <div class="link-num">7</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_6', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_6</div>
@@ -593,7 +223,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(8)">
-                        <div class="link-num">8</div>
+                        <div class="link-num">8</div><button class="copy-btn-icon" onclick="copyLink('https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_7', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">ici</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_7</div>
@@ -615,6 +250,7 @@
         <div class="modal">
             <div class="modal-header">
                 <span>HTML Source</span>
+<button class="copy-source-btn" onclick="copySource()">Copy Code</button>
                 <button class="close-btn" onclick="closeSourceModal()">×</button>
             </div>
             <div class="modal-body">
@@ -627,94 +263,19 @@
     <script>
         const content = "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><head>\n<title>\n</title>\n<!--[if !mso]><!-->\n<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\"/>\n<!--<![endif]-->\n<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"/>\n<meta content=\"width=device-width, initial-scale=1\" name=\"viewport\"/>\n<!--[if mso]>\r\n        <noscript>\r\n        <xml>\r\n        <o:OfficeDocumentSettings>\r\n          <o:AllowPNG/>\r\n          <o:PixelsPerInch>96</o:PixelsPerInch>\r\n        </o:OfficeDocumentSettings>\r\n        </xml>\r\n        </noscript>\r\n        <![endif]-->\n<!--[if lte mso 11]>\r\n        <style type=\"text/css\" data-inliner=\"ignore\">\r\n          .mj-outlook-group-fix { width:100% !important; }\r\n        </style>\r\n        <![endif]-->\n<!--[if !mso]><!--><!--<![endif]-->\n<style>a:not([name]) {color:#A8886C;text-decoration:underline}\r\na:link {color:#A8886C;text-decoration:underline}\r\na:visited {color:#A8886C;text-decoration:underline}\r\na:active {color:#A8886C;text-decoration:underline}\r\na:hover {color:#A8886C;text-decoration:underline}</style><style>@import url(https://static-forms.klaviyo.com/fonts/api/v1/VaWA4P/custom_fonts.css);\r\n#outlook a {\r\n    padding: 0\r\n    }\r\nbody {\r\n    margin: 0;\r\n    padding: 0;\r\n    -webkit-text-size-adjust: 100%;\r\n    -ms-text-size-adjust: 100%\r\n    }\r\ntable, td {\r\n    border-collapse: collapse;\r\n    mso-table-lspace: 0;\r\n    mso-table-rspace: 0\r\n    }\r\nimg {\r\n    border: 0;\r\n    line-height: 100%;\r\n    outline: none;\r\n    text-decoration: none;\r\n    -ms-interpolation-mode: bicubic\r\n    }\r\np {\r\n    display: block;\r\n    margin: 13px 0\r\n    }\r\n@media only screen and (min-width: 480px) {\r\n    .mj-column-per-100 {\r\n        width: 100% !important;\r\n        max-width: 100%\r\n        }\r\n    }\r\n.moz-text-html .mj-column-per-100 {\r\n    width: 100% !important;\r\n    max-width: 100%\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    div.kl-row.colstack div.kl-column {\r\n        display: block !important;\r\n        width: 100% !important\r\n        }\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    .component-wrapper .mob-no-spc {\r\n        padding-left: 0 !important;\r\n        padding-right: 0 !important\r\n        }\r\n    }\r\n.hlb-subblk td {\r\n    word-break: normal\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    .hlb-wrapper .hlb-block-settings-content {\r\n        padding: 9px !important\r\n        }\r\n    .hlb-logo {\r\n        padding-bottom: 9px !important\r\n        }\r\n    .r2-tbl {\r\n        width: 100%\r\n        }\r\n    .r2-tbl .lnk {\r\n        width: 100%\r\n        }\r\n    .r2-tbl .hlb-subblk > table {\r\n        border-spacing: 5px !important;\r\n        border-collapse: separate !important\r\n        }\r\n    .kl-hlb-stack {\r\n        display: block !important;\r\n        width: 100% !important;\r\n        padding-right: 0 !important\r\n        }\r\n    .kl-hlb-stack.vspc {\r\n        margin-bottom: 9px\r\n        }\r\n    .kl-hlb-wrap {\r\n        display: inline-block !important;\r\n        width: auto !important\r\n        }\r\n    .kl-hlb-no-wrap {\r\n        display: table-cell !important\r\n        }\r\n    .kl-hlb-wrap.nospc.nospc {\r\n        padding-right: 0 !important\r\n        }\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    td.kl-img-base-auto-width {\r\n        width: 100% !important\r\n        }\r\n    }\r\n.kl-button a {\r\n    display: block !important\r\n    }\r\nimg {\r\n    border: 0;\r\n    height: auto;\r\n    line-height: 100%;\r\n    outline: none;\r\n    text-decoration: none;\r\n    max-width: 100%\r\n    }\r\n.root-container {\r\n    background-repeat: repeat !important;\r\n    background-size: auto !important;\r\n    background-position: left top !important\r\n    }\r\n.root-container-spacing {\r\n    padding-top: 50px !important;\r\n    padding-bottom: 20px !important;\r\n    font-size: 0 !important\r\n    }\r\n.content-padding {\r\n    padding-left: 0 !important;\r\n    padding-right: 0 !important\r\n    }\r\n.content-padding.first {\r\n    padding-top: 0 !important\r\n    }\r\n.content-padding.last {\r\n    padding-bottom: 0 !important\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    td.mobile-only {\r\n        display: table-cell !important\r\n        }\r\n    div.mobile-only {\r\n        display: block !important\r\n        }\r\n    table.mobile-only {\r\n        display: table !important\r\n        }\r\n    .desktop-only {\r\n        display: none !important\r\n        }\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    .table-mobile-only {\r\n        display: table-cell !important;\r\n        max-height: none !important\r\n        }\r\n    .table-mobile-only.block {\r\n        display: block !important\r\n        }\r\n    .table-mobile-only.inline-block {\r\n        display: inline-block !important\r\n        }\r\n    .table-desktop-only {\r\n        max-height: 0 !important;\r\n        display: none !important;\r\n        mso-hide: all !important;\r\n        overflow: hidden !important\r\n        }\r\n    }\r\np {\r\n    margin-left: 0;\r\n    margin-right: 0;\r\n    margin-top: 0;\r\n    margin-bottom: 0;\r\n    padding-bottom: 1em\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    body.mce-content-body, /* NOTE: needed for internal tinymce styles */.kl-text > div, .kl-table-subblock > div, .kl-split-subblock > div {\r\n        font-size: 14px !important;\r\n        line-height: normal !important\r\n        }\r\n    }\r\nh1 {\r\n    color: #222427;\r\n    font-family: \"Montserrat\", Arial, \"Helvetica Neue\", Helvetica, sans-serif;\r\n    font-size: 20px;\r\n    font-style: Normal;\r\n    font-weight: 500;\r\n    line-height: normal;\r\n    letter-spacing: 0;\r\n    margin: 0;\r\n    margin-bottom: 0;\r\n    text-align: left\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    h1 {\r\n        font-size: 40px !important;\r\n        line-height: 1.1 !important\r\n        }\r\n    }\r\nh2 {\r\n    color: #222427;\r\n    font-family: \"Helvetica Neue\", Arial;\r\n    font-size: 32px;\r\n    font-style: normal;\r\n    font-weight: bold;\r\n    line-height: 1.1;\r\n    letter-spacing: 0;\r\n    margin: 0;\r\n    margin-bottom: 16px;\r\n    text-align: left\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    h2 {\r\n        font-size: 32px !important;\r\n        line-height: 1.1 !important\r\n        }\r\n    }\r\nh3 {\r\n    color: #222427;\r\n    font-family: \"Helvetica Neue\", Arial;\r\n    font-size: 24px;\r\n    font-style: normal;\r\n    font-weight: bold;\r\n    line-height: 1.1;\r\n    letter-spacing: 0;\r\n    margin: 0;\r\n    margin-bottom: 12px;\r\n    text-align: left\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    h3 {\r\n        font-size: 24px !important;\r\n        line-height: 1.1 !important\r\n        }\r\n    }\r\nh4 {\r\n    color: #222427;\r\n    font-family: \"Helvetica Neue\", Arial;\r\n    font-size: 18px;\r\n    font-style: normal;\r\n    font-weight: 400;\r\n    line-height: 1.1;\r\n    letter-spacing: 0;\r\n    margin: 0;\r\n    margin-bottom: 9px;\r\n    text-align: left\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    h4 {\r\n        font-size: 18px !important;\r\n        line-height: 1.1 !important\r\n        }\r\n    }\r\n@media only screen and (max-width: 480px) {\r\n    .root-container {\r\n        width: 100% !important\r\n        }\r\n    .root-container-spacing {\r\n        padding: 0 !important\r\n        }\r\n    .content-padding {\r\n        padding-left: 0 !important;\r\n        padding-right: 0 !important\r\n        }\r\n    .content-padding.first {\r\n        padding-top: 0 !important\r\n        }\r\n    .content-padding.last {\r\n        padding-bottom: 0 !important\r\n        }\r\n    .kl-column > .component-wrapper {\r\n        padding-left: 0 !important;\r\n        padding-right: 0 !important;\r\n        width: unset !important\r\n        }\r\n    .kl-text {\r\n        padding-right: 18px !important;\r\n        padding-left: 18px !important\r\n        }\r\n    }</style></head>\n<body style=\"word-spacing:normal;background-color:#F7F7F7;\">\n<div style=\"display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;\">\r\n      En association avec Petits Fr\u00e8res des Pauvres \ud83d\udc74\ud83d\udc75\ud83d\udc93\u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad\r\n    </div>\n<!-- TRACKING_PIXEL_TOP -->\n<div class=\"root-container\" id=\"bodyTable\" style=\"background-color:#F7F7F7;\">\n<div class=\"root-container-spacing\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td>\n<!--[if mso | IE]><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section-outlook\" style=\"width:600px;\" width=\"600\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"margin:0px auto;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"\" style=\"width:600px;\" width=\"600\" bgcolor=\"#FFFFFF\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"background:#FFFFFF;background-color:#FFFFFF;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#FFFFFF;background-color:#FFFFFF;width:100%;border-radius:0px 0px 0px 0px;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><![endif]-->\n<div class=\"content-padding first\">\n<!--[if true]><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" style=\"width:600px;direction:ltr\"><tr><![endif]-->\n<div class=\"kl-row colstack\" style=\"display:table;table-layout:fixed;width:100%;\">\n<!--[if true]><td style=\"vertical-align:top;width:600px;\"><![endif]-->\n<div class=\"kl-column\" style=\"display:table-cell;vertical-align:top;width:100%;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#000000;vertical-align:top;padding-top:5px;padding-right:18px;padding-bottom:5px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div><span style=\"font-size: 12px; color: rgb(253, 252, 250);\">Nous avons un message \u00e0 vous transmettre de la part d'<strong>une association qui nous tient \u00e0 coeur </strong>en cette p\u00e9riode de fin d'ann\u00e9e \ud83e\udef6</span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper hlb-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"hlb-block-settings-content\" style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"top\" class=\"kl-header-link-bar\" style=\"font-size:0px;padding:0px 0px 0px 0px;word-break:break-word;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"color:#000000;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;table-layout:auto;width:100%;border:0;\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"table-desktop-only hlb-logo\" style=\"display:table-cell;width:100%;padding-bottom:0px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px;\">\n<tbody>\n<tr>\n<!--[if true]><td style=\"width:150px;\" bgcolor=\"transparent\"><![endif]-->\n<!--[if !true]><!--><td style=\"width:150px;\"><!--<![endif]-->\n<a data-index=\"1\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_0\" style=\"color:#A8886C; text-decoration:underline\" target=\"_blank\">\n<img alt=\"Chargement en cours...\" src=\"img_0.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;width:100%;background-color:transparent;\" width=\"150\"/>\n</a>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n<!--[if !true]><!--><td align=\"center\" class=\"table-mobile-only hlb-logo\" style=\"display:none; max-height:0; mso-hide:all; overflow:hidden; width:100%; padding-bottom:0\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><!--[if true]><td style=\"width:100px;\" bgcolor=\"transparent\"><![endif]-->\n<!--[if !true]><!--><td style=\"width:100px;\"><!--<![endif]-->\n<a data-index=\"2\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_1\" style=\"color:#A8886C; text-decoration:underline\" target=\"_blank\">\n<img src=\"img_1.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;width:100%;background-color:transparent;\" width=\"100\"/>\n</a>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n<!--<![endif]-->\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<!--[if true]></td><![endif]-->\n</div>\n<!--[if true]></tr></table><![endif]-->\n</div>\n<!--[if mso | IE]></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td>\n<!--[if mso | IE]><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section-outlook\" style=\"width:600px;\" width=\"600\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"margin:0px auto;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"\" style=\"width:600px;\" width=\"600\" bgcolor=\"#FFFFFF\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"background:#FFFFFF;background-color:#FFFFFF;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#FFFFFF;background-color:#FFFFFF;width:100%;border-radius:0px 0px 0px 0px;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><![endif]-->\n<div class=\"content-padding\">\n<!--[if true]><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" style=\"width:600px;direction:ltr\"><tr><![endif]-->\n<div class=\"kl-row colstack\" style=\"display:table;table-layout:fixed;width:100%;\">\n<!--[if true]><td style=\"vertical-align:top;width:600px;\"><![endif]-->\n<div class=\"kl-column\" style=\"display:table-cell;vertical-align:top;width:100%;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:20px;padding-left:0px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-image\" style=\"font-size:0px;word-break:break-word;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px;\">\n<tbody>\n<tr>\n<td class=\"kl-img-base-auto-width\" style=\"border:0;padding:0px 0px 0px 0px;width:600px;\" valign=\"top\">\n<a class=\"kl-img-link\" data-index=\"3\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_2\" style=\"color:#A8886C; text-decoration:underline; display:block\">\n<img alt=\"don Petits Fr\u00e8res des Pauvres\" src=\"img_2.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%;\" title=\"don Petits Fr\u00e8res des Pauvres\" width=\"600\"/>\n</a>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#FDFCFA;vertical-align:top;padding-top:30px;padding-right:18px;padding-bottom:0px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:30px;padding-bottom:0px;padding-left:30px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><p data-end=\"395\" data-start=\"376\"><span style=\"font-size: 14px;\">\"Ch\u00e8re Madame, Cher Monsieur,</span></p>\n<p data-end=\"395\" data-start=\"376\"><br/><span style=\"font-size: 14px;\">Aujourd\u2019hui en France, <span style=\"font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 600; font-style: normal;\">plus de 2 millions de personnes \u00e2g\u00e9es sont isol\u00e9es au quotidien</span>, pire encore, 750 000 ne voient jamais personne*.</span></p>\n<p data-end=\"395\" data-start=\"376\"><br/><span style=\"font-size: 14px;\">Comme tout au long de l\u2019ann\u00e9e, les b\u00e9n\u00e9voles des <span style=\"font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 600; font-style: normal; color: rgb(227, 9, 72);\">Petits Fr\u00e8res des Pauvres</span> s\u2019engagent partout en France pour faire oublier la solitude \u00e0 nos a\u00een\u00e9s.</span></p>\n<p data-end=\"395\" data-start=\"376\"><br/><span style=\"font-size: 16px; font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 600; font-style: normal; color: rgb(227, 9, 72);\">Et si vous les aidiez, \u00e0 l\u2019occasion de cette fin d\u2019ann\u00e9e ?</span><br/><span style=\"font-size: 16px; font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 600; font-style: normal; color: rgb(10, 179, 135);\">Vous pouvez par exemple faire un don pour financer les colis gourmands que nos b\u00e9n\u00e9voles iront offrir aux a\u00een\u00e9s isol\u00e9s qui ne peuvent plus se d\u00e9placer.</span></p>\n<p data-end=\"395\" data-start=\"376\"><br/><span style=\"font-size: 14px;\">Tous les ans pour No\u00ebl, nos \u00e9quipes pr\u00e9parent de belles compositions : entr\u00e9e, plat, dessert, petite douceur, boisson, cadeau\u2026 de quoi illuminer le r\u00e9veillon d\u2019une personne \u00e2g\u00e9e qui est seule !</span></p>\n<p style=\"padding-bottom:0; text-align:center; line-height:120%\"><span style=\"font-size: 14px;\"><!-- notionvc: 47d2d74f-47a3-4f05-a991-80cfba074285 --></span></p></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#FDFCFA;vertical-align:top;padding-top:10px;padding-right:18px;padding-bottom:20px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-button\" style=\"font-size:0px;padding:0px;word-break:break-word;\" vertical-align=\"middle\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:separate;line-height:100%;\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#E30948\" role=\"presentation\" style=\"border:none;border-radius:74px;cursor:auto;mso-padding-alt:15px 15px 15px 15px;background:#E30948;\" valign=\"middle\">\n<a data-index=\"4\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_3\" style='color:#FFF; text-decoration:none; display:inline-block; background:#E30948; font-family:\"Helvetica Neue\", Arial; font-size:16px; font-weight:700; line-height:100%; letter-spacing:0; margin:0; text-transform:none; padding:15px 15px 15px 15px; mso-padding-alt:0; border-radius:74px' target=\"_blank\">\r\n              J'offre un colis\r\n            </a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#FDFCFA;vertical-align:top;padding-top:0px;padding-right:18px;padding-bottom:0px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:30px;padding-bottom:0px;padding-left:30px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><p data-end=\"395\" data-start=\"376\"><span style=\"font-size: 14px;\">Votre g\u00e9n\u00e9rosit\u00e9 transformera la solitude d\u2019un a\u00een\u00e9 isol\u00e9 en un moment de joie r\u00e9confortant qui donne du baume au c\u0153ur !</span></p>\n<p style=\"padding-bottom:0; text-align:center; line-height:120%\"><span style=\"font-size: 14px;\"><!-- notionvc: 47d2d74f-47a3-4f05-a991-80cfba074285 --></span></p></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#FDFCFA;vertical-align:top;padding-top:10px;padding-right:18px;padding-bottom:20px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-button\" style=\"font-size:0px;padding:0px;word-break:break-word;\" vertical-align=\"middle\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:separate;line-height:100%;\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#FDFCFA\" role=\"presentation\" style=\"border:none;border-bottom:solid 3px #E30948;border-left:solid 3px #E30948;border-radius:74px;border-right:solid 3px #E30948;border-top:solid 3px #E30948;cursor:auto;mso-padding-alt:15px 15px 15px 15px;background:#FDFCFA;\" valign=\"middle\">\n<a data-index=\"5\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_4\" style='color:#E30948; text-decoration:none; display:inline-block; background:#FDFCFA; font-family:\"Helvetica Neue\", Arial; font-size:16px; font-weight:700; line-height:100%; letter-spacing:0; margin:0; text-transform:none; padding:15px 15px 15px 15px; mso-padding-alt:0; border-radius:74px' target=\"_blank\">\r\n              Je fais un don\r\n            </a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#FDFCFA;vertical-align:top;padding-top:0px;padding-right:18px;padding-bottom:40px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:30px;padding-bottom:0px;padding-left:30px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div><span style=\"font-size: 14px; font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 600; font-style: normal;\">En cette p\u00e9riode de f\u00eates, je vous remercie d\u2019unir vos forces aux n\u00f4tres pour faire entrer de la douceur et de la joie au domicile d\u2019une ou de plusieurs personnes \u00e2g\u00e9es !\"</span></div>\n<div><span style=\"font-size: 14px;\">\u00a0</span></div>\n<div><span style=\"font-size: 14px;\">\u00a0</span></div>\n<div><span style=\"font-size: 14px; font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 600; font-style: normal;\">Anne G\u00e9neau\u2028</span></div>\n<div><span style=\"font-size: 14px;\">Pr\u00e9sidente\u2028</span></div>\n<div><span style=\"font-size: 14px;\">Petits Fr\u00e8res des Pauvres</span></div>\n<p style=\"padding-bottom:0; text-align:center; line-height:120%\"><span style=\"font-size: 14px;\"><!-- notionvc: 47d2d74f-47a3-4f05-a991-80cfba074285 --></span></p></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#F2ECE4;vertical-align:top;padding-top:30px;padding-right:18px;padding-bottom:40px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:30px;padding-bottom:0px;padding-left:30px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div><em><span style=\"font-size: 10px;\">*\u00c9tude CSA Research/Petits Fr\u00e8res des Pauvres, 2025</span></em></div>\n<p style=\"padding-bottom:0; text-align:center; line-height:120%\"><span style=\"font-size: 14px;\"><!-- notionvc: 47d2d74f-47a3-4f05-a991-80cfba074285 --></span></p></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<!--[if true]></td><![endif]-->\n</div>\n<!--[if true]></tr></table><![endif]-->\n</div>\n<!--[if mso | IE]></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td>\n<!--[if mso | IE]><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section-outlook\" style=\"width:600px;\" width=\"600\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"margin:0px auto;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"\" style=\"width:600px;\" width=\"600\" bgcolor=\"#FFFFFF\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"background:#FFFFFF;background-color:#FFFFFF;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#FFFFFF;background-color:#FFFFFF;width:100%;border-radius:0px 0px 0px 0px;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><![endif]-->\n<div class=\"content-padding\">\n<!--[if true]><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" style=\"width:600px;direction:ltr\"><tr><![endif]-->\n<div class=\"kl-row\" style=\"display:table;table-layout:fixed;width:100%;\">\n<!--[if true]><td style=\"vertical-align:top;width:600px;\"><![endif]-->\n<div class=\"kl-column\" style=\"display:table-cell;vertical-align:top;width:100%;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#251F1D;vertical-align:top;padding-top:30px;padding-right:18px;padding-bottom:10px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div style=\"text-align: center;\"><span style=\"font-family: Montserrat, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400; color: rgb(248, 244, 237);\">SUIVEZ-NOUS SUR INSTAGRAM @ATELIERLOUPIOTE</span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#251F1D;vertical-align:top;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div style=\"text-align: center;\">\n<table style=\"display: inline-block; margin-left: auto; margin-right: auto;\">\n<tbody>\n<tr>\n<td style=\"padding-right: 15px; padding-left: 18px; width: 150px; text-align: center;\"><a data-index=\"6\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_5\" style=\"color:rgb(248, 244, 237); text-decoration:underline\"> <img src=\"https://scontent.cdninstagram.com/v/t51.2885-15/590964213_18102341140739751_2970665103319458837_n.jpg?stp=dst-jpg_e15_tt6&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_cat=103&amp;_nc_oc=Q6cZ2QFrtxf6Avlo5YHyQL2ji7i5JOoF8yfZ-UEvXY6o9K--ERKLHCI3Kb8NgrgmRYD2_xM&amp;_nc_ohc=2UBDunr_P-QQ7kNvwGBjTBO&amp;_nc_gid=CnIHHmdRICupAWbAlKbpOA&amp;edm=APs17CUBAAAA&amp;ccb=7-5&amp;oh=00_AfkiOiNZQ5lPXg9ZY-WipwgQR7kADTVwVCsnPvRXBaqM3w&amp;oe=693DFE8F&amp;_nc_sid=10d13b\" style=\"margin: 1px; max-width: 150px; height: auto;\"/></a></td>\n</tr>\n</tbody>\n</table>\n<table style=\"display: inline-block; margin-left: auto; margin-right: auto;\">\n<tbody>\n<tr>\n<td style=\"padding-right: 15px; padding-left: 18px; width: 150px; text-align: center;\"><a data-index=\"7\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_6\" style=\"color:rgb(248, 244, 237); text-decoration:underline\"> <img src=\"https://scontent.cdninstagram.com/v/t51.2885-15/587787880_18107369125653006_7359317467759687171_n.jpg?stp=dst-jpg_e15_fr_p1080x1080_tt6&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_cat=106&amp;_nc_oc=Q6cZ2QFrtxf6Avlo5YHyQL2ji7i5JOoF8yfZ-UEvXY6o9K--ERKLHCI3Kb8NgrgmRYD2_xM&amp;_nc_ohc=sdv_xMDEhIIQ7kNvwFLxh_q&amp;_nc_gid=CnIHHmdRICupAWbAlKbpOA&amp;edm=APs17CUBAAAA&amp;ccb=7-5&amp;oh=00_AfmY142rcbX-nnRD8ZMdpng-SceBSL1eK36epHhckyk7iw&amp;oe=693E33D1&amp;_nc_sid=10d13b\" style=\"margin: 1px; max-width: 150px; height: auto;\"/></a></td>\n</tr>\n</tbody>\n</table>\n</div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if !mso]><!--><div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper mobile-only\" style=\"display:none; font-size:0; text-align:left; direction:ltr; vertical-align:top; width:100%\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\"><tbody><tr><td class=\"\" style=\"background-color:#251F1D;vertical-align:top;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\"><tbody><tr><td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;\"><div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div style=\"text-align: center;\">\n<table style=\"display: inline-block; margin-left: auto; margin-right: auto;\"><tbody><tr><td style=\"padding-right: 15px; padding-left: 18px; width: 150px; text-align: center;\">\u00a0</td></tr></tbody></table>\n<table style=\"display: inline-block; margin-left: auto; margin-right: auto;\"><tbody><tr><td style=\"padding-right: 15px; padding-left: 18px; width: 150px; text-align: center;\">\u00a0</td></tr></tbody></table>\n</div></div></td></tr></tbody></table></td></tr></tbody></table></div><!--<![endif]-->\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"background-color:#251F1D;vertical-align:top;padding-top:9px;padding-right:18px;padding-bottom:40px;padding-left:18px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" class=\"kl-text\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;\">\n<div style=\"font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-style:Normal;font-weight:400;letter-spacing:0px;line-height:normal;text-align:center;color:#211F24;\"><div style=\"text-align: center;\"><span style=\"color: rgb(248, 244, 237);\"><em><span style=\"font-size: 12px;\">Si vous ne souhaitez plus recevoir nos e-mails cliquez <a class=\"unsubscribe-link\" data-index=\"8\" href=\"https://ctrk.klclick.com/l/01KC2086ZE3MRK04KHPRCPWZXZ_7\" style=\"color:#A8886C;font-style:normal;font-weight:normal;text-decoration:underline;\">ici</a></span></em></span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<!--[if true]></td><![endif]-->\n</div>\n<!--[if true]></tr></table><![endif]-->\n</div>\n<!--[if mso | IE]></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td>\n<!--[if mso | IE]><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"kl-section-outlook\" style=\"width:600px;\" width=\"600\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"margin:0px auto;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"\" style=\"width:600px;\" width=\"600\" bgcolor=\"#FFFFFF\" ><tr><td style=\"line-height:0px;font-size:0px;mso-line-height-rule:exactly;\"><![endif]-->\n<div style=\"background:#FFFFFF;background-color:#FFFFFF;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px;\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#FFFFFF;background-color:#FFFFFF;width:100%;border-radius:0px 0px 0px 0px;\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;\">\n<!--[if mso | IE]><table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><![endif]-->\n<div class=\"content-padding last\">\n<!--[if true]><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" style=\"width:600px;direction:ltr\"><tr><![endif]-->\n<div class=\"kl-row colstack\" style=\"display:table;table-layout:fixed;width:100%;\">\n<!--[if true]><td style=\"vertical-align:top;width:600px;\"><![endif]-->\n<div class=\"kl-column\" style=\"display:table-cell;vertical-align:top;width:100%;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"font-size:0px;word-break:break-word;\">\n<div style=\"height:20px;line-height:20px;\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"mj-column-per-100 mj-outlook-group-fix component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\" width=\"100%\">\n<tbody>\n<tr>\n<td class=\"\" style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"\" width=\"100%\">\n<tbody>\n<tr><td style=\"color:#211F24;font-family:'Montserrat', Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;line-height:normal;\"><img alt=\"\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/></td></tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<!--[if true]></td><![endif]-->\n</div>\n<!--[if true]></tr></table><![endif]-->\n</div>\n<!--[if mso | IE]></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<!--[if mso | IE]></td></tr></table><![endif]-->\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<img alt=\"\" border=\"0\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\">\n</img></body></html>";
         const frame = document.getElementById('emailFrame');
-
+        
         function init() {
+            const frame = document.getElementById('emailFrame');
+            if (!frame) return;
             const doc = frame.contentDocument;
             doc.open();
             doc.write(content);
             doc.close();
 
-            // Apply base styles
-            applyFrameStyles(doc);
-
-            // Apply theme
+            // Apply theme (which calls setupFrame)
             const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') applyTheme('dark');
+            applyTheme(theme);
         }
-
-        function applyFrameStyles(doc) {
-            const style = doc.createElement('style');
-            style.innerHTML = `
-                body { margin: 0; font-family: sans-serif; background: #fff; }
-                /* Universal Scrollbar Hide */
-                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
-             `;
-            doc.head.appendChild(style);
-        }
-
-        function setMode(mode) {
-            const frameEl = document.getElementById('deviceFrame');
-            frameEl.setAttribute('data-mode', mode);
-
-            const doc = frame.contentDocument;
-            if (doc) {
-                if (mode !== 'desktop') {
-                    // Aggressive Responsive Fix
-                    // We inject a style block specifically for mobile mode
-                    let mobileStyle = doc.getElementById('mobile-fix');
-                    if (!mobileStyle) {
-                        mobileStyle = doc.createElement('style');
-                        mobileStyle.id = 'mobile-fix';
-                        mobileStyle.innerHTML = `
-                            html, body { width: 100% !important; overflow-x: hidden !important; }
-                            table, img, div, span, p { max-width: 100% !important; height: auto !important; box-sizing: border-box !important; }
-                            /* Force tables to be blocks to avoid width issues */
-                            table { display: block !important; width: 100% !important; }
-                            tbody, tr, td { display: block !important; width: 100% !important; } 
-                         `;
-                        // display: block on tables breaks layout often but ensures fitting.
-                        // A better approach is max-width: 100% and allow table layout
-                        mobileStyle.innerHTML = `
-                            html, body { 
-                                width: 100% !important; 
-                                margin:0 !important; padding:0 !important;
-                            }
-                            table { width: 100% !important; max-width: 100% !important; }
-                            img { max-width: 100% !important; height: auto !important; }
-                         `;
-                        doc.head.appendChild(mobileStyle);
-                    }
-
-                    if (mode === 'mobile') {
-                        if (doc.body) doc.body.style.paddingTop = '40px';
-                    } else {
-                        if (doc.body) doc.body.style.paddingTop = '0px';
-                    }
-                } else {
-                    const s = doc.getElementById('mobile-fix');
-                    if (s) s.remove();
-                    if (doc.body) doc.body.style.paddingTop = '0';
-                }
-            }
-
-            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('closed');
-            event.currentTarget.classList.toggle('active');
-        }
-
-        function openSourceModal() {
-            document.getElementById('sourceText').value = content;
-            document.getElementById('sourceModal').style.display = 'flex';
-        }
-
-        function closeSourceModal() {
-            document.getElementById('sourceModal').style.display = 'none';
-        }
-
         init();
     </script>
 </body>

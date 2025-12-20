@@ -11,423 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        /* Viewer Specific Styles */
-        body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewer-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .device-stage {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-
-        .device-frame {
-            background: #111;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .device-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            flex: 1;
-        }
-
-        /* Device Modes */
-        .device-frame[data-mode="desktop"] {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-        }
-
-        .device-frame[data-mode="mobile"] {
-            width: 375px;
-            height: 812px;
-            max-height: 90vh;
-            border-radius: 40px;
-            border: 12px solid #111;
-        }
-
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .device-frame[data-mode="tablet"] {
-            width: 768px;
-            height: 1024px;
-            max-height: 90vh;
-            border-radius: 24px;
-            border: 12px solid #111;
-        }
-
-        /* Sidebar */
-        .meta-sidebar {
-            width: 400px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border-color);
-            padding: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-
-        .meta-sidebar.closed {
-            transform: translateX(100%);
-            width: 0;
-            border: none;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin: 25px 0 10px 0;
-            font-weight: 700;
-        }
-
-        .section-title:first-child {
-            margin-top: 0;
-        }
-
-        .meta-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .meta-key {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-align: left;
-        }
-
-        .meta-key::after {
-            content: ":";
-        }
-
-        .meta-val {
-            color: var(--text-primary);
-            font-weight: 400;
-            text-align: right;
-            margin-left: 10px;
-            word-break: break-word;
-        }
-
-        /* Links */
-        .link-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .link-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .link-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(2px);
-        }
-
-        .link-num {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-secondary);
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        [data-theme="dark"] .link-num {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .link-content {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .link-txt {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .link-url {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Pixels */
-        .pixel-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-        }
-
-        .pixel-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 8px 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2980b9;
-        }
-
-        .pixel-row {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            cursor: help;
-        }
-
-        .pixel-row:last-child {
-            border-bottom: none;
-        }
-
-        .pixel-reason {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .pixel-url {
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.75rem;
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-        }
-
-        .sidebar-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dotted currentColor;
-        }
-
-        /* Header Controls */
-        .viewer-header {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-glass);
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .action-btn {
-            height: 36px;
-            padding: 0 12px;
-            min-width: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover,
-        .action-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="dark"] .pixel-header {
-            color: #8be9fd;
-            background: rgba(139, 233, 253, 0.1);
-        }
-
-        [data-theme="dark"] .pixel-box {
-            border-color: rgba(139, 233, 253, 0.2);
-        }
-
-        /* Modal for Source */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            width: 80%;
-            max-width: 800px;
-            height: 80vh;
-            background: var(--bg-body);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body {
-            flex: 1;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .source-area {
-            width: 100%;
-            height: 100%;
-            border: none;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            resize: none;
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-    </style>
+    <!-- Inline Viewer Styles Moved to style.css -->
 </head>
 
 <body>
@@ -509,7 +93,16 @@
                     <span class="meta-val">19/12/2025 à 22:14</span>
                 </div>
 
-                <div class="section-title">Technical</div>
+                
+                <div class="meta-row">
+                    <span class="meta-key">Email Size</span>
+                    <span class="meta-val">0.04 MB</span>
+                </div>
+                
+                <div class="meta-row">
+                    <span class="meta-key">CRM</span>
+                    <span class="meta-val">Recharge</span>
+                </div><div class="section-title">Technical</div>
                 
                 <div style="color:var(--text-tertiary); font-size:0.85rem;">No tracking pixels detected.</div>
                 
@@ -523,7 +116,12 @@
                 <ul class="link-list">
                     
                     <li class="link-item" onclick="highlightLink(1)">
-                        <div class="link-num">1</div>
+                        <div class="link-num">1</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/68d28cab3de3e', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Téléchargez l’app Wash, rechargez votre compte et </div>
                             <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
@@ -531,7 +129,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(2)">
-                        <div class="link-num">2</div>
+                        <div class="link-num">2</div><button class="copy-btn-icon" onclick="copyLink('https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/%%view_email_url%%', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Version en ligne</div>
                             <div class="link-url">https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/%%view_email_url%%</div>
@@ -539,7 +142,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(3)">
-                        <div class="link-num">3</div>
+                        <div class="link-num">3</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx</div>
@@ -547,7 +155,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(4)">
-                        <div class="link-num">4</div>
+                        <div class="link-num">4</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/68d28cab3de3e', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
@@ -555,7 +168,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(5)">
-                        <div class="link-num">5</div>
+                        <div class="link-num">5</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/68d28cab3de3e', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Je profite de 10€ offerts</div>
                             <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
@@ -563,7 +181,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(6)">
-                        <div class="link-num">6</div>
+                        <div class="link-num">6</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/68d28cab3de3e', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
@@ -571,7 +194,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(7)">
-                        <div class="link-num">7</div>
+                        <div class="link-num">7</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/68d28cab3de3e', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Je lave ma voiture gratuitement</div>
                             <div class="link-url">https://gtinsi.de/68d28cab3de3e</div>
@@ -579,7 +207,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(8)">
-                        <div class="link-num">8</div>
+                        <div class="link-num">8</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueil.aspx</div>
@@ -587,7 +220,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(9)">
-                        <div class="link-num">9</div>
+                        <div class="link-num">9</div><button class="copy-btn-icon" onclick="copyLink('https://instagram.com/showroomprive/', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://instagram.com/showroomprive/</div>
@@ -595,7 +233,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(10)">
-                        <div class="link-num">10</div>
+                        <div class="link-num">10</div><button class="copy-btn-icon" onclick="copyLink('https://www.facebook.com/showroomprivecom', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://www.facebook.com/showroomprivecom</div>
@@ -603,7 +246,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(11)">
-                        <div class="link-num">11</div>
+                        <div class="link-num">11</div><button class="copy-btn-icon" onclick="copyLink('https://www.tiktok.com/@showroomprive', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://www.tiktok.com/@showroomprive</div>
@@ -611,7 +259,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(12)">
-                        <div class="link-num">12</div>
+                        <div class="link-num">12</div><button class="copy-btn-icon" onclick="copyLink('https://fr.linkedin.com/company/showroomprive-com', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://fr.linkedin.com/company/showroomprive-com</div>
@@ -619,7 +272,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(13)">
-                        <div class="link-num">13</div>
+                        <div class="link-num">13</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=mobile.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt"></div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=mobile.aspx</div>
@@ -627,7 +285,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(14)">
-                        <div class="link-num">14</div>
+                        <div class="link-num">14</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/Mescommandes.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Mes commandes</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/Mescommandes.aspx</div>
@@ -635,7 +298,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(15)">
-                        <div class="link-num">15</div>
+                        <div class="link-num">15</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/mesba.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Mes bons d'achat</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=MonCompte/mesba.aspx</div>
@@ -643,7 +311,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(16)">
-                        <div class="link-num">16</div>
+                        <div class="link-num">16</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Mes communications</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx</div>
@@ -651,7 +324,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(17)">
-                        <div class="link-num">17</div>
+                        <div class="link-num">17</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/mode%3fu%3d1%3Fwebview%3D1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Mode</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/mode%3fu%3d1%3Fwebview%3D1</div>
@@ -659,7 +337,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(18)">
-                        <div class="link-num">18</div>
+                        <div class="link-num">18</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universmaison%3fu%3d4%3Fwebview%3D1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Maison</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universmaison%3fu%3d4%3Fwebview%3D1</div>
@@ -667,7 +350,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(19)">
-                        <div class="link-num">19</div>
+                        <div class="link-num">19</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilvoyage.aspx%3fu%3d5', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Voyage</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilvoyage.aspx%3fu%3d5</div>
@@ -675,7 +363,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(20)">
-                        <div class="link-num">20</div>
+                        <div class="link-num">20</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universbeaute%3fu%3d6%3Fwebview%3D1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Beauté</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=ope/universbeaute%3fu%3d6%3Fwebview%3D1</div>
@@ -683,7 +376,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(21)">
-                        <div class="link-num">21</div>
+                        <div class="link-num">21</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/enfant%3fu%3d3%3Fwebview%3D1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Enfant</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/enfant%3fu%3d3%3Fwebview%3D1</div>
@@ -691,7 +389,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(22)">
-                        <div class="link-num">22</div>
+                        <div class="link-num">22</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Hi-tech</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1</div>
@@ -699,7 +402,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(23)">
-                        <div class="link-num">23</div>
+                        <div class="link-num">23</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Electromenager</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1</div>
@@ -707,7 +415,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(24)">
-                        <div class="link-num">24</div>
+                        <div class="link-num">24</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilbilletterie.aspx%3fu%3d9', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Loisirs</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=accueilbilletterie.aspx%3fu%3d9</div>
@@ -715,7 +428,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(25)">
-                        <div class="link-num">25</div>
+                        <div class="link-num">25</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/legrandmarche%3fu%3d161', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Marché</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=univers-srp/legrandmarche%3fu%3d161</div>
@@ -723,7 +441,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(26)">
-                        <div class="link-num">26</div>
+                        <div class="link-num">26</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=outlet.aspx%3fu%3d8', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">Outlet</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&p=%%Member%20Encrypted%20Password%%&direction=outlet.aspx%3fu%3d8</div>
@@ -731,7 +454,12 @@
                     </li>
                     
                     <li class="link-item" onclick="highlightLink(27)">
-                        <div class="link-num">27</div>
+                        <div class="link-num">27</div><button class="copy-btn-icon" onclick="copyLink('https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx', this)" title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                           </button>
                         <div class="link-content">
                             <div class="link-txt">ici</div>
                             <div class="link-url">https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&p=%%Member%20Encrypted%20Password%%&direction=moncompte/mespreferences.aspx</div>
@@ -753,6 +481,7 @@
         <div class="modal">
             <div class="modal-header">
                 <span>HTML Source</span>
+<button class="copy-source-btn" onclick="copySource()">Copy Code</button>
                 <button class="close-btn" onclick="closeSourceModal()">×</button>
             </div>
             <div class="modal-body">
@@ -765,94 +494,19 @@
     <script>
         const content = "<td class=\"t_bgcffffff m_bgcffffff\" role=\"main\" style=\"background-color:#f5f5f5\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_bgcffffff m_w100p\" role=\"none\" style=\"margin:auto\" width=\"640\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<div class=\"t_bdtlrs0px t_bdtrrs0px t_bdblrs0px t_bdbrrs0px m_bdtlrs0px m_bdtrrs0px m_bdblrs0px m_bdbrrs0px\" style=\"border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate;background-color:#ffffff\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_dnone m_dnone\" role=\"none\" style=\"margin:auto\" width=\"90%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#cccccc;text-align:center;font-size:11px;padding-top:10px;padding-bottom:5px;vertical-align:middle\">\n<a data-index=\"1\" href=\"https://gtinsi.de/68d28cab3de3e\" style=\"color:#cccccc;display:block;text-decoration:none;outline:0\" target=\"_blank\" title=\"Je d\u00e9couvre\"> T\u00e9l\u00e9chargez l\u2019app Wash, rechargez votre compte et faites des \u00e9conomies ! </a>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_dnone m_dnone\" role=\"none\" style=\"margin:auto\" width=\"90%\">\n<tbody><tr><td>\n<div style=\"border-bottom:1px solid #f1f2f6;mso-border-alt:none\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#cccccc;text-align:center;font-size:11px;padding-bottom:13px;vertical-align:middle;mso-border-bottom-alt:1px solid #f1f2f6\">\n<a data-index=\"2\" href=\"https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/%%view_email_url%%\" style=\"color:#cccccc;display:block;text-decoration:none;outline:0\" title=\"Version en ligne\">\n<span style=\"text-decoration:underline;color:#cccccc\">Version en ligne</span></a>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w265px m_w265px\" role=\"none\" style=\"margin:auto\" width=\"265\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td class=\"t_pt0px m_pt0px\" style=\"padding-top:10px;padding-bottom:10px;text-align:center\">\n<a data-index=\"3\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=accueil.aspx\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" title=\"Je fonce\" width=\"100%\">\n<img alt=\"Showroompriv\u00e9\" class=\"t_w100p m_w100p\" src=\"img_0.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:13px;display:block;border:none\" width=\"265\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_dnone m_dnone\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"15\" style=\"height:15px;font-size:8px\"> \u200c </td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"640\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate;background-color:#ffffff\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w200px m_w200px\" role=\"none\" style=\"margin:auto\" width=\"180\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td class=\"t_pt0px m_pt0px\" style=\"padding-top:15px;padding-bottom:20px;text-align:center;vertical-align:middle\">\n<a data-index=\"4\" href=\"https://gtinsi.de/68d28cab3de3e\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" title=\"Je decouvre\" width=\"100%\">\n<img alt=\"Wash logo\" class=\"t_w100p m_w100p\" src=\"img_1.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"180\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w420px m_w90p\" role=\"none\" style=\"margin:auto\" width=\"80%\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-left-radius:10px;border-bottom-right-radius:10px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate;background-color:#89a5ff\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;color:#ffffff;text-align:center;font-size:15px;letter-spacing:1px;padding-top:20px;vertical-align:middle;line-height:21px\"> EN EXCLUSIVIT\u00c9 AVEC SHOWROOMPRIV\u00c9 </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" style=\"margin:auto;border-collapse:separate\" width=\"100%\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-left-radius:10px;border-bottom-right-radius:10px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td class=\"t_pr4p t_pl4p m_pr4p m_pl4p\" style=\"font-family:Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;color:#ffffff;text-align:center;text-transform:uppercase;font-size:30px;letter-spacing:1px;padding-top:10px;padding-bottom:5px;vertical-align:middle;line-height:36px;font-weight:700\"> 10\u20ac de lavage OFFERTS<sup>*</sup>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:16px;padding-bottom:20px;vertical-align:middle;line-height:22px\"> sur l\u2019application Wash </td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"20\" style=\"height:20px;font-size:8px\"> \u200c </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w420px m_w90p\" role=\"none\" style=\"margin:auto\" width=\"85%\">\n<tbody><tr><td class=\"t_w60p m_w100p m_flright\" valign=\"top\" width=\"60%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td class=\"t_pt0px m_pt0px m_pb20px\" style=\"font-family:Arial,Helvetica,sans-serif;color:#000000;text-align:center;font-size:16px;padding-top:30px;vertical-align:middle;line-height:22px\"> Avec l\u2019application Wash, trouvez le centre de lavage le plus proche, et achetez votre lavage directement depuis votre\u00a0mobile\u00a0!<br role=\"none\"/><br role=\"none\"/>Vous rechargez votre compte lavage en profitant des\u00a0bonus, <span style=\"font-weight:700\">c\u2019est\u00a0jusqu\u2019\u00e0 25\u20ac de lavage offert.</span>\n</td></tr></tbody></table></td>\n<td class=\"t_w40p m_w100p m_flright\" valign=\"top\" width=\"40%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w80p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"text-align:center;vertical-align:middle\">\n<img alt=\"\" class=\"t_w100p m_w100p\" src=\"img_2.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#000000;line-height:16px;display:block;border:none\" width=\"217\"/>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"20\" style=\"height:20px;font-size:8px\"> \u200c </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" style=\"margin:auto;border-collapse:separate\" width=\"220\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;border-top:1px solid #FFFFFF;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;border-left:1px solid #FFFFFF;overflow:hidden;mso-border-alt:none\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:16px;background-color:#000000;padding-top:10px;padding-bottom:10px;vertical-align:middle;line-height:24px;mso-border-top-alt:1px solid #FFFFFF;mso-border-right-alt:1px solid #FFFFFF;mso-border-bottom-alt:1px solid #FFFFFF;mso-border-left-alt:1px solid #FFFFFF\">\n<a data-index=\"5\" href=\"https://gtinsi.de/68d28cab3de3e\" style=\"color:#ffffff;line-height:24px;display:block;text-decoration:none;outline:0\" target=\"_blank\"> Je profite de 10\u20ac offerts </a>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<div class=\"t_bdtlrs15px t_bdtrrs15px t_bdblrs15px t_bdbrrs15px m_bdtlrs15px m_bdtrrs15px m_bdblrs15px m_bdbrrs15px\" style=\"overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"padding-top:25px;text-align:center;vertical-align:middle\">\n<a data-index=\"6\" href=\"https://gtinsi.de/68d28cab3de3e\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" title=\"Je decouvre\" width=\"100%\">\n<img alt=\"Total Wash cover\" class=\"t_w100p m_w100p\" src=\"img_3.jpg\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"640\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w90p m_w90p\" role=\"none\" style=\"margin:auto\" width=\"90%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#000000;text-align:center;font-size:17px;padding-top:20px;vertical-align:middle;line-height:23px\"> Avec Wash, profitez du <span style=\"font-weight:700\">premier r\u00e9seau de lavage auto</span> en\u00a0France\u00a0: </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w405px m_w90p\" role=\"none\" style=\"margin:auto\" width=\"70%\">\n<tbody><tr><td class=\"t_fz15px m_fz15px\" style=\"font-family:Arial,Helvetica,sans-serif;color:#000000;text-align:left;font-size:16px;padding-top:10px;padding-bottom:20px;vertical-align:middle;line-height:22px\"> \u2022 <span style=\"font-weight:700\">1100 centres de lavage</span> dans toute la\u00a0France<br role=\"none\"/>\u2022 <span style=\"font-weight:700\">75% d\u2019utilisation d\u2019eau recycl\u00e9e</span> pour un lavage rouleaux<br role=\"none\"/>\u2022 <span style=\"font-weight:700\">100%</span> des eaux de lavage sont <span style=\"font-weight:700\">trait\u00e9es</span><br role=\"none\"/>\u2022 <span style=\"font-weight:700\">80%</span> des produits de lavage sont <span style=\"font-weight:700\">biod\u00e9gradables</span>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" style=\"margin:auto;border-collapse:separate\" width=\"270\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;border-top:1px solid #FFFFFF;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;border-left:1px solid #FFFFFF;overflow:hidden;mso-border-alt:none\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:16px;background-color:#000000;padding-top:10px;padding-bottom:10px;vertical-align:middle;line-height:24px;mso-border-top-alt:1px solid #FFFFFF;mso-border-right-alt:1px solid #FFFFFF;mso-border-bottom-alt:1px solid #FFFFFF;mso-border-left-alt:1px solid #FFFFFF\">\n<a data-index=\"7\" href=\"https://gtinsi.de/68d28cab3de3e\" style=\"color:#ffffff;line-height:24px;display:block;text-decoration:none;outline:0\" target=\"_blank\"> Je lave ma voiture gratuitement </a>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"40\" style=\"height:40px;font-size:8px\"> \u200c </td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"640\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"40\" style=\"height:40px;font-size:8px\"> \u200c </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate;background-color:#000000\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td class=\"m_h10px m_fz10px m_lh10px\" height=\"15\" style=\"height:15px;font-size:8px\"> \u200c </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w95p m_w90p\" role=\"none\" style=\"margin:auto\" width=\"90%\">\n<tbody><tr><td class=\"t_w24p m_w100p m_flright\" valign=\"top\" width=\"23.25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w132px\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td class=\"m_pt0px\" style=\"padding-top:10px;text-align:center;vertical-align:middle\">\n<a data-index=\"8\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=accueil.aspx\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" title=\"Je fonce\" width=\"100%\">\n<img alt=\"Showroomprive\" class=\"t_w100p m_w100p\" src=\"img_4.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"133\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table></td>\n<td aria-hidden=\"true\" class=\"t_w2p m_w100p m_flright\" valign=\"top\" width=\"7%\">\n<span>\u200c</span></td>\n<td class=\"t_w24d66p m_w33d33p m_flleft\" valign=\"top\" width=\"23.25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w50px m_w50px\" role=\"none\" style=\"margin:auto\" width=\"50\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"padding-bottom:5px;text-align:center;vertical-align:middle\">\n<img alt=\"\" class=\"t_w100p m_w100p\" src=\"img_5.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#000000;line-height:16px;display:block;border:none\" width=\"50\"/>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w90px m_w90px\" role=\"none\" style=\"margin:auto\" width=\"90\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:13px;vertical-align:middle;line-height:19px\"> Les <span style=\"font-weight:700\">+</span> grandes marques jusqu'\u00e0 <span style=\"font-weight:700\">-</span>75% </td></tr></tbody></table></td>\n<td class=\"t_w24d67p m_w33d33p m_flleft\" valign=\"top\" width=\"23.25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w50px m_w50px\" role=\"none\" style=\"margin:auto\" width=\"50\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"padding-bottom:5px;text-align:center;vertical-align:middle\">\n<img alt=\"\" class=\"t_w100p m_w100p\" src=\"img_6.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#000000;line-height:16px;display:block;border:none\" width=\"50\"/>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w90px m_w90px\" role=\"none\" style=\"margin:auto\" width=\"90\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:13px;vertical-align:middle;line-height:19px\"> 14 jours <br role=\"none\"/>pour changer d'avis </td></tr></tbody></table></td>\n<td class=\"t_w24d67p m_w33d34p m_flright\" valign=\"top\" width=\"23.25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w50px m_w50px\" role=\"none\" style=\"margin:auto\" width=\"50\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"padding-bottom:5px;text-align:center;vertical-align:middle\">\n<img alt=\"\" class=\"t_w100p m_w100p\" src=\"img_7.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#000000;line-height:16px;display:block;border:none\" width=\"50\"/>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w90px m_w90px\" role=\"none\" style=\"margin:auto\" width=\"90\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:13px;vertical-align:middle;line-height:19px\"> Un service client rapide et personnalis\u00e9 </td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"25\" style=\"height:25px;font-size:8px\"> \u200c </td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate;background-color:#ffffff\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w89p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"90%\">\n<tbody><tr><td class=\"t_w60p m_w100p m_flright\" valign=\"top\" width=\"61%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;color:#000000;text-align:center;font-size:18px;letter-spacing:1px;padding-top:30px;padding-bottom:5px;vertical-align:middle;line-height:24px;font-weight:700\"> SUIVEZ-NOUS </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w220px m_w230px\" role=\"none\" style=\"margin:auto\" width=\"250\">\n<tbody><tr><td class=\"t_w25p m_w25p\" valign=\"top\" width=\"25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w45px m_w45px\" role=\"none\" style=\"margin:auto\" width=\"45\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"text-align:center;vertical-align:middle\">\n<a data-index=\"9\" href=\"https://instagram.com/showroomprive/\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" width=\"100%\">\n<img alt=\"Instagram\" class=\"t_w100p m_w100p\" src=\"img_8.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"45\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table></td>\n<td class=\"t_w25p m_w25p\" valign=\"top\" width=\"25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w45px m_w45px\" role=\"none\" style=\"margin:auto\" width=\"45\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"text-align:center;vertical-align:middle\">\n<a data-index=\"10\" href=\"https://www.facebook.com/showroomprivecom\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" width=\"100%\">\n<img alt=\"Facebook\" class=\"t_w100p m_w100p\" src=\"img_9.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"45\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table></td>\n<td class=\"t_w25p m_w25p\" valign=\"top\" width=\"25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w45px m_w45px\" role=\"none\" style=\"margin:auto\" width=\"45\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"text-align:center;vertical-align:middle\">\n<a data-index=\"11\" href=\"https://www.tiktok.com/@showroomprive\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" width=\"100%\">\n<img alt=\"Tiktok\" class=\"t_w100p m_w100p\" src=\"img_10.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"45\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table></td>\n<td class=\"t_w25p m_w25p\" valign=\"top\" width=\"25%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w45px m_w45px\" role=\"none\" style=\"margin:auto\" width=\"45\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"text-align:center;vertical-align:middle\">\n<a data-index=\"12\" href=\"https://fr.linkedin.com/company/showroomprive-com\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" width=\"100%\">\n<img alt=\"Linkedin\" class=\"t_w100p m_w100p\" src=\"img_11.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"45\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n</td></tr></tbody></table></td>\n<td class=\"t_w40p m_w100p m_flright\" valign=\"top\" width=\"39%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;color:#000000;text-align:center;font-size:18px;letter-spacing:1px;padding-top:30px;padding-bottom:5px;vertical-align:middle;line-height:24px;font-weight:700\"> APP MOBILE </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w45px m_w45px\" role=\"none\" style=\"margin:auto\" width=\"45\">\n<tbody><tr><td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"text-align:center;vertical-align:middle\">\n<a data-index=\"13\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=mobile.aspx\" style=\"color:#000000;outline:0;border:none;margin:auto;display:block\" target=\"_blank\" width=\"100%\">\n<img alt=\"Application mobile\" class=\"t_w100p m_w100p\" src=\"img_12.png\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:16px;display:block;border:none\" width=\"45\"/></a>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"30\" style=\"height:30px;font-size:8px\"> \u200c </td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w400px m_w200px\" role=\"none\" style=\"margin:auto\" width=\"95%\">\n<tbody><tr><td class=\"t_w47d5p t_flleft m_w100p m_flright\" valign=\"top\" width=\"32%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w180px m_w100p\" role=\"none\" style=\"margin:auto;border-collapse:separate\" width=\"180\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:15px;background-color:#000000;padding-top:10px;padding-bottom:10px;vertical-align:middle;line-height:24px\">\n<a data-index=\"14\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=MonCompte/Mescommandes.aspx\" style=\"color:#ffffff;line-height:24px;display:block;text-decoration:none;outline:0\" target=\"_blank\"> Mes commandes </a>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table></td>\n<td aria-hidden=\"true\" class=\"t_w5p t_flleft m_w100p m_flright\" valign=\"top\" width=\"2%\">\n<span>\u200c</span></td>\n<td class=\"t_w47d5p t_flright m_w100p m_flright\" valign=\"top\" width=\"32%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w180px m_w100p\" role=\"none\" style=\"margin:auto;border-collapse:separate\" width=\"180\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:15px;background-color:#000000;padding-top:10px;padding-bottom:10px;vertical-align:middle;line-height:24px\">\n<a data-index=\"15\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=MonCompte/mesba.aspx\" style=\"color:#ffffff;line-height:24px;display:block;text-decoration:none;outline:0\" target=\"_blank\"> Mes bons d'achat </a>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table></td>\n<td aria-hidden=\"true\" class=\"t_w100p t_flright m_w100p m_flright\" valign=\"top\" width=\"2%\">\n<span>\u200c</span></td>\n<td class=\"t_w100p t_flright m_w100p m_flright\" valign=\"top\" width=\"32%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w200px m_w100p\" role=\"none\" style=\"margin:auto;border-collapse:separate\" width=\"190\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:15px;background-color:#000000;padding-top:10px;padding-bottom:10px;vertical-align:middle;line-height:24px\">\n<a data-index=\"16\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=moncompte/mespreferences.aspx\" style=\"color:#ffffff;line-height:24px;display:block;text-decoration:none;outline:0\" target=\"_blank\"> Mes communications </a>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n<table align=\"center\" aria-hidden=\"true\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" style=\"margin:auto;clear:both\" width=\"100%\">\n<tbody><tr><td height=\"30\" style=\"height:30px;font-size:8px\"> \u200c </td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w100p m_w100p\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td>\n<div style=\"border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;overflow:hidden\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"none\" style=\"border-collapse:separate;background-color:#000000\" width=\"100%\">\n<tbody><tr><td class=\"t_w100p m_w100p\" valign=\"top\" width=\"100%\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w350px m_w280px\" role=\"none\" style=\"margin:auto\" width=\"100%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-align:center;font-size:14px;padding-top:30px;padding-bottom:30px;vertical-align:middle;line-height:24px\">\n<a data-index=\"17\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=univers-srp/mode%3fu%3d1%3Fwebview%3D1\" style=\"color:#ffffff;text-decoration:underline\">Mode</a> | <a data-index=\"18\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=ope/universmaison%3fu%3d4%3Fwebview%3D1\" style=\"color:#ffffff;text-decoration:underline\">Maison</a> | <a data-index=\"19\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=accueilvoyage.aspx%3fu%3d5\" style=\"color:#ffffff;text-decoration:underline\">Voyage</a> | <a data-index=\"20\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=ope/universbeaute%3fu%3d6%3Fwebview%3D1\" style=\"color:#ffffff;text-decoration:underline\">Beaut\u00e9</a> | <a data-index=\"21\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=univers-srp/enfant%3fu%3d3%3Fwebview%3D1\" style=\"color:#ffffff;text-decoration:underline\">Enfant</a> | <a data-index=\"22\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1\" style=\"color:#ffffff;text-decoration:underline\">Hi-tech</a> | <a data-index=\"23\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=univers-srp/ht/electromenager%3fu%3d147%3Fwebview%3D1\" style=\"color:#ffffff;text-decoration:underline\">Electromenager</a> | <a data-index=\"24\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=accueilbilletterie.aspx%3fu%3d9\" style=\"color:#ffffff;text-decoration:underline\">Loisirs</a> | <a data-index=\"25\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=univers-srp/legrandmarche%3fu%3d161\" style=\"color:#ffffff;text-decoration:underline\">March\u00e9</a>\u00a0|\u00a0<a data-index=\"26\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20Email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=outlet.aspx%3fu%3d8\" style=\"color:#ffffff;text-decoration:underline\">Outlet</a>\n</td></tr></tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"d_center t_w95p m_w90p\" role=\"none\" style=\"margin:auto\" width=\"95%\">\n<tbody><tr><td style=\"font-family:Arial,Helvetica,sans-serif;color:#646464;text-align:left;font-size:11px;padding-bottom:30px;vertical-align:middle;line-height:16px\"> * Pour les trajets courts, privil\u00e9giez la marche ou le v\u00e9lo. Code \u00e0 usage unique, offre valable pour tous les nouveaux clients jusqu\u2019au 31 ao\u00fbt 2026.<br role=\"none\"/><br role=\"none\"/>TotalEnergies Wash France SAS, 1 rue Eug\u00e8ne et Armand Peugeot, 92500 Rueil-Malmaison, Capital social: 3 750 000,00\u20ac, RCS Nanterre 539 075 598.<br role=\"none\"/><br role=\"none\"/>Vous ne souhaitez plus recevoir de communications de notre part, param\u00e9trez vos choix <a data-index=\"27\" href=\"https://www.showroomprive.com/remoteconnexion.aspx?u=%%Member%20email%%&amp;p=%%Member%20Encrypted%20Password%%&amp;direction=moncompte/mespreferences.aspx\" style=\"color:#646464;text-decoration:underline\">ici</a>.<br role=\"none\"/><br role=\"none\"/>Showroomprive.com - ZAC de la Montjoie - 1 Impasse du Pilier - 93210 La plaine St Denis - France est une SARL au capital de 115 481 749,68 Euros, RCS Bobigny n\u00b0 538 811 837, TVA FR 72 538 811 837. </td></tr></tbody></table>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n</td></tr></tbody></table>\n</td>";
         const frame = document.getElementById('emailFrame');
-
+        
         function init() {
+            const frame = document.getElementById('emailFrame');
+            if (!frame) return;
             const doc = frame.contentDocument;
             doc.open();
             doc.write(content);
             doc.close();
 
-            // Apply base styles
-            applyFrameStyles(doc);
-
-            // Apply theme
+            // Apply theme (which calls setupFrame)
             const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') applyTheme('dark');
+            applyTheme(theme);
         }
-
-        function applyFrameStyles(doc) {
-            const style = doc.createElement('style');
-            style.innerHTML = `
-                body { margin: 0; font-family: sans-serif; background: #fff; }
-                /* Universal Scrollbar Hide */
-                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
-             `;
-            doc.head.appendChild(style);
-        }
-
-        function setMode(mode) {
-            const frameEl = document.getElementById('deviceFrame');
-            frameEl.setAttribute('data-mode', mode);
-
-            const doc = frame.contentDocument;
-            if (doc) {
-                if (mode !== 'desktop') {
-                    // Aggressive Responsive Fix
-                    // We inject a style block specifically for mobile mode
-                    let mobileStyle = doc.getElementById('mobile-fix');
-                    if (!mobileStyle) {
-                        mobileStyle = doc.createElement('style');
-                        mobileStyle.id = 'mobile-fix';
-                        mobileStyle.innerHTML = `
-                            html, body { width: 100% !important; overflow-x: hidden !important; }
-                            table, img, div, span, p { max-width: 100% !important; height: auto !important; box-sizing: border-box !important; }
-                            /* Force tables to be blocks to avoid width issues */
-                            table { display: block !important; width: 100% !important; }
-                            tbody, tr, td { display: block !important; width: 100% !important; } 
-                         `;
-                        // display: block on tables breaks layout often but ensures fitting.
-                        // A better approach is max-width: 100% and allow table layout
-                        mobileStyle.innerHTML = `
-                            html, body { 
-                                width: 100% !important; 
-                                margin:0 !important; padding:0 !important;
-                            }
-                            table { width: 100% !important; max-width: 100% !important; }
-                            img { max-width: 100% !important; height: auto !important; }
-                         `;
-                        doc.head.appendChild(mobileStyle);
-                    }
-
-                    if (mode === 'mobile') {
-                        if (doc.body) doc.body.style.paddingTop = '40px';
-                    } else {
-                        if (doc.body) doc.body.style.paddingTop = '0px';
-                    }
-                } else {
-                    const s = doc.getElementById('mobile-fix');
-                    if (s) s.remove();
-                    if (doc.body) doc.body.style.paddingTop = '0';
-                }
-            }
-
-            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('closed');
-            event.currentTarget.classList.toggle('active');
-        }
-
-        function openSourceModal() {
-            document.getElementById('sourceText').value = content;
-            document.getElementById('sourceModal').style.display = 'flex';
-        }
-
-        function closeSourceModal() {
-            document.getElementById('sourceModal').style.display = 'none';
-        }
-
         init();
     </script>
 </body>
