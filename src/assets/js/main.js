@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('keyup', filterList);
+        searchInput.addEventListener('input', filterList);
     }
 });
 
@@ -63,28 +63,83 @@ function updateThemeIcon(theme) {
 /* Filtering Logic */
 function filterList() {
     const input = document.getElementById('searchInput');
+    if (!input) return;
     const filter = input.value.toLowerCase();
     const list = document.getElementById('newsList');
     if (!list) return;
-    const items = list.getElementsByClassName('news-card');
+    const items = list.querySelectorAll('.news-card');
     let visibleCount = 0;
 
-    for (let i = 0; i < items.length; i++) {
-        const title = items[i].querySelector('.card-title')?.textContent || "";
-        const sender = items[i].querySelector('.sender-pill')?.textContent || "";
+    items.forEach(item => {
+        const title = item.querySelector('.card-title')?.textContent || "";
+        const sender = item.querySelector('.sender-pill')?.textContent || "";
+        const preview = item.querySelector('.card-preview')?.textContent || "";
 
-        if (title.toLowerCase().includes(filter) || sender.toLowerCase().includes(filter)) {
-            items[i].style.display = "";
+        if (title.toLowerCase().includes(filter) ||
+            sender.toLowerCase().includes(filter) ||
+            preview.toLowerCase().includes(filter)) {
+            item.style.display = "";
             visibleCount++;
         } else {
-            items[i].style.display = "none";
+            item.style.display = "none";
         }
-    }
+    });
 
     const noResults = document.getElementById('noResults');
     if (noResults) {
         noResults.style.display = visibleCount === 0 ? "block" : "none";
     }
+}
+
+/* Sorting Logic */
+function sortList() {
+    const select = document.getElementById('sortSelect');
+    if (!select) return;
+    const criteria = select.value;
+    const list = document.getElementById('newsList');
+    if (!list) return;
+
+    const items = Array.from(list.getElementsByClassName('news-card'));
+
+    items.sort((a, b) => {
+        let valA = "", valB = "";
+        if (criteria.startsWith('date')) {
+            valA = a.getAttribute('data-date') || "";
+            valB = b.getAttribute('data-date') || "";
+            return criteria.endsWith('desc') ? valB.localeCompare(valA) : valA.localeCompare(valB);
+        } else if (criteria.startsWith('sender')) {
+            valA = (a.getAttribute('data-sender') || "").toLowerCase();
+            valB = (b.getAttribute('data-sender') || "").toLowerCase();
+            return criteria.endsWith('az') ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return 0;
+    });
+
+    // Re-append items in new order
+    items.forEach(item => list.appendChild(item));
+}
+
+/* Clipboard Utilities */
+function copyToClipboard(text, btn) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓';
+        btn.classList.add('copy-success');
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('copy-success');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+
+function copySource() {
+    const code = document.getElementById('sourceCode');
+    if (!code) return;
+    const btn = document.querySelector('.modal-actions .btn-copy-source');
+    copyToClipboard(code.textContent, btn);
 }
 
 /* Highlight Toggle Logic */

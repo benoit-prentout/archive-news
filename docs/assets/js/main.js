@@ -74,10 +74,10 @@ function filterList() {
         const sender = items[i].querySelector('.sender-pill')?.textContent || "";
 
         if (title.toLowerCase().includes(filter) || sender.toLowerCase().includes(filter)) {
-            items[i].parentElement.style.display = "";
+            items[i].style.display = "";
             visibleCount++;
         } else {
-            items[i].parentElement.style.display = "none";
+            items[i].style.display = "none";
         }
     }
 
@@ -85,6 +85,57 @@ function filterList() {
     if (noResults) {
         noResults.style.display = visibleCount === 0 ? "block" : "none";
     }
+}
+
+/* Sorting Logic */
+function sortList() {
+    const select = document.getElementById('sortSelect');
+    if (!select) return;
+    const criteria = select.value;
+    const list = document.getElementById('newsList');
+    if (!list) return;
+
+    const items = Array.from(list.getElementsByClassName('news-card'));
+
+    items.sort((a, b) => {
+        let valA = "", valB = "";
+        if (criteria.startsWith('date')) {
+            valA = a.getAttribute('data-date') || "";
+            valB = b.getAttribute('data-date') || "";
+            return criteria.endsWith('desc') ? valB.localeCompare(valA) : valA.localeCompare(valB);
+        } else if (criteria.startsWith('sender')) {
+            valA = (a.getAttribute('data-sender') || "").toLowerCase();
+            valB = (b.getAttribute('data-sender') || "").toLowerCase();
+            return criteria.endsWith('az') ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return 0;
+    });
+
+    // Re-append items in new order
+    items.forEach(item => list.appendChild(item));
+}
+
+/* Clipboard Utilities */
+function copyToClipboard(text, btn) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓';
+        btn.classList.add('copy-success');
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('copy-success');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+
+function copySource() {
+    const code = document.getElementById('sourceCode');
+    if (!code) return;
+    const btn = document.querySelector('.modal-actions .btn-copy-source');
+    copyToClipboard(code.textContent, btn);
 }
 
 /* Highlight Toggle Logic */

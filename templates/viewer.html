@@ -45,6 +45,9 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Removed opacity transition */
+            transform: scale(1);
         }
 
         .device-frame iframe {
@@ -61,8 +64,15 @@
             height: 100%;
             max-width: 1200px;
             border-radius: 12px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            /* Lighter shadow */
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            /* Almost invisible border */
+        }
+
+        [data-theme="dark"] .device-frame[data-mode="desktop"] {
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .device-frame[data-mode="mobile"] {
@@ -427,6 +437,40 @@
             cursor: pointer;
             color: var(--text-secondary);
         }
+
+        /* Copy Buttons */
+        .btn-copy-small {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            opacity: 0.6;
+        }
+
+        .btn-copy-small:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--accent-color);
+            opacity: 1;
+        }
+
+        .copy-success {
+            color: #50fa7b !important;
+            /* Dracula Green */
+            background: rgba(80, 250, 123, 0.1) !important;
+            border-color: #50fa7b !important;
+        }
+
+        @media (max-width: 768px) {
+            .hide-mobile {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -434,7 +478,7 @@
     <div class="viewer-header">
         <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
 
-        <div class="device-toggles">
+        <div class="device-toggles hide-mobile">
             <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
             <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
             <button class="device-btn active" onclick="setMode('desktop')"
@@ -510,6 +554,14 @@
                 </div>
 
                 <div class="section-title">Technical</div>
+                <div class="meta-row">
+                    <span class="meta-key">Email Size</span>
+                    <span class="meta-val">{{ (email_size / 1024)|round(1) }} KB</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Read Time</span>
+                    <span class="meta-val">{{ reading_time }}</span>
+                </div>
                 {% if detected_pixels %}
                 <div class="pixel-box">
                     <div class="pixel-header">Tracking Detected ({{ detected_pixels|length }})</div>
@@ -532,12 +584,19 @@
                 </div>
                 <ul class="link-list">
                     {% for link in links %}
-                    <li class="link-item" onclick="highlightLink({{ link.index }})">
-                        <div class="link-num">{{ loop.index }}</div>
-                        <div class="link-content">
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink({{ link.index }})">{{ loop.index }}</div>
+                        <div class="link-content" onclick="highlightLink({{ link.index }})">
                             <div class="link-txt">{{ link.txt }}</div>
                             <div class="link-url">{{ link.original_url }}</div>
                         </div>
+                        <button class="btn-copy-small" onclick="copyToClipboard('{{ link.original_url }}', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </li>
                     {% endfor %}
                 </ul>
@@ -559,6 +618,17 @@
             </div>
             <div class="modal-body">
                 <textarea id="sourceText" class="source-area" readonly></textarea>
+            </div>
+            <div class="modal-footer"
+                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="action-btn" onclick="copySource()">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy All</span>
+                </button>
+                <button class="action-btn" onclick="closeSourceModal()">Close</button>
             </div>
         </div>
     </div>
@@ -594,51 +664,50 @@
 
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
-            frameEl.setAttribute('data-mode', mode);
 
-            const doc = frame.contentDocument;
-            if (doc) {
-                if (mode !== 'desktop') {
-                    // Aggressive Responsive Fix
-                    // We inject a style block specifically for mobile mode
-                    let mobileStyle = doc.getElementById('mobile-fix');
-                    if (!mobileStyle) {
-                        mobileStyle = doc.createElement('style');
-                        mobileStyle.id = 'mobile-fix';
-                        mobileStyle.innerHTML = `
-                            html, body { width: 100% !important; overflow-x: hidden !important; }
-                            table, img, div, span, p { max-width: 100% !important; height: auto !important; box-sizing: border-box !important; }
-                            /* Force tables to be blocks to avoid width issues */
-                            table { display: block !important; width: 100% !important; }
-                            tbody, tr, td { display: block !important; width: 100% !important; } 
-                         `;
-                        // display: block on tables breaks layout often but ensures fitting.
-                        // A better approach is max-width: 100% and allow table layout
-                        mobileStyle.innerHTML = `
-                            html, body { 
-                                width: 100% !important; 
-                                margin:0 !important; padding:0 !important;
-                            }
-                            table { width: 100% !important; max-width: 100% !important; }
-                            img { max-width: 100% !important; height: auto !important; }
-                         `;
-                        doc.head.appendChild(mobileStyle);
-                    }
+            // Smooth transition exit (Scale only, no opacity)
+            frameEl.style.transform = 'scale(0.98)';
 
-                    if (mode === 'mobile') {
-                        if (doc.body) doc.body.style.paddingTop = '40px';
+            setTimeout(() => {
+                frameEl.setAttribute('data-mode', mode);
+
+                const doc = frame.contentDocument;
+                if (doc) {
+                    if (mode !== 'desktop') {
+                        let mobileStyle = doc.getElementById('mobile-fix');
+                        if (!mobileStyle) {
+                            mobileStyle = doc.createElement('style');
+                            mobileStyle.id = 'mobile-fix';
+                            mobileStyle.innerHTML = `
+                                html, body { 
+                                    width: 100% !important; 
+                                    margin:0 !important; padding:0 !important;
+                                }
+                                table { width: 100% !important; max-width: 100% !important; }
+                                img { max-width: 100% !important; height: auto !important; }
+                             `;
+                            doc.head.appendChild(mobileStyle);
+                        }
+
+                        if (mode === 'mobile') {
+                            if (doc.body) doc.body.style.paddingTop = '40px';
+                        } else {
+                            if (doc.body) doc.body.style.paddingTop = '0px';
+                        }
                     } else {
-                        if (doc.body) doc.body.style.paddingTop = '0px';
+                        const s = doc.getElementById('mobile-fix');
+                        if (s) s.remove();
+                        if (doc.body) doc.body.style.paddingTop = '0';
                     }
-                } else {
-                    const s = doc.getElementById('mobile-fix');
-                    if (s) s.remove();
-                    if (doc.body) doc.body.style.paddingTop = '0';
                 }
-            }
 
-            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
+                if (targetBtn) targetBtn.classList.add('active');
+
+                // Smooth transition enter
+                frameEl.style.transform = 'scale(1)';
+            }, 200);
         }
 
         function toggleSidebar() {

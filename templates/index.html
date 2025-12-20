@@ -18,22 +18,7 @@
     <div class="container">
         <header>
             <h1 class="logo">Newsletter Archive</h1>
-        </header>
-
-        <div class="controls-bar">
-            <div class="search-wrapper">
-                <svg class="icon search-icon" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search..."
-                    data-i18n="search_placeholder">
-            </div>
-
             <div class="actions">
-                <button id="lang-toggle" onclick="toggleLanguage()" class="btn-icon" title="Switch Language">
-                    <span id="lang-toggle-text">FR</span>
-                </button>
                 <button id="theme-toggle" onclick="toggleTheme()" class="btn-icon" title="Toggle Theme">
                     <svg class="icon icon-moon" viewBox="0 0 24 24">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -51,20 +36,61 @@
                     </svg>
                 </button>
             </div>
+        </header>
+
+        <div class="controls-bar">
+            <div class="search-row">
+                <div class="search-wrapper">
+                    <svg class="icon search-icon" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search..."
+                        data-i18n="search_placeholder">
+                </div>
+            </div>
+
+            <div class="sort-bar" style="display: flex; justify-content: flex-end; margin-top: -5px;">
+                <div class="sort-wrapper">
+                    <select id="sortSelect" class="sort-select" onchange="sortList()">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="sender-az">Sender A-Z</option>
+                        <option value="sender-za">Sender Z-A</option>
+                    </select>
+                    <svg class="icon sort-icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
+                </div>
+            </div>
         </div>
 
         <div class="stats-row">
-            <span class="stat-pill">
-                <span class="stat-val">{{ stats.count }}</span> Newsletters
-            </span>
-            <span class="stat-pill">
+            <div class="stat-pill">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span class="stat-val">{{ stats.count }}</span>
+                <span class="stat-label">Newsletters</span>
+            </div>
+            <div class="stat-pill">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
                 <span class="stat-label">Updated:</span>
                 <span class="stat-val">{{ stats.last_updated }}</span>
-            </span>
-            <span class="stat-pill">
+            </div>
+            <div class="stat-pill">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                </svg>
                 <span class="stat-label">Size:</span>
                 <span class="stat-val">{{ stats.archive_size }}</span>
-            </span>
+            </div>
         </div>
 
         <ul class="news-grid" id="newsList">
@@ -74,7 +100,7 @@
                 No results found.
             </div>
             {% for email in emails %}
-            <li class="news-card glass">
+            <li class="news-card glass" data-date="{{ email.date_obj }}" data-sender="{{ email.sender }}">
                 <a href="{{ email.id }}/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">{{ email.date_rec }}</span>
