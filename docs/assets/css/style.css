@@ -193,6 +193,62 @@ h1.logo {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* New Ghost/Modern Button Styles for Viewer */
+.action-btn,
+.device-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+}
+
+.action-btn:hover,
+.device-btn:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .action-btn:hover,
+[data-theme="dark"] .device-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.device-btn.active,
+.action-btn.active {
+    background: var(--bg-card);
+    /* Subtle elevation */
+    color: var(--accent-color);
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
+}
+
+.device-toggles {
+    display: flex;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.03);
+    /* Container for the toggle group */
+    padding: 4px;
+    border-radius: 10px;
+}
+
+[data-theme="dark"] .device-toggles {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.action-group {
+    display: flex;
+    gap: 8px;
+}
+
 /* Grid Layout */
 .news-grid {
     display: grid;
@@ -615,12 +671,13 @@ footer a {
 }
 
 .section-title {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--text-tertiary);
-    margin: 25px 0 12px 0;
+    margin: 30px 0 15px 0;
     font-weight: 700;
+    opacity: 0.8;
 }
 
 .section-title:first-child {
@@ -630,8 +687,26 @@ footer a {
 .meta-row {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .meta-row {
+    border-bottom-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Metadata Colors Refined */
+.meta-key {
+    color: var(--meta-label) !important;
+    font-weight: 400;
     font-size: 0.85rem;
+}
+
+.meta-val {
+    color: var(--meta-value) !important;
+    font-weight: 600;
+    text-align: right;
 }
 
 /* Pixel / Tracking Box */

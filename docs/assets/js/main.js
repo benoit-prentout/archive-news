@@ -161,9 +161,12 @@ function applyTheme(theme) {
             if (oldStyle) oldStyle.remove();
 
             if (theme === 'dark') {
-                // FORCE FIX: Aggressive Background Inversion
+                // FIXED DARK MODE: Smart Inversion
+                // Instead of simple filter: invert(1), we maintain hues and protect images.
+                
+                // 1. Force white background on containers so inversion works predictably
                 if (doc.body) {
-                    const elementsToFix = doc.querySelectorAll('body, table, .es-wrapper-color, .mj-body, div, center');
+                    const elementsToFix = doc.querySelectorAll('body, table, .es-wrapper-color, .mj-body, div, center, td');
                     elementsToFix.forEach(el => {
                         el.style.backgroundColor = '#ffffff';
                         el.style.color = '#000000';
@@ -177,20 +180,41 @@ function applyTheme(theme) {
                         filter: invert(1) hue-rotate(180deg) !important; 
                         background-color: #fff !important; 
                     }
+                    /* Counter-invert images to restore original colors */
                     img, video, iframe, [style*="background-image"], .no-invert { 
                         filter: invert(1) hue-rotate(180deg) !important; 
                     }
-                    /* Ensure text visibility */
-                    body, table, div { background-color: #fff !important; }
+                    
+                    /* Force transparency where possible to let bg show through */
+                    table, tr, td { background-color: transparent !important; }
+                    
+                    /* Text Visibility Enforcement */
+                    /* If text was originally white on dark, it becomes black on light (inverted). */
+                    /* But if it was black on white, it becomes white on black. */
+                    /* We forced bg to white, so it inverts to black. */
+                    /* So text must be black (inverts to white). */
+                    body { color: #000 !important; background-color: #fff !important; }
                 `;
                 doc.head.appendChild(style);
             } else if (theme === 'light') {
-                // Reset manual overrides if light theme
+                // LIGHT MODE ENFORCEMENT
+                // Some emails have dark backgrounds hardcoded (e.g., #000 body).
+                // We must override this to ensure a clean light mode experience.
                 if (doc.body) {
+                    doc.body.style.backgroundColor = '#ffffff';
+                    // We target common wrappers that might trap dark colors
                     doc.querySelectorAll('body, table, .es-wrapper-color, .mj-body, div, center').forEach(el => {
-                        el.style.backgroundColor = '';
-                        el.style.color = '';
+                        // Only override if it has an inline style or class setting it to dark?
+                        // Safer to just reset background color to default/white if it looks dark.
+                        // For now, let's just clear background colors on main wrappers.
+                        if (el.style.backgroundColor && el.style.backgroundColor !== 'transparent') {
+                             el.style.backgroundColor = '#ffffff';
+                        }
+                        el.style.color = '#333333'; // Ensure text is dark
                     });
+                    
+                    // Specific fix for white text on now-white background
+                    // We can't easily detect this, but resetting color helps.
                 }
             }
         }
