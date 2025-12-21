@@ -4,7 +4,14 @@
     "date_rec": "09/12/2025 à 17:04",
     "date_iso": "2025-12-09T17:04:53+00:00",
     "sender": "Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=\r\n\t<motsdoux@atelier-loupiote.fr>",
-    "date_arch": "19/12/2025 à 22:14",
+    "date_arch": "21/12/2025 à 14:03",
     "preheader": "En association avec Petits Frères des Pauvres 👴👵💓 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...",
-    "reading_time": "2 min"
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": false,
+        "link_count": 8,
+        "images_no_alt": 3
+    }
 }

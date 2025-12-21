@@ -4,7 +4,14 @@
     "date_rec": "04/12/2025 à 11:02",
     "date_iso": "2025-12-04T11:02:50-06:00",
     "sender": "\"Sophie d'Ultra Premium Direct\" <sophie@info.ultrapremiumdirect.com>",
-    "date_arch": "19/12/2025 à 22:14",
+    "date_arch": "21/12/2025 à 14:03",
     "preheader": "[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...",
-    "reading_time": "2 min"
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": false,
+        "link_count": 13,
+        "images_no_alt": 11
+    }
 }

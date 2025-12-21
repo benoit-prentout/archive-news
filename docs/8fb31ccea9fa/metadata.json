@@ -4,7 +4,14 @@
     "date_rec": "24/11/2025 à 05:48",
     "date_iso": "2025-11-24T05:48:26-08:00",
     "sender": "benoit@getinside.fr",
-    "date_arch": "19/12/2025 à 22:15",
+    "date_arch": "21/12/2025 à 14:03",
     "preheader": "Afficher dans le navigateur Votre allié repas au quotidien Votre allié repas au quotidien HelloFresh, c’est le service de box repas à cuisiner qui vous simplifi...",
-    "reading_time": "2 min"
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Good",
+        "unsubscribe_found": true,
+        "link_count": 20,
+        "images_no_alt": 17
+    }
 }

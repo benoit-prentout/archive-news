@@ -11,14 +11,474 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <!-- Inline Viewer Styles Moved to style.css -->
+    <style>
+        /* Viewer Specific Styles */
+        body {
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .viewer-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-body);
+        }
+
+        .device-stage {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .device-frame {
+            background: #111;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Removed opacity transition */
+            transform: scale(1);
+        }
+
+        .device-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            flex: 1;
+        }
+
+        /* Device Modes */
+        .device-frame[data-mode="desktop"] {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            /* Lighter shadow */
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            /* Almost invisible border */
+        }
+
+        [data-theme="dark"] .device-frame[data-mode="desktop"] {
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .device-frame[data-mode="mobile"] {
+            width: 375px;
+            height: 812px;
+            max-height: 90vh;
+            border-radius: 40px;
+            border: 12px solid #111;
+        }
+
+        .device-frame[data-mode="mobile"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #111;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .device-frame[data-mode="tablet"] {
+            width: 768px;
+            height: 1024px;
+            max-height: 90vh;
+            border-radius: 24px;
+            border: 12px solid #111;
+        }
+
+        /* Sidebar */
+        .meta-sidebar {
+            width: 400px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            padding: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .meta-sidebar.closed {
+            transform: translateX(100%);
+            width: 0;
+            border: none;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-header);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            margin: 25px 0 10px 0;
+            font-weight: 700;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .meta-row {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .meta-key {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .meta-key::after {
+            content: ":";
+        }
+
+        .meta-val {
+            color: var(--text-primary);
+            font-weight: 400;
+            text-align: right;
+            margin-left: 10px;
+            word-break: break-word;
+        }
+
+        /* Links */
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-item {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .link-item:hover {
+            border-color: var(--accent-color);
+            transform: translateX(2px);
+        }
+
+        .link-num {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        [data-theme="dark"] .link-num {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .link-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .link-txt {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .link-url {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Pixels */
+        .pixel-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
+        .pixel-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #2980b9;
+        }
+
+        .pixel-row {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            cursor: help;
+        }
+
+        .pixel-row:last-child {
+            border-bottom: none;
+        }
+
+        .pixel-reason {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .pixel-url {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Footer */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        .sidebar-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px dotted currentColor;
+        }
+
+        /* Header Controls */
+        .viewer-header {
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            height: 36px;
+            padding: 0 12px;
+            min-width: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover,
+        .action-btn.active {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .device-toggles {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px;
+            border-radius: 10px;
+        }
+
+        .device-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .device-btn.active {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .device-toggles {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="dark"] .pixel-header {
+            color: #8be9fd;
+            background: rgba(139, 233, 253, 0.1);
+        }
+
+        [data-theme="dark"] .pixel-box {
+            border-color: rgba(139, 233, 253, 0.2);
+        }
+
+        /* Modal for Source */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            background: var(--bg-body);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .source-area {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: none;
+            background: var(--bg-body);
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Copy Buttons */
+        .btn-copy-small {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            opacity: 0.6;
+        }
+
+        .btn-copy-small:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--accent-color);
+            opacity: 1;
+        }
+
+        .copy-success {
+            color: #50fa7b !important;
+            /* Dracula Green */
+            background: rgba(80, 250, 123, 0.1) !important;
+            border-color: #50fa7b !important;
+        }
+
+        @media (max-width: 768px) {
+            .hide-mobile {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <div class="viewer-header">
         <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
 
-        <div class="device-toggles">
+        <div class="device-toggles hide-mobile">
             <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
             <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
             <button class="device-btn active" onclick="setMode('desktop')"
@@ -90,31 +550,55 @@
                 </div>
                 <div class="meta-row">
                     <span class="meta-key">Archived</span>
-                    <span class="meta-val">19/12/2025 à 22:15</span>
+                    <span class="meta-val">21/12/2025 à 14:03</span>
                 </div>
 
-                
+                <div class="section-title">Technical</div>
                 <div class="meta-row">
                     <span class="meta-key">Email Size</span>
-                    <span class="meta-val">0.04 MB</span>
+                    <span class="meta-val">37.6 KB</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Read Time</span>
+                    <span class="meta-val">2 min</span>
                 </div>
                 
-                <div class="meta-row">
-                    <span class="meta-key">CRM</span>
-                    <span class="meta-val">Unknown</span>
-                </div><div class="section-title">Technical</div>
-                
                 <div class="pixel-box">
-                    <div class="pixel-header">Tracking Detected (1)</div>
+                    <div class="pixel-header">Tracking Pixels (1)</div>
                     
-                    <div class="pixel-row" title="This 1x1 image or known tracking URL was blocked.">
-                        <div class="pixel-reason">1x1 Pixel Dimensions</div>
-<div class="pixel-desc">Standard tracking pixel (Blocked).</div>
+                    <div class="pixel-row">
+                        <div class="pixel-reason">Integration: OK</div>
                         <div class="pixel-url">https://ci3.googleusercontent.com/meips/ADKq_NZOqhIfilEEpjjc1z9nVGDnOaJm-4N0CaTuckNK6M42RK0CYDxbLT_e1r13W5u7lIKNx6WqJQjxS44IDp6dNAcVrSvRrSUGsrK90zQH8ljBh0x2ys7frrgWWgfBnMk=s0-d-e1-ft#https://trk.newsletter.lespetitsculottes.fr/o/01K6YY7BZMHFZR0EK14T1A2VWG</div>
                     </div>
                     
                 </div>
                 
+
+                <div class="section-title">Quality Audit</div>
+                <div class="meta-row">
+                    <span class="meta-key">Subject Length</span>
+                    <span class="meta-val" style="color: var(--accent-color)">
+                        Good
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Unsubscribe Link</span>
+                    <span class="meta-val" style="color: var(--accent-color)">
+                        Found
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Images without Alt</span>
+                    <span class="meta-val" style="color: var(--accent-color)">
+                        0
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Clipping Risk</span>
+                    <span class="meta-val" style="color: var(--accent-color)">
+                        Low
+                    </span>
+                </div>
 
                 <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>Links (14)</span>
@@ -124,186 +608,214 @@
                 </div>
                 <ul class="link-list">
                     
-                    <li class="link-item" onclick="highlightLink(1)">
-                        <div class="link-num">1</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9e9_b1cd0b6f', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                           </button>
-                        <div class="link-content">
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(1)">1</div>
+                        <div class="link-content" onclick="highlightLink(1)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9e9_b1cd0b6f</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(2)">
-                        <div class="link-num">2</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ea_4e9352bb', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9e9_b1cd0b6f', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(2)">2</div>
+                        <div class="link-content" onclick="highlightLink(2)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ea_4e9352bb</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(3)">
-                        <div class="link-num">3</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9eb_c7cf0817', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ea_4e9352bb', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(3)">3</div>
+                        <div class="link-content" onclick="highlightLink(3)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9eb_c7cf0817</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(4)">
-                        <div class="link-num">4</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ec_2081e4e0', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9eb_c7cf0817', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(4)">4</div>
+                        <div class="link-content" onclick="highlightLink(4)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ec_2081e4e0</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(5)">
-                        <div class="link-num">5</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ed_c280ee4b', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ec_2081e4e0', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(5)">5</div>
+                        <div class="link-content" onclick="highlightLink(5)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ed_c280ee4b</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(6)">
-                        <div class="link-num">6</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ee_18e31003', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ed_c280ee4b', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(6)">6</div>
+                        <div class="link-content" onclick="highlightLink(6)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ee_18e31003</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(7)">
-                        <div class="link-num">7</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ef_f09352c0', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ee_18e31003', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(7)">7</div>
+                        <div class="link-content" onclick="highlightLink(7)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ef_f09352c0</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(8)">
-                        <div class="link-num">8</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9eg_5324b784', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ef_f09352c0', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(8)">8</div>
+                        <div class="link-content" onclick="highlightLink(8)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9eg_5324b784</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(9)">
-                        <div class="link-num">9</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9eh_fb093e17', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9eg_5324b784', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(9)">9</div>
+                        <div class="link-content" onclick="highlightLink(9)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9eh_fb093e17</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(10)">
-                        <div class="link-num">10</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ei_637b428d', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9eh_fb093e17', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(10)">10</div>
+                        <div class="link-content" onclick="highlightLink(10)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ei_637b428d</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(11)">
-                        <div class="link-num">11</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ej_b88c89f1', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ei_637b428d', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(11)">11</div>
+                        <div class="link-content" onclick="highlightLink(11)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ej_b88c89f1</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(12)">
-                        <div class="link-num">12</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9ek_7665dc63', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ej_b88c89f1', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(12)">12</div>
+                        <div class="link-content" onclick="highlightLink(12)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://bitli.pro/2C9ek_7665dc63</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(13)">
-                        <div class="link-num">13</div><button class="copy-btn-icon" onclick="copyLink('mailto:serviceclient@lespetitsculottes.fr', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9ek_7665dc63', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(13)">13</div>
+                        <div class="link-content" onclick="highlightLink(13)">
                             <div class="link-txt">serviceclient@lespetitsculottes.fr</div>
                             <div class="link-url">mailto:serviceclient@lespetitsculottes.fr</div>
                         </div>
-                    </li>
-                    
-                    <li class="link-item" onclick="highlightLink(14)">
-                        <div class="link-num">14</div><button class="copy-btn-icon" onclick="copyLink('https://bitli.pro/2C9el_23ce0ca4', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                        <button class="btn-copy-small" onclick="copyToClipboard('mailto:serviceclient@lespetitsculottes.fr', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                           </button>
-                        <div class="link-content">
+                        </button>
+                    </li>
+                    
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(14)">14</div>
+                        <div class="link-content" onclick="highlightLink(14)">
                             <div class="link-txt">Me désinscrire</div>
                             <div class="link-url">https://bitli.pro/2C9el_23ce0ca4</div>
                         </div>
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://bitli.pro/2C9el_23ce0ca4', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </li>
                     
                 </ul>
@@ -321,11 +833,21 @@
         <div class="modal">
             <div class="modal-header">
                 <span>HTML Source</span>
-<button class="copy-source-btn" onclick="copySource()">Copy Code</button>
                 <button class="close-btn" onclick="closeSourceModal()">×</button>
             </div>
             <div class="modal-body">
                 <textarea id="sourceText" class="source-area" readonly></textarea>
+            </div>
+            <div class="modal-footer"
+                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="action-btn" onclick="copySource()">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy All</span>
+                </button>
+                <button class="action-btn" onclick="closeSourceModal()">Close</button>
             </div>
         </div>
     </div>
@@ -334,19 +856,93 @@
     <script>
         const content = "<div style=\"word-spacing:normal;background-color:#f7f7f7\">\n<div style=\"display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden\">\n   Promis, on peut tout vous expliquer !\u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u2007\u034f \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad \u00ad\n  </div>\n<div id=\"m_-3921671456612927411m_9032826391519382873m_6169747875807996524m_-6976462278115434802bodyTable\" style=\"background-color:#f7f7f7\">\n<div>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td>\n<div style=\"margin:0px auto;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center\">\n<div style=\"background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#ffffff;background-color:#ffffff;width:100%;border-radius:0px 0px 0px 0px\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center\">\n<div>\n<div style=\"display:table;table-layout:fixed;width:100%\">\n<div style=\"display:table-cell;vertical-align:top;width:100%\">\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\"><a data-index=\"1\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9e9_b1cd0b6f&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw0E2JVn3FG5CdXcvH4TrK0D\" href=\"https://bitli.pro/2C9e9_b1cd0b6f\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"> <img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_0.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"600\"/> </a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:30px;padding-right:20px;padding-bottom:30px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word\">\n<div style=\"font-family:Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#00625d\">\n<div style=\"text-align:center\">\n<span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\n<div>\n                              Alors. Vu comme \u00e7a, \u00e7a peut sembler \u00e9trange, c\u2019est vrai. Mais non, on ne lance pas de couches <span class=\"il\">pour</span> <span class=\"il\">chat</span>. Pas encore. Enfin\u2026 On ne s\u2019\u00e9tait pas vraiment pos\u00e9 la question en fait.\u00a0\u00c7a marcherait, vous pensez ? Bon bref, revenons \u00e0 notre sujet. Les croquettes <span class=\"il\">pour</span> <span class=\"il\">chat</span> !\n                              </div>\n<div>\n<span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\u00a0</span></span></span></span></span></span></span>\n</div>\n<div>\n                              Chez Les Petits Culott\u00e9s, on a choisi de s\u2019associer \u00e0 Caats, une marque de croquettes premium <span class=\"il\">pour</span> chats avec des menus personnalis\u00e9s ET un syst\u00e8me d\u2019abonnement (comme nous).\n                              <br/>\n<br/>\n</div>\n<div>\n                              Pourquoi ? Parce que nous avons une volont\u00e9 commune : proposer des produits de qualit\u00e9, au juste prix, \u00e0 vos petits \u00eatres pr\u00e9f\u00e9r\u00e9s. Et on s\u2019est dit qu\u2019il fallait absolument qu\u2019on vous partage ce bon plan !\n                              </div></span></span></span></span></span></span></span>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td>\n<div style=\"margin:0px auto;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center\">\n<div style=\"background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#ffffff;background-color:#ffffff;width:100%;border-radius:0px 0px 0px 0px\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center\">\n<div>\n<div style=\"display:table;table-layout:fixed;width:100%\">\n<div style=\"display:table-cell;vertical-align:top;width:100%\">\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\"><a data-index=\"2\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ea_4e9352bb&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw1YtsFFguGHmeMA5x3X5x5z\" href=\"https://bitli.pro/2C9ea_4e9352bb\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_1.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"600\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:20px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\"><a data-index=\"3\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9eb_c7cf0817&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw1fBstBK6RQV7IsCiTuop2K\" href=\"https://bitli.pro/2C9eb_c7cf0817\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_2.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"600\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\"><a data-index=\"4\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ec_2081e4e0&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw1XNIa-FIRG996aym0fsZCN\" href=\"https://bitli.pro/2C9ec_2081e4e0\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"> <img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_3.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"600\"/> </a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:20px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\"><a data-index=\"5\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ed_c280ee4b&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw2ZgJbS1Hx9jQuFbPfmSAWF\" href=\"https://bitli.pro/2C9ed_c280ee4b\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"> <img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_4.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"600\"/> </a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word\">\n<div style=\"font-family:Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#00625d\"></div></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 200px 0px 200px;width:200px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td valign=\"top\"><a data-index=\"6\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ee_18e31003&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw2R9hAqCh5wn2giU_BltxPq\" href=\"https://bitli.pro/2C9ee_18e31003\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_5.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"200\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 200px 0px 200px;width:200px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td valign=\"top\"><a data-index=\"7\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ef_f09352c0&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw2XRsxeqL_ETRuZRHX_lF9W\" href=\"https://bitli.pro/2C9ef_f09352c0\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_6.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"200\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td>\n<div style=\"margin:0px auto;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center\">\n<div style=\"background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#ffffff;background-color:#ffffff;width:100%;border-radius:0px 0px 0px 0px\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center\">\n<div>\n<div style=\"display:table;table-layout:fixed;width:100%\">\n<div style=\"display:table-cell;vertical-align:top;width:100%\">\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:30px;padding-right:20px;padding-bottom:30px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word\">\n<div style=\"font-family:Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#00625d\">\n<div style=\"text-align:center\">\n<span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\n<div>\n                              Et parce que comme nous, Caats fonctionne en abonnement, vous recevez ses croquettes de qualit\u00e9 chez vous, sans bouger de votre canap\u00e9 !\n                              </div>\n<div>\n<span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\u00a0</span></span></span></span></span></span></span>\n</div>\n<div>\n                              Votre <span class=\"il\">chat</span> va enfin arr\u00eater de vous fixer avec ce regard de reproche \u00e0 6h du matin. Enfin pas s\u00fbr. On ne promet rien.\n                              </div>\n<div>\n<span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><span style=\"background-color:rgb(255,255,255);color:rgb(26,26,26);font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\u00a0</span></span></span></span></span></span></span>\n</div>\n<div>\n                              Allez, filez g\u00e2ter ce petit dictateur\n                              <br/>\n                              \u00e0 fourrure.\u00a0\n                              </div>\n<div>\n<br/>\n                              \u2028L'\u00e9quipe des Petits Culott\u00e9s\n                              </div></span></span></span></span></span></span></span>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td>\n<div style=\"margin:0px auto;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center\">\n<div style=\"background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#ffffff;background-color:#ffffff;width:100%;border-radius:0px 0px 0px 0px\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center\">\n<div>\n<div style=\"display:table;table-layout:fixed;width:100%\">\n<div style=\"display:table-cell;vertical-align:middle;width:100%\">\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word\">\n<div style=\"font-family:Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#00625d\"></div></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 200px 0px 200px;width:200px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td valign=\"top\"><a data-index=\"8\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9eg_5324b784&amp;source=gmail&amp;ust=1764076840645000&amp;usg=AOvVaw3UNdcOqZtp3ZBcOGZTuA3m\" href=\"https://bitli.pro/2C9eg_5324b784\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_7.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"200\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 200px 0px 200px;width:200px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td valign=\"top\"><a data-index=\"9\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9eh_fb093e17&amp;source=gmail&amp;ust=1764076840646000&amp;usg=AOvVaw0SPSz07ouOeDYUD0hD91Ka\" href=\"https://bitli.pro/2C9eh_fb093e17\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_8.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"200\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td>\n<div style=\"margin:0px auto;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center\">\n<div style=\"background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#ffffff;background-color:#ffffff;width:100%;border-radius:0px 0px 0px 0px\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center\">\n<div>\n<div style=\"display:table;table-layout:fixed;width:100%\">\n<div style=\"display:table-cell;vertical-align:top;width:100%\">\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\"><a data-index=\"10\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ei_637b428d&amp;source=gmail&amp;ust=1764076840646000&amp;usg=AOvVaw2uhS7Lmw_vtyeTVwCfnwCM\" href=\"https://bitli.pro/2C9ei_637b428d\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"> <img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_9.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"600\"/> </a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" style=\"font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word\">\n<div style=\"font-family:Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#00625d\"></div></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 200px 0px 200px;width:200px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td valign=\"top\"><a data-index=\"11\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ej_b88c89f1&amp;source=gmail&amp;ust=1764076840646000&amp;usg=AOvVaw1-XivETDLvHFoaPO9c-laZ\" href=\"https://bitli.pro/2C9ej_b88c89f1\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_10.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"200\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"display:none;font-size:0;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td style=\"border:0;padding:0px 200px 0px 200px;width:200px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td valign=\"top\"><a data-index=\"12\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9ek_7665dc63&amp;source=gmail&amp;ust=1764076840646000&amp;usg=AOvVaw0N1nCL0ocKkFa87km29v5d\" href=\"https://bitli.pro/2C9ek_7665dc63\" style=\"color:#000;text-decoration:underline;display:block\" target=\"_blank\"><img alt=\"Chargement en cours...\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_11.png\" style=\"display:block;outline:none;text-decoration:none;height:auto;font-size:13px;width:100%\" title=\"Chargement en cours...\" width=\"200\"/></a></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n<div style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:20px;padding-right:0px;padding-bottom:20px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;padding:0px;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px;word-break:break-word\">\n<div style=\"font-family:Arial;font-size:12px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:center;color:#727272\">\n<div>\n<span style=\"font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:14px\">En application de la r\u00e9glementation applicable, vous disposez d\u2019un droit d\u2019acc\u00e8s, d\u2019interrogation, de limitation, de portabilit\u00e9, d\u2019effacement, de modification et de rectification des informations vous concernant. Vous pouvez \u00e9galement vous opposer \u00e0 tout traitement de vos donn\u00e9es personnelles. Ces droits doivent \u00eatre exerc\u00e9s en adressant un courrier au Responsable de traitement de LES PETITS CULOTTES (<a data-index=\"13\" href=\"mailto:serviceclient@lespetitsculottes.fr\" target=\"_blank\">serviceclient@<wbr/>lespetitsculottes.fr</a>). Vous pouvez \u00e9galement vous d\u00e9sabonner en utilisant la fonction \u00ab Se d\u00e9sabonner \u00bb pr\u00e9vue dans ce courriel.</span>\n</div>\n<div>\n<span style=\"font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:14px\">\u00a0</span>\n</div>\n<div>\n<span style=\"font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:14px\">Vous ne souhaitez plus recevoir nos emails culott\u00e9s ?</span>\n<br/><span style=\"font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:14px\"><span style=\"font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;color:rgb(0,98,93)\"><a data-index=\"14\" data-saferedirecturl=\"https://www.google.com/url?q=https://bitli.pro/2C9el_23ce0ca4&amp;source=gmail&amp;ust=1764076840646000&amp;usg=AOvVaw27fxAqCX5ohyIKWZOfF_EI\" href=\"https://bitli.pro/2C9el_23ce0ca4\" style=\"color:#000000;font-weight:normal;text-decoration:underline\" target=\"_blank\">Me d\u00e9sinscrire</a></span></span>\n</div>\n<div>\n<br/><span style=\"font-family:Raleway,Arial,'Helvetica Neue',Helvetica,sans-serif;font-weight:400;font-style:normal;font-size:14px\">Les Petits Culott\u00e9s\u00a0</span>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div> <img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/>\n</div>";
         const frame = document.getElementById('emailFrame');
-        
+
         function init() {
-            const frame = document.getElementById('emailFrame');
-            if (!frame) return;
             const doc = frame.contentDocument;
             doc.open();
             doc.write(content);
             doc.close();
 
-            // Apply theme (which calls setupFrame)
+            // Apply base styles
+            applyFrameStyles(doc);
+
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
-            applyTheme(theme);
+            if (theme === 'dark') applyTheme('dark');
         }
+
+        function applyFrameStyles(doc) {
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+                /* Universal Scrollbar Hide */
+                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
+             `;
+            doc.head.appendChild(style);
+        }
+
+        function setMode(mode) {
+            const frameEl = document.getElementById('deviceFrame');
+
+            // Smooth transition exit (Scale only, no opacity)
+            frameEl.style.transform = 'scale(0.98)';
+
+            setTimeout(() => {
+                frameEl.setAttribute('data-mode', mode);
+
+                const doc = frame.contentDocument;
+                if (doc) {
+                    if (mode !== 'desktop') {
+                        let mobileStyle = doc.getElementById('mobile-fix');
+                        if (!mobileStyle) {
+                            mobileStyle = doc.createElement('style');
+                            mobileStyle.id = 'mobile-fix';
+                            mobileStyle.innerHTML = `
+                                html, body { 
+                                    width: 100% !important; 
+                                    margin:0 !important; padding:0 !important;
+                                }
+                                table { width: 100% !important; max-width: 100% !important; }
+                                img { max-width: 100% !important; height: auto !important; }
+                             `;
+                            doc.head.appendChild(mobileStyle);
+                        }
+
+                        if (mode === 'mobile') {
+                            if (doc.body) doc.body.style.paddingTop = '40px';
+                        } else {
+                            if (doc.body) doc.body.style.paddingTop = '0px';
+                        }
+                    } else {
+                        const s = doc.getElementById('mobile-fix');
+                        if (s) s.remove();
+                        if (doc.body) doc.body.style.paddingTop = '0';
+                    }
+                }
+
+                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
+                if (targetBtn) targetBtn.classList.add('active');
+
+                // Smooth transition enter
+                frameEl.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('closed');
+            event.currentTarget.classList.toggle('active');
+        }
+
+        function openSourceModal() {
+            document.getElementById('sourceText').value = content;
+            document.getElementById('sourceModal').style.display = 'flex';
+        }
+
+        function closeSourceModal() {
+            document.getElementById('sourceModal').style.display = 'none';
+        }
+
         init();
     </script>
 </body>

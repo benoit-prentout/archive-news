@@ -11,14 +11,474 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <!-- Inline Viewer Styles Moved to style.css -->
+    <style>
+        /* Viewer Specific Styles */
+        body {
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .viewer-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-body);
+        }
+
+        .device-stage {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .device-frame {
+            background: #111;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Removed opacity transition */
+            transform: scale(1);
+        }
+
+        .device-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            flex: 1;
+        }
+
+        /* Device Modes */
+        .device-frame[data-mode="desktop"] {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            /* Lighter shadow */
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            /* Almost invisible border */
+        }
+
+        [data-theme="dark"] .device-frame[data-mode="desktop"] {
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .device-frame[data-mode="mobile"] {
+            width: 375px;
+            height: 812px;
+            max-height: 90vh;
+            border-radius: 40px;
+            border: 12px solid #111;
+        }
+
+        .device-frame[data-mode="mobile"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #111;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .device-frame[data-mode="tablet"] {
+            width: 768px;
+            height: 1024px;
+            max-height: 90vh;
+            border-radius: 24px;
+            border: 12px solid #111;
+        }
+
+        /* Sidebar */
+        .meta-sidebar {
+            width: 400px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            padding: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .meta-sidebar.closed {
+            transform: translateX(100%);
+            width: 0;
+            border: none;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-header);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            margin: 25px 0 10px 0;
+            font-weight: 700;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .meta-row {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .meta-key {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .meta-key::after {
+            content: ":";
+        }
+
+        .meta-val {
+            color: var(--text-primary);
+            font-weight: 400;
+            text-align: right;
+            margin-left: 10px;
+            word-break: break-word;
+        }
+
+        /* Links */
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-item {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .link-item:hover {
+            border-color: var(--accent-color);
+            transform: translateX(2px);
+        }
+
+        .link-num {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        [data-theme="dark"] .link-num {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .link-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .link-txt {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .link-url {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Pixels */
+        .pixel-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
+        .pixel-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #2980b9;
+        }
+
+        .pixel-row {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            cursor: help;
+        }
+
+        .pixel-row:last-child {
+            border-bottom: none;
+        }
+
+        .pixel-reason {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .pixel-url {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Footer */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        .sidebar-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px dotted currentColor;
+        }
+
+        /* Header Controls */
+        .viewer-header {
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            height: 36px;
+            padding: 0 12px;
+            min-width: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover,
+        .action-btn.active {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .device-toggles {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px;
+            border-radius: 10px;
+        }
+
+        .device-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .device-btn.active {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .device-toggles {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="dark"] .pixel-header {
+            color: #8be9fd;
+            background: rgba(139, 233, 253, 0.1);
+        }
+
+        [data-theme="dark"] .pixel-box {
+            border-color: rgba(139, 233, 253, 0.2);
+        }
+
+        /* Modal for Source */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            background: var(--bg-body);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .source-area {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: none;
+            background: var(--bg-body);
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Copy Buttons */
+        .btn-copy-small {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            opacity: 0.6;
+        }
+
+        .btn-copy-small:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--accent-color);
+            opacity: 1;
+        }
+
+        .copy-success {
+            color: #50fa7b !important;
+            /* Dracula Green */
+            background: rgba(80, 250, 123, 0.1) !important;
+            border-color: #50fa7b !important;
+        }
+
+        @media (max-width: 768px) {
+            .hide-mobile {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <div class="viewer-header">
         <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
 
-        <div class="device-toggles">
+        <div class="device-toggles hide-mobile">
             <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
             <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
             <button class="device-btn active" onclick="setMode('desktop')"
@@ -90,31 +550,55 @@
                 </div>
                 <div class="meta-row">
                     <span class="meta-key">Archived</span>
-                    <span class="meta-val">19/12/2025 à 22:14</span>
+                    <span class="meta-val">21/12/2025 à 14:03</span>
                 </div>
 
-                
+                <div class="section-title">Technical</div>
                 <div class="meta-row">
                     <span class="meta-key">Email Size</span>
-                    <span class="meta-val">0.02 MB</span>
+                    <span class="meta-val">18.5 KB</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Read Time</span>
+                    <span class="meta-val">1 min</span>
                 </div>
                 
-                <div class="meta-row">
-                    <span class="meta-key">CRM</span>
-                    <span class="meta-val">Unknown</span>
-                </div><div class="section-title">Technical</div>
-                
                 <div class="pixel-box">
-                    <div class="pixel-header">Tracking Detected (1)</div>
+                    <div class="pixel-header">Tracking Pixels (1)</div>
                     
-                    <div class="pixel-row" title="This 1x1 image or known tracking URL was blocked.">
-                        <div class="pixel-reason">Known Tracking Domain</div>
-                        <div class="pixel-desc">Blocked because the domain is on a known list of email trackers.</div>
+                    <div class="pixel-row">
+                        <div class="pixel-reason">Integration: OK</div>
                         <div class="pixel-url">https://api.getinside.media/v1/emails/track/69175371416ce</div>
                     </div>
                     
                 </div>
                 
+
+                <div class="section-title">Quality Audit</div>
+                <div class="meta-row">
+                    <span class="meta-key">Subject Length</span>
+                    <span class="meta-val" style="color: orange">
+                        Too Long
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Unsubscribe Link</span>
+                    <span class="meta-val" style="color: red">
+                        Missing
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Images without Alt</span>
+                    <span class="meta-val" style="color: orange">
+                        1
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Clipping Risk</span>
+                    <span class="meta-val" style="color: var(--accent-color)">
+                        Low
+                    </span>
+                </div>
 
                 <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>Links (4)</span>
@@ -124,56 +608,64 @@
                 </div>
                 <ul class="link-list">
                     
-                    <li class="link-item" onclick="highlightLink(1)">
-                        <div class="link-num">1</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/691753713e2df', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                           </button>
-                        <div class="link-content">
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(1)">1</div>
+                        <div class="link-content" onclick="highlightLink(1)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://gtinsi.de/691753713e2df</div>
                         </div>
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://gtinsi.de/691753713e2df', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </li>
                     
-                    <li class="link-item" onclick="highlightLink(2)">
-                        <div class="link-num">2</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/691753713e2df', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                           </button>
-                        <div class="link-content">
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(2)">2</div>
+                        <div class="link-content" onclick="highlightLink(2)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://gtinsi.de/691753713e2df</div>
                         </div>
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://gtinsi.de/691753713e2df', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </li>
                     
-                    <li class="link-item" onclick="highlightLink(3)">
-                        <div class="link-num">3</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/691753713e2df', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                           </button>
-                        <div class="link-content">
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(3)">3</div>
+                        <div class="link-content" onclick="highlightLink(3)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://gtinsi.de/691753713e2df</div>
                         </div>
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://gtinsi.de/691753713e2df', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </li>
                     
-                    <li class="link-item" onclick="highlightLink(4)">
-                        <div class="link-num">4</div><button class="copy-btn-icon" onclick="copyLink('https://gtinsi.de/691753713e2df', this)" title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                           </button>
-                        <div class="link-content">
+                    <li class="link-item">
+                        <div class="link-num" onclick="highlightLink(4)">4</div>
+                        <div class="link-content" onclick="highlightLink(4)">
                             <div class="link-txt"></div>
                             <div class="link-url">https://gtinsi.de/691753713e2df</div>
                         </div>
+                        <button class="btn-copy-small" onclick="copyToClipboard('https://gtinsi.de/691753713e2df', this)"
+                            title="Copy Link">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
                     </li>
                     
                 </ul>
@@ -191,11 +683,21 @@
         <div class="modal">
             <div class="modal-header">
                 <span>HTML Source</span>
-<button class="copy-source-btn" onclick="copySource()">Copy Code</button>
                 <button class="close-btn" onclick="closeSourceModal()">×</button>
             </div>
             <div class="modal-body">
                 <textarea id="sourceText" class="source-area" readonly></textarea>
+            </div>
+            <div class="modal-footer"
+                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="action-btn" onclick="copySource()">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy All</span>
+                </button>
+                <button class="action-btn" onclick="closeSourceModal()">Close</button>
             </div>
         </div>
     </div>
@@ -204,19 +706,93 @@
     <script>
         const content = "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><head>\n<title></title>\n<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\"/>\n<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"/>\n<meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"/>\n<style type=\"text/css\">#outlook a { padding:0; }\r\n          body { margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; }\r\n          table, td { border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt; }\r\n          img { border:0;height:auto;line-height:100%; outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; }\r\n          p { display:block;margin:13px 0; }</style>\n<!--[if mso]>\r\n        <noscript>\r\n        <xml>\r\n        <o:OfficeDocumentSettings>\r\n          <o:AllowPNG/>\r\n          <o:PixelsPerInch>96</o:PixelsPerInch>\r\n        </o:OfficeDocumentSettings>\r\n        </xml>\r\n        </noscript>\r\n        <![endif]--><style type=\"text/css\">@media only screen and (min-width:480px) {\r\n        .mj-column-per-100 { width:100% !important; max-width: 100%; }\r\n.mj-column-px-600 { width:600px !important; max-width: 600px; }\r\n.mj-column-px-400 { width:400px !important; max-width: 400px; }\r\n.mj-column-px-239 { width:239px !important; max-width: 239px; }\r\n.mj-column-px-226 { width:226px !important; max-width: 226px; }\r\n.mj-column-per-15 { width:15% !important; max-width: 15%; }\r\n.mj-column-per-30 { width:30% !important; max-width: 30%; }\r\n.mj-column-per-50 { width:50% !important; max-width: 50%; }\r\n      }</style>\n<style media=\"screen and (min-width:480px)\">.moz-text-html .mj-column-per-100 { width:100% !important; max-width: 100%; }\r\n.moz-text-html .mj-column-px-600 { width:600px !important; max-width: 600px; }\r\n.moz-text-html .mj-column-px-400 { width:400px !important; max-width: 400px; }\r\n.moz-text-html .mj-column-px-239 { width:239px !important; max-width: 239px; }\r\n.moz-text-html .mj-column-px-226 { width:226px !important; max-width: 226px; }\r\n.moz-text-html .mj-column-per-15 { width:15% !important; max-width: 15%; }\r\n.moz-text-html .mj-column-per-30 { width:30% !important; max-width: 30%; }\r\n.moz-text-html .mj-column-per-50 { width:50% !important; max-width: 50%; }</style>\n<style type=\"text/css\">@media only screen and (max-width:480px) {\r\n      table.mj-full-width-mobile { width: 100% !important; }\r\n      td.mj-full-width-mobile { width: auto !important; }\r\n    }</style>\n<style type=\"text/css\">@media (max-width:499px) { .hidden-m { display: none; display: none\r\n      !important; } } @media (min-width:499px) { .hidden-d { display: none;\r\n      display: none !important; } } @media only screen and (min-width:480px) {\r\n      .desktop-border { border-right: 1px solid #DA324B; } }</style>\n</head>\n<body style=\"word-spacing:normal;background-color:#DA324B;\">\n<div style=\"display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif\">un geste solidaire qui compte pour nous \ud83d\ude4f</div>\n<div style=\"display: none; max-height: 0px; overflow: hidden\">\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u2007\u034f\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00ad\u00a0</div>\n<div style=\"background-color:#DA324B;\">\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:20px 0;text-align:center;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:middle;\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:257px;\"><a data-index=\"1\" href=\"https://gtinsi.de/691753713e2df\" target=\"_blank\"><img alt=\"Logo PETITS FRERES DES PAUVRES, Non \u00e0 l'isolement de nos a\u00een\u00e9s\" height=\"auto\" src=\"img_0.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"257\"/></a></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"background:white;background-color:white;margin:0px auto;border-radius:30px;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:white;background-color:white;width:100%;border-radius:30px;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<div class=\"mj-column-px-600 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align:top;padding:0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:0px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:600px;\"><a data-index=\"2\" href=\"https://gtinsi.de/691753713e2df\" target=\"_blank\"><img alt=\"Offrez un colis de No\u00ebl pour un a\u00een\u00e9 isol\u00e9 et illuminez son r\u00e9veillon ! J'offre un colis\" height=\"auto\" src=\"img_1.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"600\"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:20px 0;text-align:center;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><div style=\"font-family:Arial;font-size:18px;line-height:24px;text-align:left;color:#393939;\">Ch\u00e8re Madame, Cher Monsieur,<br/><br/>Aujourd\u2019hui en France, <b>plus de 2 millions de personnes \u00e2g\u00e9es sont isol\u00e9es au quotidien</b>, pire encore, 750 000 ne voient jamais personne*.<br/><br/>Comme tout au long de l\u2019ann\u00e9e, les b\u00e9n\u00e9voles des Petits Fr\u00e8res des Pauvres s\u2019engagent partout en France pour faire oublier la solitude \u00e0 nos a\u00een\u00e9s.</div></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div class=\"hidden-m\">\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<div class=\"mj-column-px-600 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:550px;\"><img alt=\"Et si vous les aidiez, \u00e0 l\u2019occasion de cette fin d\u2019ann\u00e9e ? Vous pouvez par exemple faire un don pour financer les colis gourmands que nos b\u00e9n\u00e9voles iront offrir aux a\u00een\u00e9s isol\u00e9s qui ne peuvent plus se d\u00e9placer.\" height=\"auto\" src=\"img_2.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"550\"/></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n</div>\n<div class=\"hidden-d\">\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;text-align:center;\">\n<div class=\"mj-column-px-400 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:350px;\"><img alt=\"Et si vous les aidiez, \u00e0 l\u2019occasion de cette fin d\u2019ann\u00e9e ? Vous pouvez par exemple faire un don pour financer les colis gourmands que nos b\u00e9n\u00e9voles iront offrir aux a\u00een\u00e9s isol\u00e9s qui ne peuvent plus se d\u00e9placer.\" height=\"auto\" src=\"img_3.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"350\"/></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n</div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:20px 0;text-align:center;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><div style=\"font-family:Arial;font-size:18px;line-height:24px;text-align:left;color:#393939;\">Tous les ans pour No\u00ebl, nos \u00e9quipes pr\u00e9parent de belles compositions : entr\u00e9e, plat, dessert, petite douceur, boisson, cadeau\u2026 de quoi illuminer le r\u00e9veillon d\u2019une personne \u00e2g\u00e9e qui est seule\u00a0!</div></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<div class=\"mj-column-px-239 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align:top;padding:0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:0px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:239px;\"><a data-index=\"3\" href=\"https://gtinsi.de/691753713e2df\" target=\"_blank\"><img alt=\"J'offre un colis\" height=\"auto\" src=\"img_4.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"239\"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:20px 0;text-align:center;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><div style=\"font-family:Arial;font-size:18px;line-height:24px;text-align:left;color:#393939;\">Votre g\u00e9n\u00e9rosit\u00e9 transformera la solitude d\u2019un a\u00een\u00e9 isol\u00e9 en un moment de joie r\u00e9confortant qui donne du baume au c\u0153ur\u00a0!</div></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<div class=\"mj-column-px-226 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align:top;padding:0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:0px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:226px;\"><a data-index=\"4\" href=\"https://gtinsi.de/691753713e2df\" target=\"_blank\"><img alt=\"Je fais un don\" height=\"auto\" src=\"img_5.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"226\"/></a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:20px 0;text-align:center;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><div style=\"font-family:Arial;font-size:18px;font-weight:bold;line-height:24px;text-align:left;color:#393939;\">En cette p\u00e9riode de f\u00eates, je vous remercie d\u2019unir vos forces aux n\u00f4tres pour faire entrer de la douceur et de la joie au domicile d\u2019une ou de plusieurs personnes \u00e2g\u00e9es\u00a0!</div></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:left;\">\n<div class=\"mj-column-per-15 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align:middle;padding:0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody></tbody></table></td></tr></tbody></table></div>\n<div class=\"mj-column-per-30 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align:middle;padding:0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"center\" style=\"font-size:0px;padding:0px;word-break:break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:collapse;border-spacing:0px;\"><tbody><tr><td style=\"width:180px;\"><img alt=\"\" height=\"auto\" src=\"img_6.png\" style=\"border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;\" width=\"180\"/></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></div>\n<div class=\"mj-column-per-50 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align:middle;padding:0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><div style=\"font-family:Arial;font-size:16px;line-height:20px;text-align:left;color:#571936;\">\n<b>Anne G\u00e9neau</b><br/>Pr\u00e9sidente<br/>Petits Fr\u00e8res des Pauvres</div></td></tr></tbody></table></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"margin:0px auto;max-width:600px;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%;\"><tbody><tr><td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center;\">\n<div class=\"mj-column-per-100 mj-outlook-group-fix\" style=\"font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align:top;\" width=\"100%\"><tbody><tr><td align=\"right\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\"><div style=\"font-family:Helvetica;font-size:12px;line-height:14px;text-align:right;color:#ffffff;\"><i>*\u00c9tude CSA Research/Petits Fr\u00e8res des Pauvres, 2025</i></div></td></tr></tbody></table></div>\n</td></tr></tbody></table></div>\n<div style=\"height:60px;line-height:60px;\">\u200a</div>\n</div>\n<img alt=\"\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/>\n</body></html>\n";
         const frame = document.getElementById('emailFrame');
-        
+
         function init() {
-            const frame = document.getElementById('emailFrame');
-            if (!frame) return;
             const doc = frame.contentDocument;
             doc.open();
             doc.write(content);
             doc.close();
 
-            // Apply theme (which calls setupFrame)
+            // Apply base styles
+            applyFrameStyles(doc);
+
+            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
-            applyTheme(theme);
+            if (theme === 'dark') applyTheme('dark');
         }
+
+        function applyFrameStyles(doc) {
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+                /* Universal Scrollbar Hide */
+                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
+             `;
+            doc.head.appendChild(style);
+        }
+
+        function setMode(mode) {
+            const frameEl = document.getElementById('deviceFrame');
+
+            // Smooth transition exit (Scale only, no opacity)
+            frameEl.style.transform = 'scale(0.98)';
+
+            setTimeout(() => {
+                frameEl.setAttribute('data-mode', mode);
+
+                const doc = frame.contentDocument;
+                if (doc) {
+                    if (mode !== 'desktop') {
+                        let mobileStyle = doc.getElementById('mobile-fix');
+                        if (!mobileStyle) {
+                            mobileStyle = doc.createElement('style');
+                            mobileStyle.id = 'mobile-fix';
+                            mobileStyle.innerHTML = `
+                                html, body { 
+                                    width: 100% !important; 
+                                    margin:0 !important; padding:0 !important;
+                                }
+                                table { width: 100% !important; max-width: 100% !important; }
+                                img { max-width: 100% !important; height: auto !important; }
+                             `;
+                            doc.head.appendChild(mobileStyle);
+                        }
+
+                        if (mode === 'mobile') {
+                            if (doc.body) doc.body.style.paddingTop = '40px';
+                        } else {
+                            if (doc.body) doc.body.style.paddingTop = '0px';
+                        }
+                    } else {
+                        const s = doc.getElementById('mobile-fix');
+                        if (s) s.remove();
+                        if (doc.body) doc.body.style.paddingTop = '0';
+                    }
+                }
+
+                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
+                if (targetBtn) targetBtn.classList.add('active');
+
+                // Smooth transition enter
+                frameEl.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('closed');
+            event.currentTarget.classList.toggle('active');
+        }
+
+        function openSourceModal() {
+            document.getElementById('sourceText').value = content;
+            document.getElementById('sourceModal').style.display = 'flex';
+        }
+
+        function closeSourceModal() {
+            document.getElementById('sourceModal').style.display = 'none';
+        }
+
         init();
     </script>
 </body>

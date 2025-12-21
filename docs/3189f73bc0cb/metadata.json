@@ -4,7 +4,14 @@
     "date_rec": "30/11/2025 à 06:00",
     "date_iso": "2025-11-30T06:00:36+00:00",
     "sender": "\"CANIGOURMAND\" <contact@canigourmand.com>",
-    "date_arch": "19/12/2025 à 22:14",
+    "date_arch": "21/12/2025 à 14:03",
     "preheader": "Dernière chance avant la fin des promos ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...",
-    "reading_time": "2 min"
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Good",
+        "unsubscribe_found": false,
+        "link_count": 29,
+        "images_no_alt": 3
+    }
 }
