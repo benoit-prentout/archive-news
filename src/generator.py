@@ -9,7 +9,7 @@ TEMPLATE_DIR = os.path.join(os.getcwd(), 'templates')
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
 env.globals.update(format_date=lambda d: d) # Placeholder, can process date filter if needed
 
-def generate_viewer(metadata, html_content, links, output_path, lang='fr', detected_pixels=[]):
+def generate_viewer(metadata, html_content, links, output_path, lang='fr', detected_pixels=[], audit={}):
     """
     Generates the viewer HTML using Jinja2 template.
     """
@@ -32,7 +32,8 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr', detec
         safe_html=safe_html_json,
         email_size=email_size,
         lang=lang,
-        detected_pixels=detected_pixels
+        detected_pixels=detected_pixels,
+        audit=metadata.get('audit', {})
     )
     
     with open(output_path, 'w', encoding='utf-8') as f:

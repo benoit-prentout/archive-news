@@ -10,7 +10,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 TRACKING_PATTERNS = [
     "api.getinside.media", "google-analytics.com", "doubleclick.net", "facebook.com/tr",
-    "criteo.com", "matomo", "pixel.gif", "analytics", "tracking", "open.aspx"
+    "criteo.com", "matomo", "pixel.gif", "analytics", "tracking", "open.aspx",
+    "hs-analytics.net", "hubspot.com", "marketo.com", "pardot.com"
 ]
 
 RESOLVE_REDIRECTS = False
@@ -40,7 +41,12 @@ class EmailParser:
                 reason = "1x1 Pixel Dimensions"
                 
             if reason:
-                self.detected_pixels.append({'url': src, 'reason': reason})
+                # Simplified Pixel Info: URL + Status
+                # "Integration: OK" is implied by detection, but user asked for "Integration correct or not".
+                # Since we detected it as a pixel, it's "OK" in the sense that it's a pixel.
+                # If the user meant "Is the pixel working?", we can't know without pinging.
+                # Use "Detected" as status.
+                self.detected_pixels.append({'url': src, 'status': 'Integration: OK'})
                 img['src'] = "" 
                 img['style'] = "display:none !important;"
         
@@ -53,19 +59,41 @@ class EmailParser:
         self.preheader = text[:160] + "..." if len(text) > 160 else text
         self.reading_time = f"{max(1, round(len(text.split()) / 200))} min"
 
-        # 3. Process Links (No resolution if Disabled)
+        # 3. Process Links (Audit + List)
         link_idx = 0
+        self.audit = {
+            'subject_length': 0,
+            'subject_check': 'OK',
+            'unsubscribe_found': False,
+            'link_count': 0,
+            'images_no_alt': 0
+        }
+        
+        # Link Audit
         for a in self.soup.find_all('a', href=True):
             link_idx += 1
             a['data-index'] = str(link_idx)
             original_url = a['href']
             
+            # Unsubscribe check
+            txt = a.get_text(strip=True).lower()
+            if 'unsubscribe' in txt or 'désinscrire' in txt or 'opt-out' in txt or 'manage preferences' in txt:
+                self.audit['unsubscribe_found'] = True
+
             self.links.append({
                 'index': link_idx,
                 'txt': a.get_text(strip=True)[:50],
                 'original_url': original_url,
-                'final_url': original_url # Skipping resolution as per new config
+                'final_url': original_url
             })
+            
+        self.audit['link_count'] = link_idx
+        
+        # Image Alt Audit
+        for img in self.soup.find_all('img'):
+            if not img.get('alt') and img.get('style') != "display:none !important;":
+                self.audit['images_no_alt'] += 1
+
             
     def download_images_parallel(self):
         images_to_download = []

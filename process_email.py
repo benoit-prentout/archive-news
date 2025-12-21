@@ -58,15 +58,30 @@ def process_emails():
             
             # Extract HTML
             html_payload = None
+            text_payload = None
+            
             if msg.is_multipart():
                 for part in msg.walk():
-                    if part.get_content_type() == "text/html":
+                    ctype = part.get_content_type()
+                    if ctype == "text/html":
                         html_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='ignore')
-                        break
+                    elif ctype == "text/plain":
+                         text_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='ignore')
             else:
-                html_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='ignore')
+                ctype = msg.get_content_type()
+                if ctype == "text/html":
+                    html_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='ignore')
+                elif ctype == "text/plain":
+                    text_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='ignore')
+            
+            # Fallback to text/plain if no HTML
+            if not html_payload and text_payload:
+                print(f"Warning: {f_id} has no HTML. Converting text/plain.")
+                html_payload = f"<html><body><pre style='white-space: pre-wrap; font-family: monospace;'>{html.escape(text_payload)}</pre></body></html>"
                 
-            if not html_payload: continue
+            if not html_payload: 
+                print(f"Skipping {f_id}: No content found.")
+                continue
 
             # PARSE
             parser = EmailParser(html_payload, folder_path)
@@ -82,10 +97,10 @@ def process_emails():
                     date_iso = dt.isoformat()
                 except:
                     date_rec = date_str
-                    date_iso = datetime.datetime.now().isoformat()
+                    date_iso = datetime.now().isoformat()
             else:
-                date_rec = datetime.datetime.now().strftime('%d/%m/%Y à %H:%M')
-                date_iso = datetime.datetime.now().isoformat()
+                date_rec = datetime.now().strftime('%d/%m/%Y à %H:%M')
+                date_iso = datetime.now().isoformat()
             
             # Metadata structure
             metadata = {
@@ -94,10 +109,17 @@ def process_emails():
                 'date_rec': date_rec,
                 'date_iso': date_iso,
                 'sender': msg['From'],
-                'date_arch': datetime.datetime.now().strftime('%d/%m/%Y à %H:%M'),
+                'date_arch': datetime.now().strftime('%d/%m/%Y à %H:%M'),
                 'preheader': parser.preheader,
-                'reading_time': parser.reading_time
+                'reading_time': parser.reading_time,
+                'audit': parser.audit
             }
+            
+            # Subject Length Audit
+            subj_len = len(metadata['subject'])
+            if subj_len < 10: metadata['audit']['subject_check'] = "Too Short"
+            elif subj_len > 60: metadata['audit']['subject_check'] = "Too Long"
+            else: metadata['audit']['subject_check'] = "Good"
             
             # Save metadata for index
             with open(meta_path, 'w', encoding='utf-8') as f:

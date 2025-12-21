@@ -8,214 +8,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('keyup', filterList);
-    }
-
-    // Auto-detect Mobile Device to Simplify UI
-    if (window.innerWidth < 768) {
-        // Hide device toggles on actual mobile devices, as they shouldn't simulate other devices
-        const toggles = document.querySelector('.device-toggles');
-        if (toggles) toggles.style.display = 'none';
-
-        // Force mobile mode display logic without the simulator frame constraints
-        // We might want to ensure the frame takes full width/height naturally
-        const frame = document.getElementById('deviceFrame');
-        if (frame) {
-            frame.style.width = '100%';
-            frame.style.height = '100%';
-            frame.style.border = 'none';
-            frame.style.boxShadow = 'none';
-        }
+        searchInput.addEventListener('input', filterList);
     }
 });
-
-/* View Mode Logic */
-function setMode(mode) {
-    const frameEl = document.getElementById('deviceFrame');
-    if (!frameEl) return;
-
-    // Simplified Transition: The CSS transition handles width/max-width smoothly.
-    // We just ensure the frame is ready for the switch.
-    frameEl.style.maxWidth = ''; // Let CSS take over
-    frameEl.setAttribute('data-mode', mode);
-
-    const doc = frameEl.querySelector('iframe')?.contentDocument;
-    if (doc) {
-        // Mobile Fixes
-        let mobileStyle = doc.getElementById('mobile-fix');
-        if (mode !== 'desktop') {
-            if (!mobileStyle) {
-                mobileStyle = doc.createElement('style');
-                mobileStyle.id = 'mobile-fix';
-                mobileStyle.innerHTML = `
-                    html, body { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; }
-                    table, img, .mj-column-per-100 { width: 100% !important; max-width: 100% !important; }
-                    img { height: auto !important; }
-                `;
-                doc.head.appendChild(mobileStyle);
-            }
-            if (mode === 'mobile') {
-                if (doc.body) {
-                    doc.body.style.padding = '60px 15px 30px 15px'; // Increased notch safe area
-                }
-                // Hide Scrollbar
-                let sbStyle = doc.getElementById('sb-hide');
-                if (!sbStyle) {
-                    sbStyle = doc.createElement('style');
-                    sbStyle.id = 'sb-hide';
-                    sbStyle.innerHTML = `::-webkit-scrollbar { display: none; } body { -ms-overflow-style: none; scrollbar-width: none; }`;
-                    doc.head.appendChild(sbStyle);
-                }
-            } else {
-                if (doc.body) doc.body.style.padding = '0';
-            }
-        } else {
-            if (mobileStyle) mobileStyle.remove();
-            const sb = doc.getElementById('sb-hide');
-            if (sb) sb.remove();
-            if (doc.body) doc.body.style.padding = '0';
-        }
-    }
-
-    // Update Buttons
-    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-    const btn = document.querySelector(`.device-btn[onclick="setMode('${mode}')"]`);
-    if (btn) btn.classList.add('active');
-
-    // Re-apply frame basics when switcher happens to ensure consistency
-    setupFrame(doc);
-}
-
-/* Helper to setup iframe defaults globally */
-function setupFrame(doc) {
-    if (!doc) return;
-
-    let baseStyle = doc.getElementById('base-frame-style');
-    if (!baseStyle) {
-        baseStyle = doc.createElement('style');
-        baseStyle.id = 'base-frame-style';
-        doc.head.appendChild(baseStyle);
-    }
-    baseStyle.innerHTML = `
-        html, body { 
-            margin: 0 !important; 
-            padding: 0; 
-            overflow-x: hidden; 
-            -webkit-font-smoothing: antialiased;
-        }
-        /* Universal Scrollbar Hide INSIDE Iframe */
-        ::-webkit-scrollbar { display: none !important; width: 0 !important; }
-        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
-    `;
-}
-
-/* Copy Utilities */
-function copyLink(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-        const original = btn.innerHTML;
-        btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        btn.style.color = 'var(--accent-color)';
-        setTimeout(() => {
-            btn.innerHTML = original;
-            btn.style.color = '';
-        }, 1500);
-    });
-}
-
-function copySource() {
-    const text = document.getElementById('sourceText').value;
-    navigator.clipboard.writeText(text).then(() => {
-        const btn = document.querySelector('.copy-source-btn');
-        const original = btn.innerText;
-        btn.innerText = "Copied!";
-        setTimeout(() => btn.innerText = original, 2000);
-    });
-}
-
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('closed');
-    const btn = document.querySelector('.btn-icon[title="Toggle Sidebar"]'); // Ensure we target correct btn if needed
-    if (event && event.currentTarget) event.currentTarget.classList.toggle('active');
-}
-
-function openSourceModal() {
-    document.getElementById('sourceText').value = content;
-    document.getElementById('sourceModal').style.display = 'flex';
-}
-
-function closeSourceModal() {
-    document.getElementById('sourceModal').style.display = 'none';
-}
 
 function applyTheme(theme) {
     document.body.setAttribute('data-theme', theme);
     updateThemeIcon(theme);
 
+    // Update Iframe if exists
     const frame = document.getElementById('emailFrame');
     if (frame) {
         const doc = frame.contentDocument;
         if (doc) {
-            setupFrame(doc);
             const styleId = 'dm-filter';
             let oldStyle = doc.getElementById(styleId);
             if (oldStyle) oldStyle.remove();
 
             if (theme === 'dark') {
-                // FIXED DARK MODE: Smart Inversion
-                // Instead of simple filter: invert(1), we maintain hues and protect images.
-                
-                // 1. Force white background on containers so inversion works predictably
-                if (doc.body) {
-                    const elementsToFix = doc.querySelectorAll('body, table, .es-wrapper-color, .mj-body, div, center, td');
-                    elementsToFix.forEach(el => {
-                        el.style.backgroundColor = '#ffffff';
-                        el.style.color = '#000000';
-                    });
-                }
-
                 const style = doc.createElement('style');
                 style.id = styleId;
+                // Smart Inversion
                 style.innerHTML = `
-                    html { 
-                        filter: invert(1) hue-rotate(180deg) !important; 
-                        background-color: #fff !important; 
-                    }
-                    /* Counter-invert images to restore original colors */
-                    img, video, iframe, [style*="background-image"], .no-invert { 
-                        filter: invert(1) hue-rotate(180deg) !important; 
-                    }
-                    
-                    /* Force transparency where possible to let bg show through */
-                    table, tr, td { background-color: transparent !important; }
-                    
-                    /* Text Visibility Enforcement */
-                    /* If text was originally white on dark, it becomes black on light (inverted). */
-                    /* But if it was black on white, it becomes white on black. */
-                    /* We forced bg to white, so it inverts to black. */
-                    /* So text must be black (inverts to white). */
-                    body { color: #000 !important; background-color: #fff !important; }
+                    html { filter: invert(1) hue-rotate(180deg); }
+                    img, video, iframe, [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
                 `;
                 doc.head.appendChild(style);
-            } else if (theme === 'light') {
-                // LIGHT MODE ENFORCEMENT
-                // Some emails have dark backgrounds hardcoded (e.g., #000 body).
-                // We must override this to ensure a clean light mode experience.
-                if (doc.body) {
-                    doc.body.style.backgroundColor = '#ffffff';
-                    // We target common wrappers that might trap dark colors
-                    doc.querySelectorAll('body, table, .es-wrapper-color, .mj-body, div, center').forEach(el => {
-                        // Only override if it has an inline style or class setting it to dark?
-                        // Safer to just reset background color to default/white if it looks dark.
-                        // For now, let's just clear background colors on main wrappers.
-                        if (el.style.backgroundColor && el.style.backgroundColor !== 'transparent') {
-                             el.style.backgroundColor = '#ffffff';
-                        }
-                        el.style.color = '#333333'; // Ensure text is dark
-                    });
-                    
-                    // Specific fix for white text on now-white background
-                    // We can't easily detect this, but resetting color helps.
-                }
             }
         }
     }
@@ -245,23 +63,27 @@ function updateThemeIcon(theme) {
 /* Filtering Logic */
 function filterList() {
     const input = document.getElementById('searchInput');
+    if (!input) return;
     const filter = input.value.toLowerCase();
     const list = document.getElementById('newsList');
     if (!list) return;
-    const items = list.getElementsByClassName('news-card');
+    const items = list.querySelectorAll('.news-card');
     let visibleCount = 0;
 
-    for (let i = 0; i < items.length; i++) {
-        const title = items[i].querySelector('.card-title')?.textContent || "";
-        const sender = items[i].querySelector('.sender-pill')?.textContent || "";
+    items.forEach(item => {
+        const title = item.querySelector('.card-title')?.textContent || "";
+        const sender = item.querySelector('.sender-pill')?.textContent || "";
+        const preview = item.querySelector('.card-preview')?.textContent || "";
 
-        if (title.toLowerCase().includes(filter) || sender.toLowerCase().includes(filter)) {
-            items[i].style.display = "";
+        if (title.toLowerCase().includes(filter) ||
+            sender.toLowerCase().includes(filter) ||
+            preview.toLowerCase().includes(filter)) {
+            item.style.display = "";
             visibleCount++;
         } else {
-            items[i].style.display = "none";
+            item.style.display = "none";
         }
-    }
+    });
 
     const noResults = document.getElementById('noResults');
     if (noResults) {

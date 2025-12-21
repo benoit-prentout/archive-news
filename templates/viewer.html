@@ -564,17 +564,41 @@
                 </div>
                 {% if detected_pixels %}
                 <div class="pixel-box">
-                    <div class="pixel-header">Tracking Detected ({{ detected_pixels|length }})</div>
+                    <div class="pixel-header">Tracking Pixels ({{ detected_pixels|length }})</div>
                     {% for pixel in detected_pixels %}
-                    <div class="pixel-row" title="This 1x1 image or known tracking URL was blocked.">
-                        <div class="pixel-reason">{{ pixel.reason }}</div>
+                    <div class="pixel-row">
+                        <div class="pixel-reason">{{ pixel.status }}</div>
                         <div class="pixel-url">{{ pixel.url }}</div>
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <div style="color:var(--text-tertiary); font-size:0.85rem;">No tracking pixels detected.</div>
                 {% endif %}
+
+                <div class="section-title">Quality Audit</div>
+                <div class="meta-row">
+                    <span class="meta-key">Subject Length</span>
+                    <span class="meta-val" style="color: {% if audit.subject_check == 'Good' %}var(--accent-color){% else %}orange{% endif %}">
+                        {{ audit.subject_check }}
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Unsubscribe Link</span>
+                    <span class="meta-val" style="color: {% if audit.unsubscribe_found %}var(--accent-color){% else %}red{% endif %}">
+                        {% if audit.unsubscribe_found %}Found{% else %}Missing{% endif %}
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Images without Alt</span>
+                    <span class="meta-val" style="color: {% if audit.images_no_alt == 0 %}var(--accent-color){% else %}orange{% endif %}">
+                        {{ audit.images_no_alt }}
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-key">Clipping Risk</span>
+                    <span class="meta-val" style="color: {% if email_size > 102000 %}red{% else %}var(--accent-color){% endif %}">
+                        {% if email_size > 102000 %}High (>102KB){% else %}Low{% endif %}
+                    </span>
+                </div>
 
                 <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>Links ({{ links|length }})</span>
