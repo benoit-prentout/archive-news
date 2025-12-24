@@ -100,7 +100,7 @@
                 No results found.
             </div>
             {% for email in emails %}
-            <li class="news-card glass" data-date="{{ email.date_obj }}" data-sender="{{ email.sender }}">
+            <li class="news-card glass" data-date="{{ email.date_obj }}" data-sender="{{ email.sender | e }}">
                 <a href="{{ email.id }}/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">{{ email.date_rec }}</span>

@@ -108,7 +108,7 @@ def process_emails():
                 'subject': fetcher.get_decoded_subject(msg), 
                 'date_rec': date_rec,
                 'date_iso': date_iso,
-                'sender': msg['From'],
+                'sender': EmailFetcher.get_decoded_sender(msg),
                 'date_arch': datetime.now().strftime('%d/%m/%Y à %H:%M'),
                 'preheader': parser.preheader,
                 'reading_time': parser.reading_time,

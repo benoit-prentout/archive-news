@@ -91,6 +91,26 @@ class EmailFetcher:
                 full_subject += str(part)
         return full_subject.strip()
 
+    @staticmethod
+    def get_decoded_sender(msg):
+        """Decode and clean sender name from email headers."""
+        from_header = msg.get("From", "")
+        if not from_header:
+            return "Unknown"
+        
+        # Decode MIME encoded-word format
+        decoded_parts = decode_header(from_header)
+        decoded_str = ""
+        for part, encoding in decoded_parts:
+            if isinstance(part, bytes):
+                decoded_str += part.decode(encoding or "utf-8", errors="ignore")
+            else:
+                decoded_str += str(part)
+        
+        # Extract only the friendly name, not the email address
+        name, addr = parseaddr(decoded_str)
+        return name.strip('"').strip() if name else addr
+
     def _clean_subject_prefixes(self, subject):
         if not subject: return "Untitled"
         pattern = r'^\s*\[?(?:Fwd|Fw|Tr|Re|Aw|Wg)\s*:\s*\]?\s*'
