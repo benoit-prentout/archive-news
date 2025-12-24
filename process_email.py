@@ -85,6 +85,7 @@ def process_emails():
 
             # PARSE
             parser = EmailParser(html_payload, folder_path)
+            parser.detect_crm()  # Detect CRM before processing
             parser.clean_and_process()
             parser.download_images_parallel()
             
@@ -112,7 +113,8 @@ def process_emails():
                 'date_arch': datetime.now().strftime('%d/%m/%Y à %H:%M'),
                 'preheader': parser.preheader,
                 'reading_time': parser.reading_time,
-                'audit': parser.audit
+                'audit': parser.audit,
+                'crm': parser.detected_crm
             }
             
             # Subject Length Audit

@@ -14,6 +14,36 @@ TRACKING_PATTERNS = [
     "hs-analytics.net", "hubspot.com", "marketo.com", "pardot.com"
 ]
 
+# CRM Detection Patterns
+CRM_PATTERNS = {
+    'Mailchimp': ['list-manage.com', 'mailchimp.com', 'mc.us', 'mcusercontent.com', 'campaign-archive.com'],
+    'Brevo': ['sibforms.com', 'sendinblue.com', 'brevo.com', 'sib.com'],
+    'Klaviyo': ['klaviyo.com', 'klclick.com', 'kclick.com'],
+    'Mailjet': ['mailjet.com', 'mjt.lu'],
+    'HubSpot': ['hubspot.com', 'hs-analytics.net', 'hubspotemail.net', 'hsforms.com'],
+    'Salesforce': ['salesforce.com', 'exacttarget.com', 'sfmc-content.com'],
+    'ActiveCampaign': ['activecampaign.com', 'activehosted.com', 'acems.com'],
+    'GetResponse': ['getresponse.com', 'gr8.com'],
+    'Campaign Monitor': ['createsend.com', 'cmail1.com', 'cmail2.com', 'cmail19.com', 'cmail20.com'],
+    'Constant Contact': ['constantcontact.com', 'ctct.io'],
+    'Omnisend': ['omnisend.com', 'omnisrc.com'],
+    'Drip': ['getdrip.com', 'dripemail2.com'],
+    'ConvertKit': ['convertkit.com', 'convertkit-mail.com', 'ck.page'],
+    'Customer.io': ['customer.io', 'customeriomail.com'],
+    'Iterable': ['iterable.com', 'links.iterable.com'],
+    'Emarsys': ['emarsys.com', 'emarsys.net'],
+    'Selligent': ['selligent.com', 'slgnt.eu'],
+    'Sendgrid': ['sendgrid.net', 'sendgrid.com'],
+    'Amazon SES': ['amazonses.com', 'aws.com'],
+    'Postmark': ['postmarkapp.com', 'pstmrk.it'],
+    'Sparkpost': ['sparkpost.com', 'sparkpostmail.com'],
+    'Mailgun': ['mailgun.com', 'mailgun.org'],
+    'Mandrill': ['mandrill.com', 'mandrillapp.com'],
+    'Sarbacane': ['sarbacane.com', 'sbc25.com', 'sbc33.com'],
+    'Splio': ['splio.com', 'message-business.com'],
+    'Dolist': ['dolist.com', 'dolist.net'],
+}
+
 RESOLVE_REDIRECTS = False
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -25,6 +55,36 @@ class EmailParser:
         self.output_folder = output_folder
         self.links = []
         self.detected_pixels = []
+        self.detected_crm = None
+
+    def detect_crm(self):
+        """Detect which CRM/ESP was used to send this email by analyzing URLs."""
+        # Collect all URLs from the email
+        all_urls = []
+        
+        # From links
+        for a in self.soup.find_all('a', href=True):
+            all_urls.append(a['href'].lower())
+        
+        # From images
+        for img in self.soup.find_all('img', src=True):
+            all_urls.append(img['src'].lower())
+        
+        # From inline styles (background-image)
+        for tag in self.soup.find_all(style=True):
+            style = tag['style'].lower()
+            if 'url(' in style:
+                all_urls.append(style)
+        
+        # Check against patterns
+        for crm_name, patterns in CRM_PATTERNS.items():
+            for pattern in patterns:
+                for url in all_urls:
+                    if pattern in url:
+                        self.detected_crm = crm_name
+                        return crm_name
+        
+        return None
 
     def clean_and_process(self):
         # 1. Pixel Detection & Cleanup

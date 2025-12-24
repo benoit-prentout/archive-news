@@ -104,6 +104,8 @@
                 <a href="{{ email.id }}/index.html" class="news-link">
                     <div class="card-header">
                         <span class="date">{{ email.date_rec }}</span>
+                        {% if email.crm %}<span class="crm-badge" data-crm="{{ email.crm }}">{{ email.crm }}</span>{%
+                        endif %}
                     </div>
                     <div class="sender-pill">{{ email.sender }}</div>
                     <h2 class="card-title">{{ email.subject }}</h2>
