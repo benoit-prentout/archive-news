@@ -4,7 +4,7 @@
     "date_rec": "24/11/2025 à 05:24",
     "date_iso": "2025-11-24T05:24:30-08:00",
     "sender": "benoit@getinside.fr",
-    "date_arch": "21/12/2025 à 14:03",
+    "date_arch": "24/12/2025 à 23:20",
     "preheader": "Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...",
     "reading_time": "2 min",
     "audit": {
@@ -13,5 +13,6 @@
         "unsubscribe_found": true,
         "link_count": 6,
         "images_no_alt": 3
-    }
+    },
+    "crm": "Klaviyo"
 }

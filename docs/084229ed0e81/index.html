@@ -12,1080 +12,472 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        /* Viewer Specific Styles */
         body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewer-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .device-stage {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-
-        .device-frame {
-            background: #111;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Removed opacity transition */
-            transform: scale(1);
-        }
-
-        .device-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            flex: 1;
-        }
-
-        /* Device Modes */
-        .device-frame[data-mode="desktop"] {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            /* Lighter shadow */
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            /* Almost invisible border */
-        }
-
-        [data-theme="dark"] .device-frame[data-mode="desktop"] {
-            border-color: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .device-frame[data-mode="mobile"] {
-            width: 375px;
-            height: 812px;
-            max-height: 90vh;
-            border-radius: 40px;
-            border: 12px solid #111;
-        }
-
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .device-frame[data-mode="tablet"] {
-            width: 768px;
-            height: 1024px;
-            max-height: 90vh;
-            border-radius: 24px;
-            border: 12px solid #111;
-        }
-
-        /* Sidebar */
-        .meta-sidebar {
-            width: 400px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border-color);
-            padding: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-
-        .meta-sidebar.closed {
-            transform: translateX(100%);
-            width: 0;
-            border: none;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin: 25px 0 10px 0;
-            font-weight: 700;
-        }
-
-        .section-title:first-child {
-            margin-top: 0;
-        }
-
-        .meta-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .meta-key {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-align: left;
-        }
-
-        .meta-key::after {
-            content: ":";
-        }
-
-        .meta-val {
-            color: var(--text-primary);
-            font-weight: 400;
-            text-align: right;
-            margin-left: 10px;
-            word-break: break-word;
-        }
-
-        /* Links */
-        .link-list {
-            list-style: none;
-            padding: 0;
             margin: 0;
-        }
-
-        .link-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .link-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(2px);
-        }
-
-        .link-num {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-secondary);
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        [data-theme="dark"] .link-num {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .link-content {
-            flex: 1;
             overflow: hidden;
-        }
-
-        .link-txt {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .link-url {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Pixels */
-        .pixel-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-        }
-
-        .pixel-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 8px 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2980b9;
-        }
-
-        .pixel-row {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            cursor: help;
-        }
-
-        .pixel-row:last-child {
-            border-bottom: none;
-        }
-
-        .pixel-reason {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .pixel-url {
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.75rem;
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-        }
-
-        .sidebar-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dotted currentColor;
-        }
-
-        /* Header Controls */
-        .viewer-header {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-glass);
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .action-btn {
-            height: 36px;
-            padding: 0 12px;
-            min-width: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover,
-        .action-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="dark"] .pixel-header {
-            color: #8be9fd;
-            background: rgba(139, 233, 253, 0.1);
-        }
-
-        [data-theme="dark"] .pixel-box {
-            border-color: rgba(139, 233, 253, 0.2);
-        }
-
-        /* Modal for Source */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            width: 80%;
-            max-width: 800px;
-            height: 80vh;
-            background: var(--bg-body);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body {
-            flex: 1;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .source-area {
-            width: 100%;
-            height: 100%;
-            border: none;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            resize: none;
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        /* Copy Buttons */
-        .btn-copy-small {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            opacity: 0.6;
-        }
-
-        .btn-copy-small:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--accent-color);
-            opacity: 1;
-        }
-
-        .copy-success {
-            color: #50fa7b !important;
-            /* Dracula Green */
-            background: rgba(80, 250, 123, 0.1) !important;
-            border-color: #50fa7b !important;
-        }
-
-        @media (max-width: 768px) {
-            .hide-mobile {
-                display: none !important;
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="viewer-header">
-        <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
+    <div class="viewer-layout">
+        <!-- Main Content -->
+        <div class="viewer-main">
+            <!-- Header -->
+            <header class="viewer-header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <h1
+                        style="font-family: var(--font-header); font-size: 1rem; font-weight: 600; margin: 0; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent-blue);">
+                        Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...
+                    </h1>
+                </div>
 
-        <div class="device-toggles hide-mobile">
-            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
-            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
-            <button class="device-btn active" onclick="setMode('desktop')"
-                title="View in Desktop Mode (Filtered)">Desktop</button>
-        </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="viewer-toolbar">
+                        <button class="btn btn-secondary" onclick="toggleHighlightLinks()"
+                            title="Highlight all links (H)">
+                            <span id="highlightBtnText">Show Links</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
+                            View HTML
+                        </button>
+                    </div>
 
-        <div class="action-group">
-            <button class="action-btn" onclick="openSourceModal()" title="View Source Code">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            </button>
-            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                <svg class="icon icon-moon" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-                <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()"
-                title="Highlight Links in Email">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                </svg>
-            </button>
-            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
-                <span>Metadata</span>
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            </button>
-        </div>
-    </div>
+                    <span class="crm-badge" data-crm="Unknown">Unknown</span>
 
-    <div class="viewer-container">
-        <div class="device-stage">
-            <div class="device-frame" id="deviceFrame" data-mode="desktop">
-                <iframe id="emailFrame"></iframe>
+                    <div class="device-toggle hide-mobile">
+                        <button class="device-btn" onclick="setMode('mobile')" title="Mobile (1)">Mobile</button>
+                        <button class="device-btn" onclick="setMode('tablet')" title="Tablet (2)">Tablet</button>
+                        <button class="device-btn active" onclick="setMode('desktop')"
+                            title="Desktop (3)">Desktop</button>
+                    </div>
+
+                    <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme (T)">
+                        <svg class="icon icon-moon" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Email Content -->
+            <div class="viewer-content">
+                <div id="deviceFrame" data-mode="desktop"
+                    style="width: 100%; max-width: 800px; height: 100%; transition: max-width 0.3s ease;">
+                    <iframe id="emailFrame" class="email-frame"></iframe>
+                </div>
             </div>
         </div>
 
-        <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header">Metadata</div>
+        <!-- Sidebar -->
+        <aside class="viewer-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Metadata</span>
+            </div>
+
             <div class="sidebar-content">
-                <div class="section-title">General Info</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject</span>
-                    <span class="meta-val">Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Sender</span>
-                    <span class="meta-val">benoit@getinside.fr</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Received</span>
-                    <span class="meta-val">26/11/2025 à 13:22</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Archived</span>
-                    <span class="meta-val">21/12/2025 à 14:03</span>
+                <!-- General Info -->
+                <div class="meta-section">
+                    <div class="meta-section-title">General</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Sender</span>
+                        <span class="meta-val">benoit@getinside.fr</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Subject</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...">Offre spéciale sur vos Magazines : Le Chasseur Français, La Revue Nationale de la Chasse...</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Preheader</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...">Si vous ne visualisez pas correctement ce message, cliquez-ici TOUTE L'OFFRE L'ARMURERIE BONS PLANS MARQUES VIDÉOS Offre spéciale sur vos magazines préférés ! L...</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Received</span>
+                        <span class="meta-val">26/11/2025 à 13:22</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">CRM</span>
+                        <span class="meta-val text-cyan">Unknown</span>
+                    </div>
                 </div>
 
-                <div class="section-title">Technical</div>
-                <div class="meta-row">
-                    <span class="meta-key">Email Size</span>
-                    <span class="meta-val">54.0 KB</span>
+                <!-- Technical -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Technical</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Size</span>
+                        <span class="meta-val">54.0 KB</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Clipping Risk</span>
+                        <span class="meta-val text-green">
+                            Low
+                        </span>
+                    </div>
                 </div>
-                <div class="meta-row">
-                    <span class="meta-key">Read Time</span>
-                    <span class="meta-val">1 min</span>
-                </div>
+
+                <!-- Tracking Pixels -->
                 
 
-                <div class="section-title">Quality Audit</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject Length</span>
-                    <span class="meta-val" style="color: orange">
-                        Too Long
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Unsubscribe Link</span>
-                    <span class="meta-val" style="color: red">
-                        Missing
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Images without Alt</span>
-                    <span class="meta-val" style="color: orange">
-                        9
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Clipping Risk</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Low
-                    </span>
-                </div>
-
-                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Links (30)</span>
-                    <button onclick="copyLinks([{'index': 1, 'txt': 'Si vous ne visualisez pas correctement ce message,', 'original_url': 'https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg', 'final_url': 'https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg'}, {'index': 2, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg', 'final_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg'}, {'index': 3, 'txt': "TOUTE L'OFFRE", 'original_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg', 'final_url': 'https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg'}, {'index': 4, 'txt': "L'ARMURERIE", 'original_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE', 'final_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE'}, {'index': 5, 'txt': 'BONS PLANS', 'original_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo', 'final_url': 'https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo'}, {'index': 6, 'txt': 'MARQUES', 'original_url': 'https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs', 'final_url': 'https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs'}, {'index': 7, 'txt': 'VIDÉOS', 'original_url': 'https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD', 'final_url': 'https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD'}, {'index': 8, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo', 'final_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo'}, {'index': 9, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk', 'final_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk'}, {'index': 10, 'txt': 'Je découvre', 'original_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU', 'final_url': 'https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU'}, {'index': 11, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw'}, {'index': 12, 'txt': 'Voir', 'original_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0', 'final_url': 'https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0'}, {'index': 13, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM'}, {'index': 14, 'txt': 'Voir', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI'}, {'index': 15, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs'}, {'index': 16, 'txt': 'Voir', 'original_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE', 'final_url': 'https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE'}, {'index': 17, 'txt': 'DES EXPERTS À VOTRE ÉCOUTE', 'original_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg', 'final_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg'}, {'index': 18, 'txt': 'LIVRAISON SUR MESURE', 'original_url': 'https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g', 'final_url': 'https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g'}, {'index': 19, 'txt': "CHANGEZ D'AVIS FACILEMENT", 'original_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE', 'final_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE'}, {'index': 20, 'txt': '3-4 FOIS SANS FRAIS PAR CB', 'original_url': 'https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc', 'final_url': 'https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc'}, {'index': 21, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw'}, {'index': 22, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw'}, {'index': 23, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw'}, {'index': 24, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ', 'final_url': 'https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ'}, {'index': 25, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ', 'final_url': 'https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ'}, {'index': 26, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4', 'final_url': 'https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4'}, {'index': 27, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao', 'final_url': 'https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao'}, {'index': 28, 'txt': '', 'original_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo', 'final_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo'}, {'index': 29, 'txt': "Mes préférences d'abonnement", 'original_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI', 'final_url': 'https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI'}, {'index': 30, 'txt': 'Me désabonner', 'original_url': 'https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1', 'final_url': 'https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1'}])"
-                        style="border:none; background:none; color:var(--accent-color); cursor:pointer; font-size:0.7em; font-weight:600;">COPY
-                        ALL</button>
-                </div>
-                <ul class="link-list">
+                <!-- All Links -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Links (30)</div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(1)">1</div>
-                        <div class="link-content" onclick="highlightLink(1)">
-                            <div class="link-txt">Si vous ne visualisez pas correctement ce message,</div>
+                    <div class="link-card" onclick="highlightLink(1)">
+                        <span class="link-index">1</span>
+                        <div class="link-content">
+                            <div class="link-text">Si vous ne visualisez pas correctement ce message,</div>
                             <div class="link-url">https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(2)">2</div>
-                        <div class="link-content" onclick="highlightLink(2)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(2)">
+                        <span class="link-index">2</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(3)">3</div>
-                        <div class="link-content" onclick="highlightLink(3)">
-                            <div class="link-txt">TOUTE L'OFFRE</div>
+                    <div class="link-card" onclick="highlightLink(3)">
+                        <span class="link-index">3</span>
+                        <div class="link-content">
+                            <div class="link-text">TOUTE L'OFFRE</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(4)">4</div>
-                        <div class="link-content" onclick="highlightLink(4)">
-                            <div class="link-txt">L'ARMURERIE</div>
+                    <div class="link-card" onclick="highlightLink(4)">
+                        <span class="link-index">4</span>
+                        <div class="link-content">
+                            <div class="link-text">L'ARMURERIE</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(5)">5</div>
-                        <div class="link-content" onclick="highlightLink(5)">
-                            <div class="link-txt">BONS PLANS</div>
+                    <div class="link-card" onclick="highlightLink(5)">
+                        <span class="link-index">5</span>
+                        <div class="link-content">
+                            <div class="link-text">BONS PLANS</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(6)">6</div>
-                        <div class="link-content" onclick="highlightLink(6)">
-                            <div class="link-txt">MARQUES</div>
+                    <div class="link-card" onclick="highlightLink(6)">
+                        <span class="link-index">6</span>
+                        <div class="link-content">
+                            <div class="link-text">MARQUES</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(7)">7</div>
-                        <div class="link-content" onclick="highlightLink(7)">
-                            <div class="link-txt">VIDÉOS</div>
+                    <div class="link-card" onclick="highlightLink(7)">
+                        <span class="link-index">7</span>
+                        <div class="link-content">
+                            <div class="link-text">VIDÉOS</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(8)">8</div>
-                        <div class="link-content" onclick="highlightLink(8)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(8)">
+                        <span class="link-index">8</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(9)">9</div>
-                        <div class="link-content" onclick="highlightLink(9)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(9)">
+                        <span class="link-index">9</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(10)">10</div>
-                        <div class="link-content" onclick="highlightLink(10)">
-                            <div class="link-txt">Je découvre</div>
+                    <div class="link-card" onclick="highlightLink(10)">
+                        <span class="link-index">10</span>
+                        <div class="link-content">
+                            <div class="link-text">Je découvre</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(11)">11</div>
-                        <div class="link-content" onclick="highlightLink(11)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(11)">
+                        <span class="link-index">11</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(12)">12</div>
-                        <div class="link-content" onclick="highlightLink(12)">
-                            <div class="link-txt">Voir</div>
+                    <div class="link-card" onclick="highlightLink(12)">
+                        <span class="link-index">12</span>
+                        <div class="link-content">
+                            <div class="link-text">Voir</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(13)">13</div>
-                        <div class="link-content" onclick="highlightLink(13)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(13)">
+                        <span class="link-index">13</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(14)">14</div>
-                        <div class="link-content" onclick="highlightLink(14)">
-                            <div class="link-txt">Voir</div>
+                    <div class="link-card" onclick="highlightLink(14)">
+                        <span class="link-index">14</span>
+                        <div class="link-content">
+                            <div class="link-text">Voir</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(15)">15</div>
-                        <div class="link-content" onclick="highlightLink(15)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(15)">
+                        <span class="link-index">15</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(16)">16</div>
-                        <div class="link-content" onclick="highlightLink(16)">
-                            <div class="link-txt">Voir</div>
+                    <div class="link-card" onclick="highlightLink(16)">
+                        <span class="link-index">16</span>
+                        <div class="link-content">
+                            <div class="link-text">Voir</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(17)">17</div>
-                        <div class="link-content" onclick="highlightLink(17)">
-                            <div class="link-txt">DES EXPERTS À VOTRE ÉCOUTE</div>
+                    <div class="link-card" onclick="highlightLink(17)">
+                        <span class="link-index">17</span>
+                        <div class="link-content">
+                            <div class="link-text">DES EXPERTS À VOTRE ÉCOUTE</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(18)">18</div>
-                        <div class="link-content" onclick="highlightLink(18)">
-                            <div class="link-txt">LIVRAISON SUR MESURE</div>
+                    <div class="link-card" onclick="highlightLink(18)">
+                        <span class="link-index">18</span>
+                        <div class="link-content">
+                            <div class="link-text">LIVRAISON SUR MESURE</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(19)">19</div>
-                        <div class="link-content" onclick="highlightLink(19)">
-                            <div class="link-txt">CHANGEZ D'AVIS FACILEMENT</div>
+                    <div class="link-card" onclick="highlightLink(19)">
+                        <span class="link-index">19</span>
+                        <div class="link-content">
+                            <div class="link-text">CHANGEZ D'AVIS FACILEMENT</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(20)">20</div>
-                        <div class="link-content" onclick="highlightLink(20)">
-                            <div class="link-txt">3-4 FOIS SANS FRAIS PAR CB</div>
+                    <div class="link-card" onclick="highlightLink(20)">
+                        <span class="link-index">20</span>
+                        <div class="link-content">
+                            <div class="link-text">3-4 FOIS SANS FRAIS PAR CB</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(21)">21</div>
-                        <div class="link-content" onclick="highlightLink(21)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(21)">
+                        <span class="link-index">21</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(22)">22</div>
-                        <div class="link-content" onclick="highlightLink(22)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(22)">
+                        <span class="link-index">22</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(23)">23</div>
-                        <div class="link-content" onclick="highlightLink(23)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(23)">
+                        <span class="link-index">23</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(24)">24</div>
-                        <div class="link-content" onclick="highlightLink(24)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(24)">
+                        <span class="link-index">24</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(25)">25</div>
-                        <div class="link-content" onclick="highlightLink(25)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(25)">
+                        <span class="link-index">25</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(26)">26</div>
-                        <div class="link-content" onclick="highlightLink(26)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(26)">
+                        <span class="link-index">26</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(27)">27</div>
-                        <div class="link-content" onclick="highlightLink(27)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(27)">
+                        <span class="link-index">27</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(28)">28</div>
-                        <div class="link-content" onclick="highlightLink(28)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(28)">
+                        <span class="link-index">28</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(29)">29</div>
-                        <div class="link-content" onclick="highlightLink(29)">
-                            <div class="link-txt">Mes préférences d'abonnement</div>
+                    <div class="link-card" onclick="highlightLink(29)">
+                        <span class="link-index">29</span>
+                        <div class="link-content">
+                            <div class="link-text">Mes préférences d'abonnement</div>
                             <div class="link-url">https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(30)">30</div>
-                        <div class="link-content" onclick="highlightLink(30)">
-                            <div class="link-txt">Me désabonner</div>
+                    <div class="link-card" onclick="highlightLink(30)">
+                        <span class="link-index">30</span>
+                        <div class="link-content">
+                            <div class="link-text">Me désabonner</div>
                             <div class="link-url">https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1')">Copy</button>
+                    </div>
                     
-                </ul>
-            </div>
+                </div>
 
-            <div class="sidebar-footer">
-                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. All rights
-                reserved.
+                <!-- Footer -->
+                <div class="meta-section"
+                    style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+                        © 2025 <a href="https://github.com/benoit-prentout" target="_blank"
+                            style="color: var(--accent-blue); text-decoration: none;">Benoît Prentout</a>. All rights
+                        reserved.
+                    </p>
+                </div>
             </div>
-        </div>
+        </aside>
     </div>
 
-    <!-- Code Modal -->
-    <div id="sourceModal" class="modal-overlay">
-        <div class="modal">
+    <!-- HTML Source Modal -->
+    <div class="modal-overlay" id="htmlModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <span>HTML Source</span>
-                <button class="close-btn" onclick="closeSourceModal()">×</button>
+                <span class="modal-title">HTML Source</span>
+                <button class="modal-close" onclick="closeHtmlModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <textarea id="sourceText" class="source-area" readonly></textarea>
+                <pre class="code-block" id="htmlSourceCode"></pre>
             </div>
-            <div class="modal-footer"
-                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="action-btn" onclick="copySource()">
-                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span>Copy All</span>
-                </button>
-                <button class="action-btn" onclick="closeSourceModal()">Close</button>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="copyAllHtml()">Copy HTML</button>
             </div>
         </div>
     </div>
+
+    <!-- Link overlays container -->
+    <div id="linkOverlays" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100;"></div>
 
     <script src="../assets/js/main.js"></script>
     <script>
         const content = "<td align=\"center\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_preheaderBlock_1\" role=\"presentation\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" bgcolor=\"\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:30px 10px 10px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td>\n<p style=\"padding:0px;margin:0px;font-family:Arial,Helvetica,sans-serif;font-size:10px;line-height:140%;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-align:center\">\n<a data-index=\"1\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw0VVt9kXhirx3B9wejZV9hc\" href=\"https://tg.info.chasseur.com/p/k2fI4665tY7n8fvLE9rSOS5gMfoMQrakW5yfRO1CWXtJIfHV3EG3MtNRQUxLWRMVJlFTxEDGJwXdk9kuk1NmB8x-MHDjVTJmZqP7I4mUKvU7vyhT50YnmJbQdJMXFNgNkyGRL89hWSjjxy8-vruQqDyDDSH5457u1njr2YwjYSvG0VJYn2CPBDoXb3MlhDHTo8MYA9oJSU92Sifm9OGBmlyg\" style=\"color:rgb(0,0,0);text-decoration:underline\" target=\"_blank\">Si vous ne visualisez pas correctement ce message, cliquez-ici</a>\n</p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_lineBlock_4\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td height=\"1\" style=\"line-height:1px;font-size:1px;height:1px;border-bottom:1px solid rgb(171,171,171);border-top-color:rgb(171,171,171);border-right-color:rgb(171,171,171);border-left-color:rgb(171,171,171)\"> </td></tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr></tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_imageBlock_4\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<center>\n<a data-index=\"2\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw1Hb_a1kZX8uKuumpiOk9Wb\" href=\"https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gSjJ_iUqpApLxELHR9DT1-Mg\" target=\"_blank\">\n<img alt=\"Chasseur.com\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_0.png\" style=\"display:block;margin:0px auto;width:100%;max-width:300px\" width=\"300\"/>\n</a>\n</center>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_lineBlock_2\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td height=\"1\" style=\"line-height:1px;font-size:1px;height:1px;border-bottom:1px solid rgb(171,171,171);border-top-color:rgb(171,171,171);border-right-color:rgb(171,171,171);border-left-color:rgb(171,171,171)\"> </td></tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr></tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_menuTextBlock_6\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\" width=\"600\">\n<tbody>\n<tr>\n<td bgcolor=\"#ffffff\" style=\"text-align:center;border-top:none;border-bottom:none;padding:0px 10px;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\">\n<tbody>\n<tr>\n<th valign=\"middle\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:13px;line-height:130%;color:rgb(0,0,0);font-weight:normal;font-style:normal\">\n<a data-index=\"3\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw0m0FDlYDf3TKKb1orouBmc\" href=\"https://tg.info.chasseur.com/1/c/k2bb9TX2IwJ3dZVr8Sc-RLCQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RkssdfVc-gKAxEgRY80z5gS8mZDaRAKsW5MjYWZy9UxDg\" style=\"text-decoration:none;color:rgb(0,0,0)\" target=\"_blank\">\n<strong>TOUTE L'OFFRE</strong></a>\n</p>\n</th>\n<th style=\"width:15px\"> </th>\n<th valign=\"middle\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:13px;line-height:130%;color:rgb(0,0,0);font-weight:normal;font-style:normal\">\n<a data-index=\"4\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw1mdZ_M0zGiLA2Mb3UFFcMa\" href=\"https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuA2VBRzD7ZulvwchFUKBPxCZBtzb7NTTMlAHqNNWwysMCUMUAnKgUHc1KuG6GqXGPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_C5A3tmsxe3wKNUmoKvjOuAE\" style=\"text-decoration:none;color:rgb(0,0,0)\" target=\"_blank\">L'ARMURERIE</a>\n</p>\n</th>\n<th style=\"width:15px\"> </th>\n<th valign=\"middle\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:13px;line-height:130%;color:rgb(0,0,0);font-weight:normal;font-style:normal\">\n<a data-index=\"5\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw3bPRBgdh_MUYppVcKDZnsx\" href=\"https://tg.info.chasseur.com/1/c/k2-6vKVlrVRdMa5rj8PLtz0gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_-tGI-FbNr1EQQ7RxUT2uiRyXaS3dQkQQiEXdKW-5UkxPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtmFhd_CLm1aKPp2gz--moGS2k37zU9ckXFewyhths_CytFVHFA88y8TQJldsreKEo\" style=\"text-decoration:none;color:rgb(0,0,0)\" target=\"_blank\">\n<strong>\n<span style=\"color:rgb(255,168,0);text-decoration:none\">BONS PLANS</span></strong></a>\n</p>\n</th>\n<th style=\"width:15px\"> </th>\n<th valign=\"middle\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:13px;line-height:130%;color:rgb(0,0,0);font-weight:normal;font-style:normal\">\n<a data-index=\"6\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw2K52UZFZYkHS3MFDHzmim4\" href=\"https://tg.info.chasseur.com/1/c/k2qrPJujLajpek47s8uTuhZwMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_3aUG4HUukrZ3oZv8USG9q2aHyt-3ord0Ro2HC5D3n2l4QccnRtyERb34SGdRSrFpX9alS0LxJkWxrGnWAbxRMUXpDv0j44kr-aOHi9WyykqIEnA7XaC_0t_Kpn2Y7fGQDjWcKfjLSNAkhuwLUEcNvs\" style=\"text-decoration:none;color:rgb(0,0,0)\" target=\"_blank\">MARQUES</a>\n</p>\n</th>\n<th style=\"width:15px\"> </th>\n<th valign=\"middle\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:13px;line-height:130%;color:rgb(0,0,0);font-weight:normal;font-style:normal\">\n<a data-index=\"7\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw2KdiLRt-1l29Q9fIvIFxNC\" href=\"https://tg.info.chasseur.com/1/c/k2bH6lhelcnZqyEG7OWYgm6gMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_yWRyvta-3PycMwap2eEEkjJUNIi2JsErdpWpvH7d_GN7xhcejoadf90OJjBWZ7M6hUr1ifXpxNTAuUjdGYlxL5R6FiLu32qv2PZlX6hZbogzg137uXAxvNLoxsw4HzjOObjJgkGPPAywW7miLw6rtiC3o3NTcEGTzeOD_djDhzD\" style=\"text-decoration:none;color:rgb(0,0,0)\" target=\"_blank\">VID\u00c9OS</a>\n</p>\n</th>\n</tr>\n</tbody>\n</table></td></tr></tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_lineBlock_3\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td height=\"1\" style=\"line-height:1px;font-size:1px;height:1px;border-bottom:1px solid rgb(171,171,171);border-top-color:rgb(171,171,171);border-right-color:rgb(171,171,171);border-left-color:rgb(171,171,171)\"> </td></tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr></tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_titleBlock_1\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px 0px 10px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:30px 10px 0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\">\n<p style=\"padding:0px;margin:0px;font-family:Roboto,Helvetica,sans-serif;font-size:14px;line-height:normal;color:rgb(0,0,0);font-style:normal;text-align:center;font-weight:normal\">\n<span style=\"font-size:30px\">\n<span style=\"font-size:25px\">\n<strong>\n<span style=\"color:rgb(0,152,212)\">\n<span style=\"color:rgb(0,0,0)\">Offre sp\u00e9ciale sur vos magazines pr\u00e9f\u00e9r\u00e9s !</span></span></strong></span>\n<br/>\n<span style=\"font-size:15px\">Le <span class=\"il\">Chasseur</span> Fran\u00e7ais, La Revue Nationale de la Chasse...</span></span></p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_imageBlock_2\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px 0px\">\n<table align=\"center\" bgcolor=\"#F6F6F6\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<center>\n<a data-index=\"8\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw0ik-Ay2PLTlk3cnQJbqT26\" href=\"https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XkFqmMCR1mWi5oApjjmA4Uo\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_1.png\" style=\"display:block;margin:0px auto;width:100%;max-width:600px\" width=\"600\"/>\n</a>\n</center>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_imageBlock_5\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:20px 0px 0px\">\n<table align=\"center\" bgcolor=\"#F6F6F6\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<center>\n<a data-index=\"9\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw2ic_crw4MhQRDJKR9Luhli\" href=\"https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XnNGtfp3Z5PHU9eg8NPWJsk\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_2.jpg\" style=\"display:block;margin:0px auto;width:100%;max-width:600px\" width=\"600\"/>\n</a>\n</center>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_coverBlock_2\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px 0px 10px\">\n<table align=\"center\" bgcolor=\"#F6F6F6\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:10px 60px 70px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:15px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:140%;color:rgb(0,0,0);font-style:normal;font-weight:normal\">\n<span style=\"color:rgb(120,147,65)\">Une\n<strong>Google Nest Hub</strong>\nest\n<strong>OFFERTE</strong>\u00a0</span></p>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding-top:15px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:140%;color:rgb(0,0,0);font-style:normal;font-weight:normal\">Sur une s\u00e9lection de titres Chasse, P\u00eache ou Nature, France <span class=\"il\">Abonnements</span> vous offre une Google Nest Hub.<br/>\n<br/>\n<span style=\"font-size:14px\">\n<em>France <span class=\"il\">Abonnements</span>, leader de l'<span class=\"il\">abonnement</span> magazines depuis 50 ans avec plus de 300 titres et les tarifs les plus bas de France !</em></span></p>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding-top:30px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0px auto\">\n<tbody>\n<tr>\n<td bgcolor=\"#789341\" style=\"border-radius:50px;border-style:solid;border-width:1px;border-color:rgb(120,147,65)\">\n<p style=\"padding:0px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:140%;color:rgb(255,255,255);font-weight:bold;font-style:normal;margin:0px\">\n<a data-index=\"10\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw1kkTWtJ__8E2E46p1MLUi_\" href=\"https://tg.info.chasseur.com/1/c/k27AOkKf7KBlwsr6i1CcSIAAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLaKt44_VSTR2y589n8BtI4n_0BxmAWfHgARQOzJKU-VECBuXIrsNYL7yFzH4ZNZZe7fajZuuoHHxQw2wA0cISTFeP_GDj89t2Yy-WcdRel9XvMfoAf6_UUPUicAcwKokiU\" style=\"color:rgb(255,255,255);text-decoration:none;padding:10px 25px;display:inline-block\" target=\"_blank\">\n<span>Je d\u00e9couvre</span>\n</a>\n</p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_textImageBlock_1\" role=\"presentation\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px 0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:20px 0px 40px;border-style:solid;border-width:10px;border-color:rgb(246,246,246)\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" dir=\"rtl\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<th bgcolor=\"\" dir=\"ltr\" style=\"width:300px;vertical-align:middle\" valign=\"middle\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:0px\">\n<a data-index=\"11\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw1aZ29I-Yl-9DZEp5uqcKFd\" href=\"https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3SGbPfuV650930AzWw-nFhw\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_3.png\" style=\"display:block;margin:0px auto;max-width:160px\" width=\"160\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</th>\n<th bgcolor=\"\" style=\"vertical-align:middle;width:300px\" valign=\"middle\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" dir=\"ltr\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding-left:20px;padding-right:20px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:25px;line-height:100%;color:rgb(0,0,0);font-weight:bold;font-style:normal\">Le <span class=\"il\">Chasseur</span> Fran\u00e7ais</p>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding-top:10px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0px auto\">\n<tbody>\n<tr>\n<td bgcolor=\"#000000\" style=\"border-radius:50px;border-style:solid;border-width:1px;border-color:rgb(0,0,0)\">\n<p style=\"padding:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:14px;line-height:140%;color:rgb(255,255,255);font-weight:bold;font-style:normal;margin:0px\">\n<a data-index=\"12\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw3srMRV-cUBpaPJfOZEqnJk\" href=\"https://tg.info.chasseur.com/1/c/k2q1iH2ZOqfrCBvXO0-tnU8AMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2XqucPZKx6KgKcJeRH1_KzQY5ot-CI0wnhK3XyTERskev6__RmGfxN6LE_HBH94DvXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhRXU8sYaBD_UaOGvOwYpYpYuRtFgEIaQZQmNztT71PO3bxx-QI9HYb9oFRqTNABuI0\" style=\"color:rgb(255,255,255);text-decoration:none;padding:10px 25px;display:inline-block\" target=\"_blank\">\n<span>Voir</span>\n</a>\n</p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</th>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_textImageBlock_3\" role=\"presentation\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px 0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:20px 0px 40px;border-style:solid;border-width:10px;border-color:rgb(246,246,246)\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" dir=\"rtl\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<th bgcolor=\"\" dir=\"ltr\" style=\"width:300px;vertical-align:middle\" valign=\"middle\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:0px\">\n<a data-index=\"13\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw1iJRbqYXoPRCz33kOI3Si8\" href=\"https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Aq6EGj-tQoR3HeNIusClbM\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_4.jpg\" style=\"display:block;margin:0px auto;max-width:160px\" width=\"160\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</th>\n<th bgcolor=\"\" style=\"vertical-align:middle;width:300px\" valign=\"middle\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" dir=\"ltr\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding-left:20px;padding-right:20px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:25px;line-height:100%;color:rgb(0,0,0);font-weight:bold;font-style:normal\">La Revue Nationale de la Chasse</p>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding-top:10px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0px auto\">\n<tbody>\n<tr>\n<td bgcolor=\"#000000\" style=\"border-radius:50px;border-style:solid;border-width:1px;border-color:rgb(0,0,0)\">\n<p style=\"padding:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:14px;line-height:140%;color:rgb(255,255,255);font-weight:bold;font-style:normal;margin:0px\">\n<a data-index=\"14\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw2y0HzxguFPYQmQ_VHAwDHm\" href=\"https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2DQkY0G9QioIfaALTCeqjMI\" style=\"color:rgb(255,255,255);text-decoration:none;padding:10px 25px;display:inline-block\" target=\"_blank\">\n<span>Voir</span>\n</a>\n</p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</th>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_textImageBlock_4\" role=\"presentation\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px 0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:20px 0px 40px;border-style:solid;border-width:10px;border-color:rgb(246,246,246)\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" dir=\"rtl\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<th bgcolor=\"\" dir=\"ltr\" style=\"width:300px;vertical-align:middle\" valign=\"middle\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:0px\">\n<a data-index=\"15\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs&amp;source=gmail&amp;ust=1764278541035000&amp;usg=AOvVaw0Zq39Sl8BGQVoBo5VPlF1w\" href=\"https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2GZ9reP2jZ9SXAAYq-mhbLs\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_5.png\" style=\"display:block;margin:0px auto;max-width:160px\" width=\"160\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</th>\n<th bgcolor=\"\" style=\"vertical-align:middle;width:300px\" valign=\"middle\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" dir=\"ltr\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding-left:20px;padding-right:20px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:25px;line-height:100%;color:rgb(0,0,0);font-weight:bold;font-style:normal\">L'Ami des Jardins et de la Maison</p>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"padding-top:10px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0px auto\">\n<tbody>\n<tr>\n<td bgcolor=\"#000000\" style=\"border-radius:50px;border-style:solid;border-width:1px;border-color:rgb(0,0,0)\">\n<p style=\"padding:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:14px;line-height:140%;color:rgb(255,255,255);font-weight:bold;font-style:normal;margin:0px\">\n<a data-index=\"16\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw1hEGXWO9wUI-H-DuLr0bua\" href=\"https://tg.info.chasseur.com/1/c/k2PCe1XusR9kJRq-FD-vqJjAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETuI85liXcJt5yNPCYEUKdwwklm7EbNNp9M4xynQ1UoLYCxxZr8nMHFtmUCKyxVfj2pECjL5xm0DPJUKK8N-lB66QgieoNsc9CcqdKRVZjT6Is3BqQ8pnnvo8nfBNJjDc6_nXAiLqE_FBbdjPc4c1evJKgMkQ1AKRjX9SBmbehEFP_6JMxO4wNMy-34f7QqmXiGG2nWY3OdrAxkpum1dib2Lu7Gx5tIDFmqmT9ECowuOE\" style=\"color:rgb(255,255,255);text-decoration:none;padding:10px 25px;display:inline-block\" target=\"_blank\">\n<span>Voir</span>\n</a>\n</p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</th>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_advantageBlock_19\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:10px 0px 0px\">\n<table align=\"center\" bgcolor=\"#779346\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:20px 10px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;font-size:0px\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\">\n<span style=\"vertical-align:top;width:145px;display:inline-block\" valign=\"top\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;width:125px\">\n<tbody>\n<tr>\n<td align=\"center\">\n<img alt=\"DES EXPERTS  \u00c0 VOTRE \u00c9COUTE\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_6.png\" style=\"display:block;margin:0px auto;max-width:50px\" width=\"50\"/>\n</td>\n</tr>\n<tr>\n<td style=\"padding:10px 5px 0px\" valign=\"top\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:120%;color:rgb(255,255,255);font-weight:normal;font-style:normal\">\n<span style=\"color:rgb(255,255,255)\">\n<a data-index=\"17\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw2e4Zxc0Hll6eucDtWoQyvn\" href=\"https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_5FJyW6VQqlRL_bIqyCS5aYOSQMmGKJzavvzkMSkAlVpSQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-Bnrpk1br1ogeodF-26seSg\" style=\"color:rgb(255,255,255);text-decoration:none\" target=\"_blank\">DES EXPERTS \u00c0 VOTRE \u00c9COUTE</a></span></p>\n</td>\n</tr>\n</tbody></table>\n</span>\n<span style=\"vertical-align:top;width:145px;display:inline-block\" valign=\"top\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;width:125px\">\n<tbody>\n<tr>\n<td align=\"center\">\n<img alt=\"LIVRAISON SUR MESURE\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_7.png\" style=\"display:block;margin:0px auto;max-width:50px\" width=\"50\"/>\n</td>\n</tr>\n<tr>\n<td style=\"padding:10px 5px 0px\" valign=\"top\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:120%;color:rgb(255,255,255);font-weight:normal;font-style:normal\">\n<span style=\"color:rgb(255,255,255)\">\n<a data-index=\"18\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw3AU-40Oe-sOg-g_Tmf4tHk\" href=\"https://tg.info.chasseur.com/1/c/k2fUh3FGx3OUnaPnFuRLvKWQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__My_e6ASPdVZumpsuJV1YQTkvyTG7CT33pplAUyaxAFXXdqAWjDpRmCsmU9FoSvqPmwg2qDxcsdkupe8h9pDhT4N0A3TBTWrlrLZIuqOZ_RdvNG9CY3_3kW2ANP4N6oIMwJNEO91kw0FDwKqxlHP5g\" style=\"color:rgb(255,255,255);text-decoration:none\" target=\"_blank\">LIVRAISON SUR MESURE</a></span></p>\n</td>\n</tr>\n</tbody></table>\n</span>\n<span style=\"vertical-align:top;width:145px;display:inline-block\" valign=\"top\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;width:125px\">\n<tbody>\n<tr>\n<td align=\"center\">\n<img alt=\"CHANGEZ D'AVIS FACILEMENT\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_8.png\" style=\"display:block;margin:0px auto;max-width:50px\" width=\"50\"/>\n</td>\n</tr>\n<tr>\n<td style=\"padding:10px 5px 0px\" valign=\"top\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:120%;color:rgb(255,255,255);font-weight:normal;font-style:normal\">\n<span style=\"color:rgb(255,255,255)\">\n<a data-index=\"19\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw354j-7PQ69wrhqfs-c1spR\" href=\"https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__74fWGXddUl2Dw88g0ZdDtvJuOmywkRB_VGDIsLZbbqSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikOYNjzunhzuLOQF3OKQYPzE\" style=\"color:rgb(255,255,255);text-decoration:none\" target=\"_blank\">CHANGEZ D'AVIS FACILEMENT</a></span></p>\n</td>\n</tr>\n</tbody></table>\n</span>\n<span style=\"vertical-align:top;width:145px;display:inline-block\" valign=\"top\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;width:125px\">\n<tbody>\n<tr>\n<td align=\"center\">\n<img alt=\"3-4 FOIS SANS FRAIS PAR CB\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_9.png\" style=\"display:block;margin:0px auto;max-width:50px\" width=\"50\"/>\n</td>\n</tr>\n<tr>\n<td style=\"padding:10px 5px 0px\" valign=\"top\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:120%;color:rgb(255,255,255);font-weight:normal;font-style:normal\">\n<span style=\"color:rgb(255,255,255)\">\n<a data-index=\"20\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw1Xm3Dw9YzIgIoGmlJGg3t9\" href=\"https://tg.info.chasseur.com/1/c/k29Tm4rIgZlg84jK7DK6JqKgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX__WO66xBtmTm2dIswypAczyyX8d5EwKz3cgiwj7WSN43ZEzOp3c-B-U7JNlgsSZaxIHPyU3RULtpoQRZiFCqqsG1ZthhCnYM9JSmdL1by3I4aqLpzT17KYaca0nceeHMfEb9EMzo3-bg9IG7_exiGBVpHxpiG7P5FdES7kWySSqc\" style=\"color:rgb(255,255,255);text-decoration:none\" target=\"_blank\">3-4 FOIS SANS FRAIS PAR CB</a></span></p>\n</td>\n</tr>\n</tbody></table>\n</span>\n</td></tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_mosaicBlock_6\" role=\"presentation\" style=\"max-width:600px;margin:0px auto;width:100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:5px;padding-bottom:5px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" bgcolor=\"#F6F6F6\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;border-style:none;border-width:0px\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"width:25%;height:100px;padding:0px\" valign=\"middle\">\n<a data-index=\"21\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw1IHnyhAnDEbb95uQw0SJrp\" href=\"https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazqgBjW9rTP-AjiGd1YmAFbw\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" height=\"\" src=\"img_10.png\" style=\"max-width:100%;display:block;margin:0px auto\" width=\"150\"/>\n</a>\n</td>\n<td style=\"width:25%;height:100px;padding:0px\" valign=\"middle\">\n<a data-index=\"22\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw0sE2oek-8K_q7_S_JPPEyy\" href=\"https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uaz8keszDyGcnZZAJUTS1d-Yw\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" height=\"\" src=\"img_11.png\" style=\"max-width:100%;display:block;margin:0px auto\" width=\"150\"/>\n</a>\n</td>\n<td style=\"width:25%;height:100px;padding:0px\" valign=\"middle\">\n<a data-index=\"23\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw0gBeD9SDsj24jVucIYi0DD\" href=\"https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazchNZ0f63e6Uzkja3WfTYaw\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" height=\"\" src=\"img_12.png\" style=\"max-width:100%;display:block;margin:0px auto\" width=\"150\"/>\n</a>\n</td>\n<td style=\"width:25%;height:100px;padding:0px\" valign=\"middle\">\n<a data-index=\"24\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw3OoKHwQcyFgKRTsdVGFA3i\" href=\"https://tg.info.chasseur.com/1/c/k2W2c626GkozNx2zzeWjVCUQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_8dEKXKCfbOjCpXQHFiV63SLLe18ama7MAl-YOLZ1k7_iSe0Vdz-B77szzHEevVCb8oFsFjGvLOx3H0Gnre9-RlYkXa8cYRYHnbNZyd3_uazmeuav3o7XI-obwdsGDloIQ\" target=\"_blank\">\n<img alt=\"\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" height=\"\" src=\"img_13.png\" style=\"max-width:100%;display:block;margin:0px auto\" width=\"150\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</td></tr>\n</tbody></table>\n</td></tr>\n</tbody></table>\n</td></tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_socialBlock_12\" role=\"presentation\" style=\"max-width:600px;margin:0px auto;width:100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:0px;padding-bottom:0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"max-width:600px;margin:0px auto;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:20px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\">\n<tbody>\n<tr>\n<td style=\"padding:0px 5px\" valign=\"bottom\">\n<a data-index=\"25\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw0BpNdWjy-zBMStJmMkxKnE\" href=\"https://tg.info.chasseur.com/1/c/k2YvQJd56g179wfmoRm3LcFQMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETgV3MfA0nOlJ_breW3AKU6WdMHcnOxdIEHoFIIxvTVIYsjsecTtP7wR2chnuedKQ8SQJ9_iIaHPyYbz7YfQiDZBowbnBtO18kcd_K8fyyCzEy7Hj6SjcCHMR8KK3Xm1aF1_jrZ7dHsOKjRk3MTyvJ-IsXy4rhn3iChz8GmbLgkOQ\" target=\"_blank\">\n<img alt=\"Facebook\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_14.png\" style=\"display:block\"/>\n</a>\n</td>\n<td style=\"padding:0px 5px\" valign=\"bottom\">\n<a data-index=\"26\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw13ohGOp_DA2TvoKIWfJYcG\" href=\"https://tg.info.chasseur.com/1/c/k2siF2bOzQznFEjn3EGOJrDAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFET6GHbksGDGmzWnE7Lnc6bLPgui5ues7U9AvHQqb6JnZjWLlJTsxgvWI3pG6MPzcw993YWuvRYKj_GNqFoaM7tTrogPXi9TN23FBcsB3D-NjHJm1gfbWmbmVr6zoe6qIuMWiNPz4UhEfs4GkvTlycT4xou_tAD9fs2bi-NbalpA1D0A7zhYpVc5IFGPzkZFFq4\" target=\"_blank\">\n<img alt=\"Youtube\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_15.png\" style=\"display:block\"/>\n</a>\n</td>\n<td style=\"padding:0px 5px\" valign=\"bottom\">\n<a data-index=\"27\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw1DigcX-Tnq1BjyYFrNxkPE\" href=\"https://tg.info.chasseur.com/1/c/k26J4ZkX9NJhLa9hVvg-67PAMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETOgGEz6Q6OthT8zCpHesZaZqbuiO6E3pIB7cYrBz4SqoS2XTneaSgbceK29diuftGSeVD_sNNSyGLZga6GPXqff4Bv-pgGa56EzstLG9M7RqR8pdskqEQAA7kXdkDzMuDZu7QHQmBoxC0BGBZQaZikE8B6a-xRYZAMundr-xWqao\" target=\"_blank\">\n<img alt=\"Instagram\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_16.png\" style=\"display:block\"/>\n</a>\n</td>\n<td style=\"padding:0px 5px\" valign=\"bottom\">\n<a data-index=\"28\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw1GYIjkajrsrfaB11SzPkDc\" href=\"https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETWmJ5gnHNN5qFxEsm6KVp5dhNLMoHLWs5NnlrGNRRMINkzmTqJuLWDU4TvB_DmskuPk-GrrDdC6BR4w8YB3yVs86VuRHNN4XZwYUWAbk_dEtrJorwXbDWMXk4xm57AXIYLdMFAF_URsQKXG2q-unAOL2yXgYePkEmAM1g-9RxJEo\" target=\"_blank\">\n<img alt=\"TikTok\" border=\"0\" class=\"CToWUd\" data-bit=\"iit\" src=\"img_17.png\" style=\"display:block\"/>\n</a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_copyBlock_1\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:10px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding:0px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:140%;color:rgb(0,0,0);font-style:normal;font-weight:normal\"></p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_copyBlock_2\" style=\"margin:0px auto;width:100%;max-width:600px\">\n<tbody>\n<tr>\n<td>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto;max-width:600px;width:100%;background-position:50% 0%;background-repeat:no-repeat;background-size:auto;background-image:none\">\n<tbody>\n<tr>\n<td style=\"padding:10px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding:0px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:140%;color:rgb(0,0,0);font-style:normal;font-weight:normal\"><span style=\"color:rgb(0,0,0)\">\n<a data-index=\"29\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw35LioXVd_Rde-CqasRhHM8\" href=\"https://tg.info.chasseur.com/1/c/k22A0_0CVL032nX0taFZFEtgMfoMQrakW5yfRO1CWXtJKDh2BQS51fsfdnxWDSwFETbearH8_ByF_2taq2rjsX_1Mr6cM4jycWhQWp8nokyiiF_tzTNAOeAknE0SkmFLzy8ZduoifOAYt4iHYofPQ3B24kDH8GE8h6nEuTv8IGFZK8z3YmHd0VzkXDLL3U2JAR9ccoGOounKvdT0eunyPIlu9Hb59g1bWtJDT6cxYAlYI\" target=\"_blank\">Mes pr\u00e9f\u00e9rences d'<span class=\"il\">abonnement</span></a></span></p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"m_3496691881672478915m_4095209192180711575m_-981943692218358508ko_footerBlock_2\" role=\"presentation\" style=\"max-width:600px;margin:0px auto;width:100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding-top:0px;padding-bottom:30px\">\n<table align=\"center\" bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin:0px auto\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"padding:0px 0px 10px;border-style:none;border-width:0px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"max-width:600px;margin:0px auto;width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"padding:0px 20px\">\n<p style=\"padding:0px;margin:0px;text-align:center;font-family:Roboto,Helvetica,sans-serif;font-size:10px;line-height:100%;color:rgb(0,0,0);font-style:normal;font-weight:normal\">\n<a data-index=\"30\" data-saferedirecturl=\"https://www.google.com/url?q=https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1&amp;source=gmail&amp;ust=1764278541036000&amp;usg=AOvVaw3zEQaoKmMGOr2lx9UxmsOx\" href=\"https://tg.info.chasseur.com/f/o2rpHh_Bq5dC25-F1bLgNyia_2o732_xvlpMqlpoq0V8giyTmiVqaBkhACa4_e0-l1\" style=\"color:rgb(0,0,0)\" target=\"_blank\"><span style=\"color:rgb(0,0,0)\">Me d\u00e9sabonner</span></a>\n</p>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>";
         const frame = document.getElementById('emailFrame');
+        let linksHighlighted = false;
+        let overlayElements = [];
 
         function init() {
             const doc = frame.contentDocument;
@@ -1093,85 +485,196 @@
             doc.write(content);
             doc.close();
 
-            // Apply base styles
-            applyFrameStyles(doc);
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+            `;
+            doc.head.appendChild(style);
 
-            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
-        function applyFrameStyles(doc) {
-            const style = doc.createElement('style');
-            style.innerHTML = `
-                body { margin: 0; font-family: sans-serif; background: #fff; }
-                /* Universal Scrollbar Hide */
-                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
-             `;
-            doc.head.appendChild(style);
-        }
-
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
+            const iframeEl = document.getElementById('emailFrame');
 
-            // Smooth transition exit (Scale only, no opacity)
-            frameEl.style.transform = 'scale(0.98)';
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.device-btn[onclick*="${mode}"]`);
+            if (btn) btn.classList.add('active');
 
-            setTimeout(() => {
-                frameEl.setAttribute('data-mode', mode);
+            // Remove/add scrollbar class
+            if (mode === 'mobile') {
+                frameEl.style.maxWidth = '375px';
+                iframeEl.classList.add('no-scrollbar');
+            } else if (mode === 'tablet') {
+                frameEl.style.maxWidth = '600px';
+                iframeEl.classList.add('no-scrollbar');
+            } else {
+                frameEl.style.maxWidth = '800px';
+                iframeEl.classList.remove('no-scrollbar');
+            }
 
-                const doc = frame.contentDocument;
-                if (doc) {
-                    if (mode !== 'desktop') {
-                        let mobileStyle = doc.getElementById('mobile-fix');
-                        if (!mobileStyle) {
-                            mobileStyle = doc.createElement('style');
-                            mobileStyle.id = 'mobile-fix';
-                            mobileStyle.innerHTML = `
-                                html, body { 
-                                    width: 100% !important; 
-                                    margin:0 !important; padding:0 !important;
-                                }
-                                table { width: 100% !important; max-width: 100% !important; }
-                                img { max-width: 100% !important; height: auto !important; }
-                             `;
-                            doc.head.appendChild(mobileStyle);
-                        }
+            // Update overlays if visible
+            if (linksHighlighted) {
+                setTimeout(updateOverlays, 100);
+            }
+        }
 
-                        if (mode === 'mobile') {
-                            if (doc.body) doc.body.style.paddingTop = '40px';
-                        } else {
-                            if (doc.body) doc.body.style.paddingTop = '0px';
-                        }
-                    } else {
-                        const s = doc.getElementById('mobile-fix');
-                        if (s) s.remove();
-                        if (doc.body) doc.body.style.paddingTop = '0';
-                    }
+        function highlightLink(idx) {
+            const doc = frame.contentDocument;
+            const link = doc.querySelector(`[data-index="${idx}"]`);
+            if (link) {
+                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Flash highlight
+                link.style.outline = '3px solid #50FA7B';
+                link.style.outlineOffset = '2px';
+                link.style.backgroundColor = 'rgba(80, 250, 123, 0.2)';
+
+                setTimeout(() => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                    link.style.backgroundColor = '';
+                }, 3000);
+            }
+        }
+
+        function toggleHighlightLinks() {
+            linksHighlighted = !linksHighlighted;
+            const btn = document.getElementById('highlightBtnText');
+            btn.textContent = linksHighlighted ? 'Hide Links' : 'Show Links';
+
+            if (linksHighlighted) {
+                createOverlays();
+            } else {
+                removeOverlays();
+            }
+        }
+
+        function createOverlays() {
+            removeOverlays();
+            const doc = frame.contentDocument;
+            const links = doc.querySelectorAll('[data-index]');
+            const container = document.getElementById('linkOverlays');
+            const frameRect = frame.getBoundingClientRect();
+            const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
+            const scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
+
+            links.forEach(link => {
+                const idx = link.getAttribute('data-index');
+                const rect = link.getBoundingClientRect();
+
+                // Create overlay badge
+                const badge = document.createElement('div');
+                badge.className = 'link-overlay-badge';
+                badge.textContent = idx;
+                badge.style.cssText = `
+                    position: fixed;
+                    left: ${frameRect.left + rect.left}px;
+                    top: ${frameRect.top + rect.top - 10}px;
+                    background: #BD93F9;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: bold;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-family: sans-serif;
+                    z-index: 1000;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    min-width: 16px;
+                    text-align: center;
+                `;
+                container.appendChild(badge);
+                overlayElements.push(badge);
+
+                // Add outline to link in iframe
+                link.style.outline = '2px solid #BD93F9';
+                link.style.outlineOffset = '1px';
+            });
+        }
+
+        function removeOverlays() {
+            const container = document.getElementById('linkOverlays');
+            container.innerHTML = '';
+            overlayElements = [];
+
+            // Remove outlines from iframe links
+            const doc = frame.contentDocument;
+            if (doc) {
+                const links = doc.querySelectorAll('[data-index]');
+                links.forEach(link => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                });
+            }
+        }
+
+        function updateOverlays() {
+            if (linksHighlighted) {
+                createOverlays();
+            }
+        }
+
+        // Update overlays on scroll
+        frame.addEventListener('load', () => {
+            frame.contentWindow.addEventListener('scroll', () => {
+                if (linksHighlighted) updateOverlays();
+            });
+        });
+
+        function openHtmlModal() {
+            const modal = document.getElementById('htmlModal');
+            const codeEl = document.getElementById('htmlSourceCode');
+            codeEl.textContent = content;
+            modal.classList.add('active');
+        }
+
+        function closeHtmlModal() {
+            document.getElementById('htmlModal').classList.remove('active');
+        }
+
+        function copyAllHtml() {
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Escape: close modal if open
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('htmlModal');
+                if (modal.classList.contains('active')) {
+                    closeHtmlModal();
                 }
-
-                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
-                if (targetBtn) targetBtn.classList.add('active');
-
-                // Smooth transition enter
-                frameEl.style.transform = 'scale(1)';
-            }, 200);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('closed');
-            event.currentTarget.classList.toggle('active');
-        }
-
-        function openSourceModal() {
-            document.getElementById('sourceText').value = content;
-            document.getElementById('sourceModal').style.display = 'flex';
-        }
-
-        function closeSourceModal() {
-            document.getElementById('sourceModal').style.display = 'none';
-        }
+            }
+            // 1, 2, 3: device modes
+            if (e.key === '1') setMode('mobile');
+            if (e.key === '2') setMode('tablet');
+            if (e.key === '3') setMode('desktop');
+            // T: toggle theme
+            if (e.key === 't' || e.key === 'T') toggleTheme();
+            // H: toggle highlight links
+            if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
+            // V: view HTML
+            if (e.key === 'v' || e.key === 'V') openHtmlModal();
+            // Arrow keys for scrolling iframe
+            if (e.key === 'ArrowDown') frame.contentWindow.scrollBy(0, 100);
+            if (e.key === 'ArrowUp') frame.contentWindow.scrollBy(0, -100);
+        });
 
         init();
     </script>

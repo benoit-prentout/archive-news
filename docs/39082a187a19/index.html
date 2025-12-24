@@ -12,835 +12,314 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        /* Viewer Specific Styles */
         body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewer-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .device-stage {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-
-        .device-frame {
-            background: #111;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Removed opacity transition */
-            transform: scale(1);
-        }
-
-        .device-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            flex: 1;
-        }
-
-        /* Device Modes */
-        .device-frame[data-mode="desktop"] {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            /* Lighter shadow */
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            /* Almost invisible border */
-        }
-
-        [data-theme="dark"] .device-frame[data-mode="desktop"] {
-            border-color: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .device-frame[data-mode="mobile"] {
-            width: 375px;
-            height: 812px;
-            max-height: 90vh;
-            border-radius: 40px;
-            border: 12px solid #111;
-        }
-
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .device-frame[data-mode="tablet"] {
-            width: 768px;
-            height: 1024px;
-            max-height: 90vh;
-            border-radius: 24px;
-            border: 12px solid #111;
-        }
-
-        /* Sidebar */
-        .meta-sidebar {
-            width: 400px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border-color);
-            padding: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-
-        .meta-sidebar.closed {
-            transform: translateX(100%);
-            width: 0;
-            border: none;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin: 25px 0 10px 0;
-            font-weight: 700;
-        }
-
-        .section-title:first-child {
-            margin-top: 0;
-        }
-
-        .meta-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .meta-key {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-align: left;
-        }
-
-        .meta-key::after {
-            content: ":";
-        }
-
-        .meta-val {
-            color: var(--text-primary);
-            font-weight: 400;
-            text-align: right;
-            margin-left: 10px;
-            word-break: break-word;
-        }
-
-        /* Links */
-        .link-list {
-            list-style: none;
-            padding: 0;
             margin: 0;
-        }
-
-        .link-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .link-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(2px);
-        }
-
-        .link-num {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-secondary);
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        [data-theme="dark"] .link-num {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .link-content {
-            flex: 1;
             overflow: hidden;
-        }
-
-        .link-txt {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .link-url {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Pixels */
-        .pixel-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-        }
-
-        .pixel-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 8px 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2980b9;
-        }
-
-        .pixel-row {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            cursor: help;
-        }
-
-        .pixel-row:last-child {
-            border-bottom: none;
-        }
-
-        .pixel-reason {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .pixel-url {
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.75rem;
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-        }
-
-        .sidebar-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dotted currentColor;
-        }
-
-        /* Header Controls */
-        .viewer-header {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-glass);
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .action-btn {
-            height: 36px;
-            padding: 0 12px;
-            min-width: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover,
-        .action-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="dark"] .pixel-header {
-            color: #8be9fd;
-            background: rgba(139, 233, 253, 0.1);
-        }
-
-        [data-theme="dark"] .pixel-box {
-            border-color: rgba(139, 233, 253, 0.2);
-        }
-
-        /* Modal for Source */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            width: 80%;
-            max-width: 800px;
-            height: 80vh;
-            background: var(--bg-body);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body {
-            flex: 1;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .source-area {
-            width: 100%;
-            height: 100%;
-            border: none;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            resize: none;
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        /* Copy Buttons */
-        .btn-copy-small {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            opacity: 0.6;
-        }
-
-        .btn-copy-small:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--accent-color);
-            opacity: 1;
-        }
-
-        .copy-success {
-            color: #50fa7b !important;
-            /* Dracula Green */
-            background: rgba(80, 250, 123, 0.1) !important;
-            border-color: #50fa7b !important;
-        }
-
-        @media (max-width: 768px) {
-            .hide-mobile {
-                display: none !important;
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="viewer-header">
-        <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
+    <div class="viewer-layout">
+        <!-- Main Content -->
+        <div class="viewer-main">
+            <!-- Header -->
+            <header class="viewer-header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <h1
+                        style="font-family: var(--font-header); font-size: 1rem; font-weight: 600; margin: 0; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent-blue);">
+                        Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺
+                    </h1>
+                </div>
 
-        <div class="device-toggles hide-mobile">
-            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
-            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
-            <button class="device-btn active" onclick="setMode('desktop')"
-                title="View in Desktop Mode (Filtered)">Desktop</button>
-        </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="viewer-toolbar">
+                        <button class="btn btn-secondary" onclick="toggleHighlightLinks()"
+                            title="Highlight all links (H)">
+                            <span id="highlightBtnText">Show Links</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
+                            View HTML
+                        </button>
+                    </div>
 
-        <div class="action-group">
-            <button class="action-btn" onclick="openSourceModal()" title="View Source Code">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            </button>
-            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                <svg class="icon icon-moon" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-                <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()"
-                title="Highlight Links in Email">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                </svg>
-            </button>
-            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
-                <span>Metadata</span>
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            </button>
-        </div>
-    </div>
+                    <span class="crm-badge" data-crm="Unknown">Unknown</span>
 
-    <div class="viewer-container">
-        <div class="device-stage">
-            <div class="device-frame" id="deviceFrame" data-mode="desktop">
-                <iframe id="emailFrame"></iframe>
+                    <div class="device-toggle hide-mobile">
+                        <button class="device-btn" onclick="setMode('mobile')" title="Mobile (1)">Mobile</button>
+                        <button class="device-btn" onclick="setMode('tablet')" title="Tablet (2)">Tablet</button>
+                        <button class="device-btn active" onclick="setMode('desktop')"
+                            title="Desktop (3)">Desktop</button>
+                    </div>
+
+                    <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme (T)">
+                        <svg class="icon icon-moon" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Email Content -->
+            <div class="viewer-content">
+                <div id="deviceFrame" data-mode="desktop"
+                    style="width: 100%; max-width: 800px; height: 100%; transition: max-width 0.3s ease;">
+                    <iframe id="emailFrame" class="email-frame"></iframe>
+                </div>
             </div>
         </div>
 
-        <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header">Metadata</div>
+        <!-- Sidebar -->
+        <aside class="viewer-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Metadata</span>
+            </div>
+
             <div class="sidebar-content">
-                <div class="section-title">General Info</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject</span>
-                    <span class="meta-val">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Sender</span>
-                    <span class="meta-val">"Sophie d'Ultra Premium Direct" <sophie@info.ultrapremiumdirect.com></span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Received</span>
-                    <span class="meta-val">04/12/2025 à 11:02</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Archived</span>
-                    <span class="meta-val">21/12/2025 à 14:03</span>
+                <!-- General Info -->
+                <div class="meta-section">
+                    <div class="meta-section-title">General</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Sender</span>
+                        <span class="meta-val">Sophie d'Ultra Premium Direct</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Subject</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺">Le Coffret Mastu : le cadeau de Noël idéal pour votre animal 🐶😺</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Preheader</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...">[Edition limitée] Dépêchez-vous, il n'en reste plus beaucoup ! Le coffret parfait pour votre animal Ultra Premium Direct s'associe au créateur de contenu et amo...</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Received</span>
+                        <span class="meta-val">04/12/2025 à 11:02</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">CRM</span>
+                        <span class="meta-val text-cyan">Unknown</span>
+                    </div>
                 </div>
 
-                <div class="section-title">Technical</div>
-                <div class="meta-row">
-                    <span class="meta-key">Email Size</span>
-                    <span class="meta-val">27.7 KB</span>
+                <!-- Technical -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Technical</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Size</span>
+                        <span class="meta-val">27.7 KB</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Clipping Risk</span>
+                        <span class="meta-val text-green">
+                            Low
+                        </span>
+                    </div>
                 </div>
-                <div class="meta-row">
-                    <span class="meta-key">Read Time</span>
-                    <span class="meta-val">2 min</span>
-                </div>
+
+                <!-- Tracking Pixels -->
                 
-                <div class="pixel-box">
-                    <div class="pixel-header">Tracking Pixels (1)</div>
+                <div class="meta-section">
+                    <div class="meta-section-title">Tracking Pixels (1)</div>
                     
-                    <div class="pixel-row">
-                        <div class="pixel-reason">Integration: OK</div>
-                        <div class="pixel-url">https://click.info.ultrapremiumdirect.com/open.aspx?ffcb10-fec1157875630d78-fe5f12747561017f741d-fe3a11717564047d761c74-ff9a1071-fe2215767363017f7c1677-ff63167974&d=500020&bmt=0</div>
+                    <div class="link-card" style="cursor: default;">
+                        <div class="link-content">
+                            <div class="link-text text-green">Integration: OK</div>
+                            <div class="link-url">https://click.info.ultrapremiumdirect.com/open.aspx?ffcb10-fec1157875630d78-fe5f12747561017f741d-fe3a11717564047d761c74-ff9a1071-fe2215767363017f7c1677-ff63167974&d=500020&bmt=0</div>
+                        </div>
                     </div>
                     
                 </div>
                 
 
-                <div class="section-title">Quality Audit</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject Length</span>
-                    <span class="meta-val" style="color: orange">
-                        Too Long
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Unsubscribe Link</span>
-                    <span class="meta-val" style="color: red">
-                        Missing
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Images without Alt</span>
-                    <span class="meta-val" style="color: orange">
-                        11
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Clipping Risk</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Low
-                    </span>
-                </div>
-
-                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Links (13)</span>
-                    <button onclick="copyLinks([{'index': 1, 'txt': '', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95'}, {'index': 2, 'txt': 'En savoir plus', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef'}, {'index': 3, 'txt': 'Commander le coffret', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e'}, {'index': 4, 'txt': 'Commander le coffret', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40'}, {'index': 5, 'txt': '', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2'}, {'index': 6, 'txt': 'En savoir plus', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2'}, {'index': 7, 'txt': '05.64.25.03.08', 'original_url': 'tel:0564250308', 'final_url': 'tel:0564250308'}, {'index': 8, 'txt': 'contact@ultrapremiumdirect.com', 'original_url': 'mailto:contact@ultrapremiumdirect.com', 'final_url': 'mailto:contact@ultrapremiumdirect.com'}, {'index': 9, 'txt': '', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b'}, {'index': 10, 'txt': '', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5'}, {'index': 11, 'txt': '', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2'}, {'index': 12, 'txt': '', 'original_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e', 'final_url': 'https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e'}, {'index': 13, 'txt': 'Ne plus recevoir de mail de notre part', 'original_url': 'https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170', 'final_url': 'https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170'}])"
-                        style="border:none; background:none; color:var(--accent-color); cursor:pointer; font-size:0.7em; font-weight:600;">COPY
-                        ALL</button>
-                </div>
-                <ul class="link-list">
+                <!-- All Links -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Links (13)</div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(1)">1</div>
-                        <div class="link-content" onclick="highlightLink(1)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(1)">
+                        <span class="link-index">1</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(2)">2</div>
-                        <div class="link-content" onclick="highlightLink(2)">
-                            <div class="link-txt">En savoir plus</div>
+                    <div class="link-card" onclick="highlightLink(2)">
+                        <span class="link-index">2</span>
+                        <div class="link-content">
+                            <div class="link-text">En savoir plus</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(3)">3</div>
-                        <div class="link-content" onclick="highlightLink(3)">
-                            <div class="link-txt">Commander le coffret</div>
+                    <div class="link-card" onclick="highlightLink(3)">
+                        <span class="link-index">3</span>
+                        <div class="link-content">
+                            <div class="link-text">Commander le coffret</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(4)">4</div>
-                        <div class="link-content" onclick="highlightLink(4)">
-                            <div class="link-txt">Commander le coffret</div>
+                    <div class="link-card" onclick="highlightLink(4)">
+                        <span class="link-index">4</span>
+                        <div class="link-content">
+                            <div class="link-text">Commander le coffret</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(5)">5</div>
-                        <div class="link-content" onclick="highlightLink(5)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(5)">
+                        <span class="link-index">5</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(6)">6</div>
-                        <div class="link-content" onclick="highlightLink(6)">
-                            <div class="link-txt">En savoir plus</div>
+                    <div class="link-card" onclick="highlightLink(6)">
+                        <span class="link-index">6</span>
+                        <div class="link-content">
+                            <div class="link-text">En savoir plus</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(7)">7</div>
-                        <div class="link-content" onclick="highlightLink(7)">
-                            <div class="link-txt">05.64.25.03.08</div>
+                    <div class="link-card" onclick="highlightLink(7)">
+                        <span class="link-index">7</span>
+                        <div class="link-content">
+                            <div class="link-text">05.64.25.03.08</div>
                             <div class="link-url">tel:0564250308</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('tel:0564250308', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('tel:0564250308')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(8)">8</div>
-                        <div class="link-content" onclick="highlightLink(8)">
-                            <div class="link-txt">contact@ultrapremiumdirect.com</div>
+                    <div class="link-card" onclick="highlightLink(8)">
+                        <span class="link-index">8</span>
+                        <div class="link-content">
+                            <div class="link-text">contact@ultrapremiumdirect.com</div>
                             <div class="link-url">mailto:contact@ultrapremiumdirect.com</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('mailto:contact@ultrapremiumdirect.com', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('mailto:contact@ultrapremiumdirect.com')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(9)">9</div>
-                        <div class="link-content" onclick="highlightLink(9)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(9)">
+                        <span class="link-index">9</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(10)">10</div>
-                        <div class="link-content" onclick="highlightLink(10)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(10)">
+                        <span class="link-index">10</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(11)">11</div>
-                        <div class="link-content" onclick="highlightLink(11)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(11)">
+                        <span class="link-index">11</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(12)">12</div>
-                        <div class="link-content" onclick="highlightLink(12)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(12)">
+                        <span class="link-index">12</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(13)">13</div>
-                        <div class="link-content" onclick="highlightLink(13)">
-                            <div class="link-txt">Ne plus recevoir de mail de notre part</div>
+                    <div class="link-card" onclick="highlightLink(13)">
+                        <span class="link-index">13</span>
+                        <div class="link-content">
+                            <div class="link-text">Ne plus recevoir de mail de notre part</div>
                             <div class="link-url">https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170')">Copy</button>
+                    </div>
                     
-                </ul>
-            </div>
+                </div>
 
-            <div class="sidebar-footer">
-                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. All rights
-                reserved.
+                <!-- Footer -->
+                <div class="meta-section"
+                    style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+                        © 2025 <a href="https://github.com/benoit-prentout" target="_blank"
+                            style="color: var(--accent-blue); text-decoration: none;">Benoît Prentout</a>. All rights
+                        reserved.
+                    </p>
+                </div>
             </div>
-        </div>
+        </aside>
     </div>
 
-    <!-- Code Modal -->
-    <div id="sourceModal" class="modal-overlay">
-        <div class="modal">
+    <!-- HTML Source Modal -->
+    <div class="modal-overlay" id="htmlModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <span>HTML Source</span>
-                <button class="close-btn" onclick="closeSourceModal()">×</button>
+                <span class="modal-title">HTML Source</span>
+                <button class="modal-close" onclick="closeHtmlModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <textarea id="sourceText" class="source-area" readonly></textarea>
+                <pre class="code-block" id="htmlSourceCode"></pre>
             </div>
-            <div class="modal-footer"
-                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="action-btn" onclick="copySource()">
-                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span>Copy All</span>
-                </button>
-                <button class="action-btn" onclick="closeSourceModal()">Close</button>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="copyAllHtml()">Copy HTML</button>
             </div>
         </div>
     </div>
+
+    <!-- Link overlays container -->
+    <div id="linkOverlays" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100;"></div>
 
     <script src="../assets/js/main.js"></script>
     <script>
         const content = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n\n<html>\n<head>\n<meta content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\" name=\"viewport\"/>\n<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"/>\n<style type=\"text/css\">\r\n      ReadMsgBody{ width: 100%;}\r\n      .ExternalClass {width: 100%;}\r\n      .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}\r\n      body {-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;margin:0 !important;}\r\n      p { margin: 1em 0;}\r\n      table td { border-collapse: collapse;}\r\n      img {outline:0;}\r\n      a img {border:none;}\r\n      @-ms-viewport{ width: device-width;}\r\n    </style>\n<style type=\"text/css\">\r\n      @media only screen and (max-width: 480px) {\r\n        .container {width: 100% !important;}\r\n        .footer { width:auto !important; margin-left:0; }\r\n        .mobile-hidden { display:none !important; }\r\n        .logo { display:block !important; padding:0 !important; }\r\n        img { max-width:100% !important; height:auto !important; max-height:auto !important;}\r\n        .header img{max-width:100% !important;height:auto !important; max-height:auto !important;}\r\n        .photo img { width:100% !important; max-width:100% !important; height:auto !important;}\r\n        .drop { display:block !important; width: 100% !important; float:left; clear:both;}\r\n        .footerlogo { display:block !important; width: 100% !important; padding-top:15px; float:left; clear:both;}\r\n        .nav4, .nav5, .nav6 { display: none !important; }\r\n        .tableBlock {width:100% !important;}\r\n        .responsive-td {width:100% !important; display:block !important; padding:0 !important; }\r\n        .fluid, .fluid-centered {\r\n          width: 100% !important;\r\n          max-width: 100% !important;\r\n          height: auto !important;\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        .fluid-centered {\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        /* MOBILE GLOBAL STYLES - DO NOT CHANGE */\r\nbody, .tb_properties{font-family: Arial !important; font-size: 16px !important; color: #393939 !important; line-height: 1.5 !important; padding: 0px !important; }.buttonstyles{font-family: Arial, helvetica, sans-serif !important; font-size: 14px !important; color: #FFFFFF !important; padding: 10px 15px !important; }h1{font-family: Arial !important; font-size: 22px !important; color: #202020 !important; line-height: 1 !important; }h2{font-family: Arial !important; font-size: 20px !important; color: #202020 !important; line-height: 1 !important; }h3{font-family: Arial !important; font-size: 18px !important; color: #202020 !important; line-height: 1 !important; }a:not(.buttonstyles){line-height: 1 !important; }.mobile-hidden{display: none !important; }.responsive-td {width: 100% !important;\r\n display: block !important; padding: 0 !important;}\r\n/* END OF MOBILE GLOBAL STYLES - DO NOT CHANGE */\r\n      }\r\n      @media only screen and (max-width: 640px) {\r\n        .container { width:100% !important; }\r\n        .mobile-hidden { display:none !important; }\r\n        .logo { display:block !important; padding:0 !important; }\r\n        .photo img { width:100% !important; height:auto !important;}\r\n        .nav5, .nav6 { display: none !important;}\r\n        .fluid, .fluid-centered {\r\n          width: 100% !important;\r\n          max-width: 100% !important;\r\n          height: auto !important;\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n        .fluid-centered {\r\n          margin-left: auto !important;\r\n          margin-right: auto !important;\r\n        }\r\n      }\r\n    </style>\n<!--[if mso]>       <style type=\"text/css\">           /* Begin Outlook Font Fix */               body, table, td {                  font-family : Arial, helvetica, sans-serif;                  line-height : 150%;                  font-size : 16px;                  color : #515151;               }           /* End Outlook Font Fix */       </style>     <![endif]-->\n</head>\n<body bgcolor=\"#EEEEEE\" style=\"margin: 0px; -webkit-text-size-adjust:none;background-color : #EEEEEE; font-family : Arial, helvetica, sans-serif; line-height : 150%; font-size : 16px; color : #515151; padding : 0px; \" text=\"#808080\"><style type=\"text/css\">\r\ndiv.preheader \r\n{ display: none !important; } \r\n</style>\n<div class=\"preheader\" style=\"font-size: 1px; display: none !important;\">[Edition limit\u00e9e] D\u00e9p\u00eachez-vous, il n'en reste plus beaucoup !</div>\n<div style=\"font-size:0; line-height:0;\"><img alt=\"\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/></div>\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td align=\"center\" valign=\"top\">\n</td>\n</tr>\n<tr>\n<td align=\"center\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"container\" width=\"600\">\n<tr>\n<td>\n<table bgcolor=\"#FFF9F5\" cellpadding=\"0\" cellspacing=\"0\" class=\"tb_properties border_style\" style=\"font-size : 16px; font-family : Arial, helvetica, sans-serif; color : #515151;background-color : #FFF9F5; border : 0px; line-height : 100%; \" width=\"100%\">\n<tr>\n<td align=\"center\" valign=\"top\">\n<table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td class=\"content_padding\" style=\"border:0px;padding : 0px 0px 10px; \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr>\n<td align=\"left\" class=\"header\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: #FFFAF5; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<a data-index=\"1\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e42660d6f36e0594490150539e0f977a0e46e7e40f5558e2d27848d684455d47d292cd581e516f0a7b8f77209f65197d373853ea5629aecb95\" title=\"Je d\u00e9couvre la box\"><img alt=\"\" data-assetid=\"182223\" src=\"img_0.gif\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"600\"/></a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 40px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><div style=\"text-align: center;\">\n<span style=\"font-size:17px;line-height:1.8\"><b>Le coffret parfait pour votre animal</b></span></div><p data-end=\"256\" data-start=\"154\" style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Ultra Premium Direct s'associe au cr\u00e9ateur de contenu et amoureux des animaux, <b>Mastu</b>, pour d\u00e9voiler une <b>\u00e9dition limit\u00e9e*</b> unique !</span></p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Pens\u00e9 comme une v\u00e9ritable <b>exp\u00e9rience de complicit\u00e9</b>, c'est le coffret parfait pour g\u00e2ter votre chien ou votre chat. Il combine le meilleur de la nutrition Ultra Premium Direct et une s\u00e9lection de jouets et accessoires exclusifs, <b>imagin\u00e9s et co-cr\u00e9\u00e9s avec Mastu.</b></span><br/>\r\n\t\u00a0</p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Une belle dose d\u2019amour, de gourmandise et de surprises pour renforcer chaque jour le lien avec votre animal. Mais attention, c'est une <b>\u00c9dition Limit\u00e9e</b> !</span></p><p style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8;\">Valeur r\u00e9elle des produits : <b>plus de\u00a050\u20ac</b><br/>\r\n\tPrix exceptionnel du coffret : <b>34,90\u20ac</b></span></p></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"border: 0px; background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 0px 20px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"2\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4467457d3145f76c5bb5bb729edafdc8a0ef5b8af9ddf2b320abb694ca6eacd7371f66af05effb113cecaa5218952dab3c9ddb0fe8b4b36ef\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">En savoir plus </a></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr>\n<td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"182269\" src=\"img_1.jpg\" style=\"display: block; padding: 25px 0px 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></td></tr></table></td></tr></table></td>\n<td class=\"responsive-td\" style=\"width: 50%; padding-left: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><div style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8\"><b>Coffret pour Chien\u00a0\ud83d\udc36</b><br/>\n<br/>\r\n\tVous y trouverez l'<b>huile de saumon Mastu</b>, deux \u00e9chantillons de <b>croquettes fabriqu\u00e9es sans c\u00e9r\u00e9ales</b> (poulet ou saumon frais), des <b>friandises articulation</b> et deux <b>toppers au poulet</b> pour transformer les repas en festin.<br/>\r\n\tC\u00f4t\u00e9 accessoires exclusifs co-cr\u00e9\u00e9s avec Mastu : un <b>jouet indestructible</b> id\u00e9al pour l'hygi\u00e8ne dentaire, une <b>peluche </b>robuste, un <b>tote bag </b>et un <b>gobelet personnalis\u00e9</b>.\u00a0</span></div></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"3\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49c30856aa8d5cefe893e2960572c5d583464c58ca298ffbe60e0fa8ccea6002a12bd2e25ee43311abbe1e29ca7be6cfff3d860ffa520e90e\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #6B9DB3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">Commander le coffret</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr>\n<td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><div style=\"text-align: center;\">\n<span style=\"font-size:14px;line-height:1.8\"><b>Coffret pour Chat\u00a0\ud83d\udc31</b><br/>\n<br/>\r\n\tVous y trouverez l'<b>huile de saumon Mastu</b>, un \u00e9chantillon de <b>croquettes fabriqu\u00e9es sans c\u00e9r\u00e9ales</b> (poulet frais), des <b>friandises</b> au saumon<b> (anti-boules de poils),\u00a0</b>deux <b>sachets fra\u00eecheur </b>(saumon/cabillaud &amp; poulet/dinde)<b>, </b>des <b>friandises cr\u00e9meuses </b>et <b>2 bo\u00eetes d'\u00e9minc\u00e9s en sauce</b> (poulet &amp; veau).<br/>\r\n\tC\u00f4t\u00e9 accessoires exclusifs co-cr\u00e9\u00e9s avec Mastu : un <b>jouet interactif</b>, une <b>canne \u00e0 p\u00eache avec herbe \u00e0 chat</b>, des balles, un <b>tote bag </b>et un <b>gobelet personnalis\u00e9</b>.\u00a0</span></div></td></tr></table></td><td class=\"responsive-td\" style=\"width: 50%; padding-left: 3px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 25px 0px 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<img alt=\"\" data-assetid=\"182270\" src=\"img_2.jpg\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 20px 0px 25px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"4\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4076792841bb7ad1dfd4875cc189e2ff89de73ba854c2871a2735ebcafcacf9c001da90b152e663fe496ca9be5c0e4789afd8c7433c437b40\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"Je d\u00e9couvre la box\">Commander le coffret</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td class=\"responsive-td\" style=\"width: 50%; padding-right: 5px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding-bottom: 10px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<a data-index=\"5\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2\" title=\"\"><img alt=\"\" data-assetid=\"185068\" src=\"img_3.jpg\" style=\"display: block; padding: 0px; text-align: center; height: auto; width: 100%; border: 0px;\" width=\"2000\"/></a></td></tr></table></td></tr></table></td>\n<td class=\"responsive-td\" style=\"width: 50%; padding-left: 5px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding-bottom: 10px; \">\u00a0<div style=\"line-height: 150%;\">\n</div>\u00a0<div style=\"line-height: 150%; text-align: center;\">\n<span style=\"font-size:14px;\"><b>Dites adieu aux boules de poils !\u00a0\u2728</b></span><br/>\r\n\t\u00a0</div><div style=\"line-height: 150%; text-align: center;\">\n<span style=\"font-size:14px;\">Offrez \u00e0 votre chat un moment de plaisir tout en <b>am\u00e9liorant son confort digestif</b>. D\u00e9couvrez en<b> \u00e9dition limit\u00e9e</b> nos friandises au saumon qui <b>raviront le corps et les papilles </b>de votre chat.</span></div></td></tr></table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 6px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px 0px 10px; \"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr>\n<td bgcolor=\"#68A4B6\" class=\"innertd buttonblock\" style=\" border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; background-color: #68A4B6;\"><a class=\"buttonstyles\" data-index=\"6\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e49be35f542411098e13d7fd41e540116ff9bccb7db896beceeb93cc314a5760f977f090a1cfbf9eec7f15b3ccf48ae9798239690511fabfe2\" style=\" font-size: 16px; font-family: Arial, helvetica, sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #68A4B6; border: 0px solid #0176D3; padding: 10px 20px; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;\" target=\"_blank\" title=\"En savoir plus\">En savoir plus</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr>\n</table><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%;\"><tr><td style=\"width: 25%; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\">\n<img alt=\"\" data-assetid=\"171692\" height=\"125\" src=\"img_4.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171693\" height=\"125\" src=\"img_5.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr>\n</table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px; padding-right: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171748\" height=\"125\" src=\"img_6.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td><td style=\"width: 25%; padding-left: 0px;\" valign=\"top\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\">\n<table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"center\"><img alt=\"\" data-assetid=\"171695\" height=\"125\" src=\"img_7.png\" style=\"display: block; padding: 0px; text-align: center; height: 125px; width: 125px; border: 0px;\" width=\"125\"/></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n<tr>\n<td align=\"left\" class=\"\" valign=\"top\">\n<table cellpadding=\"0\" cellspacing=\"0\" class=\"slot-styling\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; \" width=\"100%\"><tr><td class=\"slot-styling camarker-inner\" style=\"padding: 0px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"min-width: 100%; \" width=\"100%\"><tr><td class=\"stylingblock-content-margin-cell\" style=\"padding: 0px 20px; \"><table cellpadding=\"0\" cellspacing=\"0\" class=\"stylingblock-content-wrapper\" role=\"presentation\" style=\"background-color: transparent; min-width: 100%; border-top: 1px solid #848487; border-right: 0px; border-bottom: 0px; border-left: 0px; \" width=\"100%\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 0px; \"><p style=\"text-align: center; line-height: 115%;\">\n</p><div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:13px;\">\n<span><b>Nos experts en nutrition vous r\u00e9pondent :</b></span><br/>\n<span>Au</span>\u00a0\r\n    <b>\n<a data-index=\"7\" href=\"tel:0564250308\" style=\"text-decoration: none; color: inherit;\">\r\n        05.64.25.03.08\r\n      </a>\n</b>\u00a0\r\n    <span>(num\u00e9ro non surtax\u00e9) ou par email \u00e0</span>\u00a0\r\n    <b>\n<a data-index=\"8\" href=\"mailto:contact@ultrapremiumdirect.com\" style=\"text-decoration: none; color: inherit;\">\r\n        contact@ultrapremiumdirect.com\r\n      </a>\n</b>\n</span>\n</div>\n<div style=\"text-align: center;\">\n<div style=\"width:300px;height:30px;background:none;margin:auto;padding:10px;text-align:center\">\n<a data-index=\"9\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4cb5a9baacc245a1c9c21cdb777329310beb084744824cdb98338716833dee9b862b50ff84f3bf09cd542d54d06cfde21f3904cdbd7f6472b\" title=\"\"><img alt=\"Suivez-nous sur Instagram\" data-assetid=\"6804\" height=\"30\" src=\"img_8.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"10\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4408fefc4e75b69a9e0db74f7db7ad15196c4266c9f843d5d4deff67bde3b826d00ea419ebb50148c4b2efc15e31019305d782be5ff1fa1d5\" title=\"\"><img alt=\"\" data-assetid=\"6803\" height=\"30\" src=\"img_9.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"11\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e4bee9cc7e49d3fbd7b47bfab9eb8ddc6b2ec0b1be332e1b870bb9cb45e8fba95032a20045fb41ac095c271c4b162ad9dd39bb816f35554bc2\" title=\"\"><img alt=\"\" data-assetid=\"6805\" height=\"30\" src=\"img_10.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n<a data-index=\"12\" data-linkto=\"https://\" href=\"https://click.info.ultrapremiumdirect.com/?qs=13bdd49838d249e46af8f5b67c289c8ae78e97f7fdfe0e5ac5b8146774f34618b5e158e9a4ec008496dda66625e9b024242e5d42b67963715cfc302178dd0b4e\" title=\"\"><img alt=\"\" data-assetid=\"6806\" height=\"30\" src=\"img_11.png\" style=\"display:inline-block;margin-left:5px;margin-right:5px\" width=\"30\"/></a>\n</div>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:12px;\">Ultra Premium Direct - Agropole 3 Chemin du Saylat CS 30009 47901 AGEN CEDEX 9</span><br/><br/>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:12px;\">*Vous pouvez ajouter au maximum 5 coffrets cadeaux dans votre panier, chien et chat confondus.</span><br/><br/>\n<div style=\"text-align: center; line-height: 115%;\">\n<span style=\"font-size:10px;\"><a data-index=\"13\" data-linkto=\"other\" href=\"https://click.info.ultrapremiumdirect.com/unsub_center.aspx?qs=ab3b362d9c04d29ed22666c3c7b8fcea1ca00a9c2ccfd4fdeaf2fdf45ee698d342006cf7a79083a5d5db20d49b71f4874bcfc8dbfa855b0af4053877f1df9c0b76757bdb2b5b2170\" style=\"color:#AE9973;text-decoration:underline;\" title=\"Ne plus recevoir de mail de notre part\">Ne plus recevoir de mail de notre part</a></span></div></div></div></div></td></tr></table></td></tr></table></td></tr></table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n<tr>\n<td valign=\"top\">\n</td>\n</tr>\n</table>\n</body>\n</html>\n";
         const frame = document.getElementById('emailFrame');
+        let linksHighlighted = false;
+        let overlayElements = [];
 
         function init() {
             const doc = frame.contentDocument;
@@ -848,85 +327,196 @@
             doc.write(content);
             doc.close();
 
-            // Apply base styles
-            applyFrameStyles(doc);
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+            `;
+            doc.head.appendChild(style);
 
-            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
-        function applyFrameStyles(doc) {
-            const style = doc.createElement('style');
-            style.innerHTML = `
-                body { margin: 0; font-family: sans-serif; background: #fff; }
-                /* Universal Scrollbar Hide */
-                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
-             `;
-            doc.head.appendChild(style);
-        }
-
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
+            const iframeEl = document.getElementById('emailFrame');
 
-            // Smooth transition exit (Scale only, no opacity)
-            frameEl.style.transform = 'scale(0.98)';
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.device-btn[onclick*="${mode}"]`);
+            if (btn) btn.classList.add('active');
 
-            setTimeout(() => {
-                frameEl.setAttribute('data-mode', mode);
+            // Remove/add scrollbar class
+            if (mode === 'mobile') {
+                frameEl.style.maxWidth = '375px';
+                iframeEl.classList.add('no-scrollbar');
+            } else if (mode === 'tablet') {
+                frameEl.style.maxWidth = '600px';
+                iframeEl.classList.add('no-scrollbar');
+            } else {
+                frameEl.style.maxWidth = '800px';
+                iframeEl.classList.remove('no-scrollbar');
+            }
 
-                const doc = frame.contentDocument;
-                if (doc) {
-                    if (mode !== 'desktop') {
-                        let mobileStyle = doc.getElementById('mobile-fix');
-                        if (!mobileStyle) {
-                            mobileStyle = doc.createElement('style');
-                            mobileStyle.id = 'mobile-fix';
-                            mobileStyle.innerHTML = `
-                                html, body { 
-                                    width: 100% !important; 
-                                    margin:0 !important; padding:0 !important;
-                                }
-                                table { width: 100% !important; max-width: 100% !important; }
-                                img { max-width: 100% !important; height: auto !important; }
-                             `;
-                            doc.head.appendChild(mobileStyle);
-                        }
+            // Update overlays if visible
+            if (linksHighlighted) {
+                setTimeout(updateOverlays, 100);
+            }
+        }
 
-                        if (mode === 'mobile') {
-                            if (doc.body) doc.body.style.paddingTop = '40px';
-                        } else {
-                            if (doc.body) doc.body.style.paddingTop = '0px';
-                        }
-                    } else {
-                        const s = doc.getElementById('mobile-fix');
-                        if (s) s.remove();
-                        if (doc.body) doc.body.style.paddingTop = '0';
-                    }
+        function highlightLink(idx) {
+            const doc = frame.contentDocument;
+            const link = doc.querySelector(`[data-index="${idx}"]`);
+            if (link) {
+                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Flash highlight
+                link.style.outline = '3px solid #50FA7B';
+                link.style.outlineOffset = '2px';
+                link.style.backgroundColor = 'rgba(80, 250, 123, 0.2)';
+
+                setTimeout(() => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                    link.style.backgroundColor = '';
+                }, 3000);
+            }
+        }
+
+        function toggleHighlightLinks() {
+            linksHighlighted = !linksHighlighted;
+            const btn = document.getElementById('highlightBtnText');
+            btn.textContent = linksHighlighted ? 'Hide Links' : 'Show Links';
+
+            if (linksHighlighted) {
+                createOverlays();
+            } else {
+                removeOverlays();
+            }
+        }
+
+        function createOverlays() {
+            removeOverlays();
+            const doc = frame.contentDocument;
+            const links = doc.querySelectorAll('[data-index]');
+            const container = document.getElementById('linkOverlays');
+            const frameRect = frame.getBoundingClientRect();
+            const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
+            const scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
+
+            links.forEach(link => {
+                const idx = link.getAttribute('data-index');
+                const rect = link.getBoundingClientRect();
+
+                // Create overlay badge
+                const badge = document.createElement('div');
+                badge.className = 'link-overlay-badge';
+                badge.textContent = idx;
+                badge.style.cssText = `
+                    position: fixed;
+                    left: ${frameRect.left + rect.left}px;
+                    top: ${frameRect.top + rect.top - 10}px;
+                    background: #BD93F9;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: bold;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-family: sans-serif;
+                    z-index: 1000;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    min-width: 16px;
+                    text-align: center;
+                `;
+                container.appendChild(badge);
+                overlayElements.push(badge);
+
+                // Add outline to link in iframe
+                link.style.outline = '2px solid #BD93F9';
+                link.style.outlineOffset = '1px';
+            });
+        }
+
+        function removeOverlays() {
+            const container = document.getElementById('linkOverlays');
+            container.innerHTML = '';
+            overlayElements = [];
+
+            // Remove outlines from iframe links
+            const doc = frame.contentDocument;
+            if (doc) {
+                const links = doc.querySelectorAll('[data-index]');
+                links.forEach(link => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                });
+            }
+        }
+
+        function updateOverlays() {
+            if (linksHighlighted) {
+                createOverlays();
+            }
+        }
+
+        // Update overlays on scroll
+        frame.addEventListener('load', () => {
+            frame.contentWindow.addEventListener('scroll', () => {
+                if (linksHighlighted) updateOverlays();
+            });
+        });
+
+        function openHtmlModal() {
+            const modal = document.getElementById('htmlModal');
+            const codeEl = document.getElementById('htmlSourceCode');
+            codeEl.textContent = content;
+            modal.classList.add('active');
+        }
+
+        function closeHtmlModal() {
+            document.getElementById('htmlModal').classList.remove('active');
+        }
+
+        function copyAllHtml() {
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Escape: close modal if open
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('htmlModal');
+                if (modal.classList.contains('active')) {
+                    closeHtmlModal();
                 }
-
-                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
-                if (targetBtn) targetBtn.classList.add('active');
-
-                // Smooth transition enter
-                frameEl.style.transform = 'scale(1)';
-            }, 200);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('closed');
-            event.currentTarget.classList.toggle('active');
-        }
-
-        function openSourceModal() {
-            document.getElementById('sourceText').value = content;
-            document.getElementById('sourceModal').style.display = 'flex';
-        }
-
-        function closeSourceModal() {
-            document.getElementById('sourceModal').style.display = 'none';
-        }
+            }
+            // 1, 2, 3: device modes
+            if (e.key === '1') setMode('mobile');
+            if (e.key === '2') setMode('tablet');
+            if (e.key === '3') setMode('desktop');
+            // T: toggle theme
+            if (e.key === 't' || e.key === 'T') toggleTheme();
+            // H: toggle highlight links
+            if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
+            // V: view HTML
+            if (e.key === 'v' || e.key === 'V') openHtmlModal();
+            // Arrow keys for scrolling iframe
+            if (e.key === 'ArrowDown') frame.contentWindow.scrollBy(0, 100);
+            if (e.key === 'ArrowUp') frame.contentWindow.scrollBy(0, -100);
+        });
 
         init();
     </script>

@@ -3,8 +3,8 @@
     "subject": "Bouteilles sensorielles à prix minis 🌟",
     "date_rec": "05/12/2025 à 15:33",
     "date_iso": "2025-12-05T15:33:52+00:00",
-    "sender": "Berceau magique <newsletter@megara.fr>",
-    "date_arch": "21/12/2025 à 14:03",
+    "sender": "Berceau magique",
+    "date_arch": "24/12/2025 à 23:20",
     "preheader": "[OP] VP Petit Boum - 05/12/25 Jusqu'à -10% sur la marque Petit Boum ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...",
     "reading_time": "2 min",
     "audit": {
@@ -13,5 +13,6 @@
         "unsubscribe_found": true,
         "link_count": 45,
         "images_no_alt": 18
-    }
+    },
+    "crm": null
 }

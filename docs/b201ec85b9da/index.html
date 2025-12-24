@@ -12,970 +12,404 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        /* Viewer Specific Styles */
         body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewer-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .device-stage {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-
-        .device-frame {
-            background: #111;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Removed opacity transition */
-            transform: scale(1);
-        }
-
-        .device-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            flex: 1;
-        }
-
-        /* Device Modes */
-        .device-frame[data-mode="desktop"] {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            /* Lighter shadow */
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            /* Almost invisible border */
-        }
-
-        [data-theme="dark"] .device-frame[data-mode="desktop"] {
-            border-color: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .device-frame[data-mode="mobile"] {
-            width: 375px;
-            height: 812px;
-            max-height: 90vh;
-            border-radius: 40px;
-            border: 12px solid #111;
-        }
-
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .device-frame[data-mode="tablet"] {
-            width: 768px;
-            height: 1024px;
-            max-height: 90vh;
-            border-radius: 24px;
-            border: 12px solid #111;
-        }
-
-        /* Sidebar */
-        .meta-sidebar {
-            width: 400px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border-color);
-            padding: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-
-        .meta-sidebar.closed {
-            transform: translateX(100%);
-            width: 0;
-            border: none;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin: 25px 0 10px 0;
-            font-weight: 700;
-        }
-
-        .section-title:first-child {
-            margin-top: 0;
-        }
-
-        .meta-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .meta-key {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-align: left;
-        }
-
-        .meta-key::after {
-            content: ":";
-        }
-
-        .meta-val {
-            color: var(--text-primary);
-            font-weight: 400;
-            text-align: right;
-            margin-left: 10px;
-            word-break: break-word;
-        }
-
-        /* Links */
-        .link-list {
-            list-style: none;
-            padding: 0;
             margin: 0;
-        }
-
-        .link-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .link-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(2px);
-        }
-
-        .link-num {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-secondary);
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        [data-theme="dark"] .link-num {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .link-content {
-            flex: 1;
             overflow: hidden;
-        }
-
-        .link-txt {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .link-url {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Pixels */
-        .pixel-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-        }
-
-        .pixel-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 8px 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2980b9;
-        }
-
-        .pixel-row {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            cursor: help;
-        }
-
-        .pixel-row:last-child {
-            border-bottom: none;
-        }
-
-        .pixel-reason {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .pixel-url {
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.75rem;
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-        }
-
-        .sidebar-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dotted currentColor;
-        }
-
-        /* Header Controls */
-        .viewer-header {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-glass);
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .action-btn {
-            height: 36px;
-            padding: 0 12px;
-            min-width: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover,
-        .action-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="dark"] .pixel-header {
-            color: #8be9fd;
-            background: rgba(139, 233, 253, 0.1);
-        }
-
-        [data-theme="dark"] .pixel-box {
-            border-color: rgba(139, 233, 253, 0.2);
-        }
-
-        /* Modal for Source */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            width: 80%;
-            max-width: 800px;
-            height: 80vh;
-            background: var(--bg-body);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body {
-            flex: 1;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .source-area {
-            width: 100%;
-            height: 100%;
-            border: none;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            resize: none;
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        /* Copy Buttons */
-        .btn-copy-small {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            opacity: 0.6;
-        }
-
-        .btn-copy-small:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--accent-color);
-            opacity: 1;
-        }
-
-        .copy-success {
-            color: #50fa7b !important;
-            /* Dracula Green */
-            background: rgba(80, 250, 123, 0.1) !important;
-            border-color: #50fa7b !important;
-        }
-
-        @media (max-width: 768px) {
-            .hide-mobile {
-                display: none !important;
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="viewer-header">
-        <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
+    <div class="viewer-layout">
+        <!-- Main Content -->
+        <div class="viewer-main">
+            <!-- Header -->
+            <header class="viewer-header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <h1
+                        style="font-family: var(--font-header); font-size: 1rem; font-weight: 600; margin: 0; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent-blue);">
+                        Agenda Club 💚
+                    </h1>
+                </div>
 
-        <div class="device-toggles hide-mobile">
-            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
-            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
-            <button class="device-btn active" onclick="setMode('desktop')"
-                title="View in Desktop Mode (Filtered)">Desktop</button>
-        </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="viewer-toolbar">
+                        <button class="btn btn-secondary" onclick="toggleHighlightLinks()"
+                            title="Highlight all links (H)">
+                            <span id="highlightBtnText">Show Links</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
+                            View HTML
+                        </button>
+                    </div>
 
-        <div class="action-group">
-            <button class="action-btn" onclick="openSourceModal()" title="View Source Code">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            </button>
-            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                <svg class="icon icon-moon" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-                <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()"
-                title="Highlight Links in Email">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                </svg>
-            </button>
-            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
-                <span>Metadata</span>
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            </button>
-        </div>
-    </div>
+                    <span class="crm-badge" data-crm="Klaviyo">Klaviyo</span>
 
-    <div class="viewer-container">
-        <div class="device-stage">
-            <div class="device-frame" id="deviceFrame" data-mode="desktop">
-                <iframe id="emailFrame"></iframe>
+                    <div class="device-toggle hide-mobile">
+                        <button class="device-btn" onclick="setMode('mobile')" title="Mobile (1)">Mobile</button>
+                        <button class="device-btn" onclick="setMode('tablet')" title="Tablet (2)">Tablet</button>
+                        <button class="device-btn active" onclick="setMode('desktop')"
+                            title="Desktop (3)">Desktop</button>
+                    </div>
+
+                    <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme (T)">
+                        <svg class="icon icon-moon" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Email Content -->
+            <div class="viewer-content">
+                <div id="deviceFrame" data-mode="desktop"
+                    style="width: 100%; max-width: 800px; height: 100%; transition: max-width 0.3s ease;">
+                    <iframe id="emailFrame" class="email-frame"></iframe>
+                </div>
             </div>
         </div>
 
-        <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header">Metadata</div>
+        <!-- Sidebar -->
+        <aside class="viewer-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Metadata</span>
+            </div>
+
             <div class="sidebar-content">
-                <div class="section-title">General Info</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject</span>
-                    <span class="meta-val">Agenda Club 💚</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Sender</span>
-                    <span class="meta-val">The Bradery <hello@thebradery.com></span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Received</span>
-                    <span class="meta-val">28/11/2025 à 14:09</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Archived</span>
-                    <span class="meta-val">21/12/2025 à 14:03</span>
+                <!-- General Info -->
+                <div class="meta-section">
+                    <div class="meta-section-title">General</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Sender</span>
+                        <span class="meta-val">The Bradery</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Subject</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="Agenda Club 💚">Agenda Club 💚</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Preheader</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="On profite de la vente archive Drôle de Monsieur, on savoure un cocktail chez Super Fine puis on danse à la Fête du Cornichon avant de visiter la Maisonde Victo...">On profite de la vente archive Drôle de Monsieur, on savoure un cocktail chez Super Fine puis on danse à la Fête du Cornichon avant de visiter la Maisonde Victo...</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Received</span>
+                        <span class="meta-val">28/11/2025 à 14:09</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">CRM</span>
+                        <span class="meta-val text-cyan">Klaviyo</span>
+                    </div>
                 </div>
 
-                <div class="section-title">Technical</div>
-                <div class="meta-row">
-                    <span class="meta-key">Email Size</span>
-                    <span class="meta-val">63.8 KB</span>
+                <!-- Technical -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Technical</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Size</span>
+                        <span class="meta-val">63.8 KB</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Clipping Risk</span>
+                        <span class="meta-val text-green">
+                            Low
+                        </span>
+                    </div>
                 </div>
-                <div class="meta-row">
-                    <span class="meta-key">Read Time</span>
-                    <span class="meta-val">1 min</span>
-                </div>
+
+                <!-- Tracking Pixels -->
                 
-                <div class="pixel-box">
-                    <div class="pixel-header">Tracking Pixels (1)</div>
+                <div class="meta-section">
+                    <div class="meta-section-title">Tracking Pixels (1)</div>
                     
-                    <div class="pixel-row">
-                        <div class="pixel-reason">Integration: OK</div>
-                        <div class="pixel-url">https://ctrk.klclick.com/o/01KB5BT9P8ZPM2WGV023C43RJP</div>
+                    <div class="link-card" style="cursor: default;">
+                        <div class="link-content">
+                            <div class="link-text text-green">Integration: OK</div>
+                            <div class="link-url">https://ctrk.klclick.com/o/01KB5BT9P8ZPM2WGV023C43RJP</div>
+                        </div>
                     </div>
                     
                 </div>
                 
 
-                <div class="section-title">Quality Audit</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject Length</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Good
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Unsubscribe Link</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Found
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Images without Alt</span>
-                    <span class="meta-val" style="color: orange">
-                        13
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Clipping Risk</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Low
-                    </span>
-                </div>
-
-                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Links (22)</span>
-                    <button onclick="copyLinks([{'index': 1, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_0', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_0'}, {'index': 2, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_1', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_1'}, {'index': 3, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_2', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_2'}, {'index': 4, 'txt': 'JE M’INSCRIS', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_3', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_3'}, {'index': 5, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_4', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_4'}, {'index': 6, 'txt': 'JE DÉCOUVRE', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_5', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_5'}, {'index': 7, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_6', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_6'}, {'index': 8, 'txt': 'JE DÉCOUVRE', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_7', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_7'}, {'index': 9, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_8', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_8'}, {'index': 10, 'txt': 'JE DÉCOUVRE', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_9', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_9'}, {'index': 11, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_10', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_10'}, {'index': 12, 'txt': 'JE DÉCOUVRE', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_11', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_11'}, {'index': 13, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_12', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_12'}, {'index': 14, 'txt': 'JE DÉCOUVRE', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_13', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_13'}, {'index': 15, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_14', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_14'}, {'index': 16, 'txt': 'JE DÉCOUVRE', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_15', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_15'}, {'index': 17, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_16', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_16'}, {'index': 18, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_17', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_17'}, {'index': 19, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_18', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_18'}, {'index': 20, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_19', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_19'}, {'index': 21, 'txt': 'préférences', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_20', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_20'}, {'index': 22, 'txt': 'désinscrire', 'original_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_21', 'final_url': 'https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_21'}])"
-                        style="border:none; background:none; color:var(--accent-color); cursor:pointer; font-size:0.7em; font-weight:600;">COPY
-                        ALL</button>
-                </div>
-                <ul class="link-list">
+                <!-- All Links -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Links (22)</div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(1)">1</div>
-                        <div class="link-content" onclick="highlightLink(1)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(1)">
+                        <span class="link-index">1</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_0</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_0', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_0')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(2)">2</div>
-                        <div class="link-content" onclick="highlightLink(2)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(2)">
+                        <span class="link-index">2</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_1</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_1', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_1')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(3)">3</div>
-                        <div class="link-content" onclick="highlightLink(3)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(3)">
+                        <span class="link-index">3</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_2</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_2', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_2')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(4)">4</div>
-                        <div class="link-content" onclick="highlightLink(4)">
-                            <div class="link-txt">JE M’INSCRIS</div>
+                    <div class="link-card" onclick="highlightLink(4)">
+                        <span class="link-index">4</span>
+                        <div class="link-content">
+                            <div class="link-text">JE M’INSCRIS</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_3</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_3', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_3')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(5)">5</div>
-                        <div class="link-content" onclick="highlightLink(5)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(5)">
+                        <span class="link-index">5</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_4</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_4', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_4')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(6)">6</div>
-                        <div class="link-content" onclick="highlightLink(6)">
-                            <div class="link-txt">JE DÉCOUVRE</div>
+                    <div class="link-card" onclick="highlightLink(6)">
+                        <span class="link-index">6</span>
+                        <div class="link-content">
+                            <div class="link-text">JE DÉCOUVRE</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_5</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_5', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_5')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(7)">7</div>
-                        <div class="link-content" onclick="highlightLink(7)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(7)">
+                        <span class="link-index">7</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_6</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_6', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_6')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(8)">8</div>
-                        <div class="link-content" onclick="highlightLink(8)">
-                            <div class="link-txt">JE DÉCOUVRE</div>
+                    <div class="link-card" onclick="highlightLink(8)">
+                        <span class="link-index">8</span>
+                        <div class="link-content">
+                            <div class="link-text">JE DÉCOUVRE</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_7</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_7', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_7')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(9)">9</div>
-                        <div class="link-content" onclick="highlightLink(9)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(9)">
+                        <span class="link-index">9</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_8</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_8', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_8')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(10)">10</div>
-                        <div class="link-content" onclick="highlightLink(10)">
-                            <div class="link-txt">JE DÉCOUVRE</div>
+                    <div class="link-card" onclick="highlightLink(10)">
+                        <span class="link-index">10</span>
+                        <div class="link-content">
+                            <div class="link-text">JE DÉCOUVRE</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_9</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_9', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_9')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(11)">11</div>
-                        <div class="link-content" onclick="highlightLink(11)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(11)">
+                        <span class="link-index">11</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_10</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_10', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_10')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(12)">12</div>
-                        <div class="link-content" onclick="highlightLink(12)">
-                            <div class="link-txt">JE DÉCOUVRE</div>
+                    <div class="link-card" onclick="highlightLink(12)">
+                        <span class="link-index">12</span>
+                        <div class="link-content">
+                            <div class="link-text">JE DÉCOUVRE</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_11</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_11', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_11')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(13)">13</div>
-                        <div class="link-content" onclick="highlightLink(13)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(13)">
+                        <span class="link-index">13</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_12</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_12', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_12')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(14)">14</div>
-                        <div class="link-content" onclick="highlightLink(14)">
-                            <div class="link-txt">JE DÉCOUVRE</div>
+                    <div class="link-card" onclick="highlightLink(14)">
+                        <span class="link-index">14</span>
+                        <div class="link-content">
+                            <div class="link-text">JE DÉCOUVRE</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_13</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_13', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_13')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(15)">15</div>
-                        <div class="link-content" onclick="highlightLink(15)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(15)">
+                        <span class="link-index">15</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_14</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_14', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_14')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(16)">16</div>
-                        <div class="link-content" onclick="highlightLink(16)">
-                            <div class="link-txt">JE DÉCOUVRE</div>
+                    <div class="link-card" onclick="highlightLink(16)">
+                        <span class="link-index">16</span>
+                        <div class="link-content">
+                            <div class="link-text">JE DÉCOUVRE</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_15</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_15', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_15')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(17)">17</div>
-                        <div class="link-content" onclick="highlightLink(17)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(17)">
+                        <span class="link-index">17</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_16</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_16', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_16')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(18)">18</div>
-                        <div class="link-content" onclick="highlightLink(18)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(18)">
+                        <span class="link-index">18</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_17</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_17', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_17')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(19)">19</div>
-                        <div class="link-content" onclick="highlightLink(19)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(19)">
+                        <span class="link-index">19</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_18</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_18', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_18')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(20)">20</div>
-                        <div class="link-content" onclick="highlightLink(20)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(20)">
+                        <span class="link-index">20</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_19</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_19', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_19')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(21)">21</div>
-                        <div class="link-content" onclick="highlightLink(21)">
-                            <div class="link-txt">préférences</div>
+                    <div class="link-card" onclick="highlightLink(21)">
+                        <span class="link-index">21</span>
+                        <div class="link-content">
+                            <div class="link-text">préférences</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_20</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_20', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_20')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(22)">22</div>
-                        <div class="link-content" onclick="highlightLink(22)">
-                            <div class="link-txt">désinscrire</div>
+                    <div class="link-card" onclick="highlightLink(22)">
+                        <span class="link-index">22</span>
+                        <div class="link-content">
+                            <div class="link-text">désinscrire</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_21</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_21', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_21')">Copy</button>
+                    </div>
                     
-                </ul>
-            </div>
+                </div>
 
-            <div class="sidebar-footer">
-                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. All rights
-                reserved.
+                <!-- Footer -->
+                <div class="meta-section"
+                    style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+                        © 2025 <a href="https://github.com/benoit-prentout" target="_blank"
+                            style="color: var(--accent-blue); text-decoration: none;">Benoît Prentout</a>. All rights
+                        reserved.
+                    </p>
+                </div>
             </div>
-        </div>
+        </aside>
     </div>
 
-    <!-- Code Modal -->
-    <div id="sourceModal" class="modal-overlay">
-        <div class="modal">
+    <!-- HTML Source Modal -->
+    <div class="modal-overlay" id="htmlModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <span>HTML Source</span>
-                <button class="close-btn" onclick="closeSourceModal()">×</button>
+                <span class="modal-title">HTML Source</span>
+                <button class="modal-close" onclick="closeHtmlModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <textarea id="sourceText" class="source-area" readonly></textarea>
+                <pre class="code-block" id="htmlSourceCode"></pre>
             </div>
-            <div class="modal-footer"
-                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="action-btn" onclick="copySource()">
-                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span>Copy All</span>
-                </button>
-                <button class="action-btn" onclick="closeSourceModal()">Close</button>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="copyAllHtml()">Copy HTML</button>
             </div>
         </div>
     </div>
+
+    <!-- Link overlays container -->
+    <div id="linkOverlays" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100;"></div>
 
     <script src="../assets/js/main.js"></script>
     <script>
         const content = "<!DOCTYPE html>\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><head>\n<meta charset=\"utf-8\"/>\n<meta content=\"width=device-width\" name=\"viewport\"/>\n<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\"/>\n<meta name=\"x-apple-disable-message-reformatting\"/>\n<meta content=\"telephone=no,address=no,email=no,date=no,url=no\" name=\"format-detection\"/>\n<title></title>\n<!--[if mso]>\r\n            <style>\r\n                * {\r\n                    font-family: sans-serif !important;\r\n                }\r\n            </style>\r\n        <![endif]-->\n<!--[if !mso]><!-->\n<!-- <![endif]-->\n<!--[if gte mso 9]>\r\n        <xml>\r\n            <o:OfficeDocumentSettings>\r\n                <o:AllowPNG/>\r\n                <o:PixelsPerInch>96</o:PixelsPerInch>\r\n            </o:OfficeDocumentSettings>\r\n        </xml>\r\n        <![endif]-->\n<style>@import url(\"https://fonts.googleapis.com/css2?family=Work+Sans:wght@900&family=Work+Sans:wght@400&family=Work+Sans:ital,wght@1,600&family=Work+Sans:wght@700&family=Work+Sans:wght@600&family=Work+Sans:ital,wght@1,700&display=swap\");\r\nhtml {\r\n    margin: 0 !important;\r\n    padding: 0 !important\r\n    }\r\n* {\r\n    -ms-text-size-adjust: 100%;\r\n    -webkit-text-size-adjust: 100%\r\n    }\r\ntd {\r\n    vertical-align: top;\r\n    mso-table-lspace: 0 !important;\r\n    mso-table-rspace: 0 !important\r\n    }\r\na {\r\n    text-decoration: none\r\n    }\r\nimg {\r\n    -ms-interpolation-mode: bicubic\r\n    }\r\n@media only screen and (min-device-width: 320px) and (max-device-width: 374px) {\r\n    u ~ div .email-container {\r\n        min-width: 320px !important\r\n        }\r\n    }\r\n@media only screen and (min-device-width: 375px) and (max-device-width: 413px) {\r\n    u ~ div .email-container {\r\n        min-width: 375px !important\r\n        }\r\n    }\r\n@media only screen and (min-device-width: 414px) {\r\n    u ~ div .email-container {\r\n        min-width: 414px !important\r\n        }\r\n    }\r\n@media only screen and (max-device-width: 599px), only screen and (max-width: 599px) {\r\n    .eh {\r\n        height: auto !important\r\n        }\r\n    .desktop {\r\n        display: none !important;\r\n        height: 0 !important;\r\n        margin: 0 !important;\r\n        max-height: 0 !important;\r\n        overflow: hidden !important;\r\n        padding: 0 !important;\r\n        visibility: hidden !important;\r\n        width: 0 !important;\r\n        min-height: 0 !important\r\n        }\r\n    .mobile {\r\n        display: block !important;\r\n        width: auto !important;\r\n        height: auto !important;\r\n        float: none !important\r\n        }\r\n    .email-container {\r\n        width: 100% !important;\r\n        margin: auto !important\r\n        }\r\n    .stack-column, .stack-column-center {\r\n        display: block !important;\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n        direction: ltr !important\r\n        }\r\n    .wid-auto {\r\n        width: auto !important\r\n        }\r\n    .table-w-full-mobile {\r\n        width: 100%\r\n        }\r\n    .full-button {\r\n        width: 100% !important\r\n        }\r\n    .text-60713825 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-90393047 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-87995364 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-71672512 {\r\n        line-height: 18px !important\r\n        }\r\n    .text-43104321 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-92447708 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-70299738 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-38493215 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-05337457 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-89494637 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-83569571 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-38884083 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-64441042 {\r\n        font-size: 14px !important\r\n        }\r\n    .text-52874266 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-30447263 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-83943627 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-92260592 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-60115139 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-25180390 {\r\n        font-size: 16px !important\r\n        }\r\n    .text-71946109 {\r\n        line-height: 20px !important\r\n        }\r\n    .text-19687809 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-69592840 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-79404971 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-24186239 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-33849994 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-57892164 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-18163044 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-22188528 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-65869328 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-32077599 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-89939382 {\r\n        font-size: 16px !important\r\n        }\r\n    .text-82080768 {\r\n        line-height: 20px !important\r\n        }\r\n    .text-24223627 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-16221895 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-14224177 {\r\n        font-size: 14px !important\r\n        }\r\n    .text-46585611 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-13835562 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-43393502 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-97627193 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-75581340 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-37298264 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-87842385 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-69440226 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-24105703 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-23978732 {\r\n        font-size: 16px !important\r\n        }\r\n    .text-91491728 {\r\n        line-height: 20px !important\r\n        }\r\n    .text-55492684 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-34103548 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-02732538 {\r\n        font-size: 14px !important\r\n        }\r\n    .text-33028009 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-90278503 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-62617674 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-88137494 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-92831080 {\r\n        line-height: 19px !important\r\n        }\r\n    .text-44816943 {\r\n        font-size: 12px !important\r\n        }\r\n    .text-30256848 {\r\n        line-height: 17px !important\r\n        }\r\n    .text-37219595 {\r\n        font-size: 13px !important\r\n        }\r\n    .text-21874034 {\r\n        line-height: 19px !important\r\n        }\r\n    .pt-05480680 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pl-35649075 {\r\n        padding-left: 25px !important\r\n        }\r\n    .pr-10884294 {\r\n        padding-right: 25px !important\r\n        }\r\n    .pt-83444661 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-27980770 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-97547088 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-72097835 {\r\n        padding-right: 12px !important\r\n        }\r\n    .pt-35481628 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-81440558 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-60747619 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-29513921 {\r\n        padding-right: 12px !important\r\n        }\r\n    .pt-49779612 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-15351499 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-25706663 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-15792326 {\r\n        padding-right: 12px !important\r\n        }\r\n    .pt-31430127 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-91357402 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-90712465 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-71962855 {\r\n        padding-right: 12px !important\r\n        }\r\n    .pt-98259288 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-65155241 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pl-79781368 {\r\n        padding-left: 10px !important\r\n        }\r\n    .pr-71180685 {\r\n        padding-right: 10px !important\r\n        }\r\n    .pt-78120329 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-18170753 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pl-58353486 {\r\n        padding-left: 10px !important\r\n        }\r\n    .pr-51253328 {\r\n        padding-right: 10px !important\r\n        }\r\n    .pt-77691876 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-21650390 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pt-94541152 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-26469188 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-86070845 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-42533786 {\r\n        padding-right: 12px !important\r\n        }\r\n    .pt-30539283 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-65845868 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pl-58614815 {\r\n        padding-left: 10px !important\r\n        }\r\n    .pr-75232278 {\r\n        padding-right: 10px !important\r\n        }\r\n    .pt-20890066 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-61809451 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pt-63217487 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-75491371 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-42203218 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-62878905 {\r\n        padding-right: 12px !important\r\n        }\r\n    .pt-87375978 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-53212123 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pl-02659307 {\r\n        padding-left: 10px !important\r\n        }\r\n    .pr-08816319 {\r\n        padding-right: 10px !important\r\n        }\r\n    .pt-26387044 {\r\n        padding-top: 10px !important\r\n        }\r\n    .pb-48673607 {\r\n        padding-bottom: 10px !important\r\n        }\r\n    .pt-00008710 {\r\n        padding-top: 4px !important\r\n        }\r\n    .pb-21711065 {\r\n        padding-bottom: 4px !important\r\n        }\r\n    .pl-09383030 {\r\n        padding-left: 12px !important\r\n        }\r\n    .pr-15378282 {\r\n        padding-right: 12px !important\r\n        }\r\n    .mobile-center {\r\n        text-align: center\r\n        }\r\n    .mobile-center > table {\r\n        display: inline-block;\r\n        vertical-align: inherit\r\n        }\r\n    .mobile-left {\r\n        text-align: left\r\n        }\r\n    .mobile-left > table {\r\n        display: inline-block;\r\n        vertical-align: inherit\r\n        }\r\n    .mobile-right {\r\n        text-align: right\r\n        }\r\n    .mobile-right > table {\r\n        display: inline-block;\r\n        vertical-align: inherit\r\n        }\r\n    }\r\n@media (prefers-color-scheme: dark) {\r\n    .sdegpljhgz {\r\n        background-color: #FCF5EE !important\r\n        }\r\n    }</style></head>\n<body style=\"background-color:#ffffff;margin:0;padding:0!important;mso-line-height-rule:exactly;\" width=\"100%\"><img alt=\"\" border=\"0\" height=\"1\" src=\"\" style=\"display:none !important;\" width=\"1\"/>\n<div style=\"background-color:#ffffff\"> <!--[if gte mso 9]>\r\n                <v:background xmlns:v=\"urn:schemas-microsoft-com:vml\" fill=\"t\">\r\n                <v:fill type=\"tile\" color=\"#ffffff\"/>\r\n                </v:background>\r\n                <![endif]-->\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" valign=\"top\">\n<div id=\"preview_text\" style=\"display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;\">\r\n              On profite de la vente archive Dr\u00f4le de Monsieur, on savoure un cocktail chez Super Fine puis on danse \u00e0 la F\u00eate du Cornichon avant de visiter la Maisonde Victor Hugo !\r\n            </div>\n<!-- Visually Hidden Preheader Text : END -->\n<!-- Preview Text Spacing Hack : BEGIN -->\n<div style=\"display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;\">\r\n              \u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\u200c\u00a0\r\n            </div>\n<table align=\"center\" bgcolor=\"#ffffff\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"email-container\" id=\"brick_container\" style=\"margin:0 auto;\" width=\"600\">\n<tbody><tr>\n<td align=\"center\" width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td width=\"580\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#f0f7e7\" style=\"background-color:#f0f7e7; border-radius:8px; \" width=\"580\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td class=\"pt-05480680 pl-35649075 pr-10884294\" style=\"vertical-align: bottom;   padding-left:80px; padding-right:80px;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:20px; height:20px; font-size:20px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: bottom;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: bottom;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: bottom;\" width=\"69\">\n<div class=\"text-90393047\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-60713825 text-90393047\" style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:21px;text-align:left;\">DEC. 25<br/></span><span class=\"text-60713825 text-90393047\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:21px;text-align:left;\">Week 1</span>\n</div>\n</td>\n<td style=\"vertical-align: bottom;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"16\">\n<img border=\"0\" src=\"img_0.png\" style=\"min-width:16px; width:16px;\r\n         height: auto; display: block;\" width=\"16\"/>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" width=\"500\">\n<a data-index=\"1\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_0\"> <img border=\"0\" src=\"img_1.png\" style=\"max-width:500px; width: 100%;\r\n         height: auto; display: block;\" width=\"500\"/></a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle; height:24px;   padding-left:20px; padding-right:20px;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-71672512\" style=\"line-height:24px;text-align:center;\">\n<span class=\"text-87995364 text-71672512\" style=\"color:#00664e;font-weight:600;font-style:italic;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:center;\">Le rendez-vous cool du week-end !</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td width=\"100%\"> <a data-index=\"2\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_1\">\n</a>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;  \" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-83444661 pb-27980770 pl-97547088 pr-72097835\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-92447708\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-43104321 text-92447708\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">food</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n<td style=\"width:8px; min-width:8px;\" width=\"8\">\n</td>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-35481628 pb-81440558 pl-60747619 pr-29513921\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-38493215\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-70299738 text-38493215\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">lifestyle</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n<td style=\"width:8px; min-width:8px;\" width=\"8\">\n</td>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-49779612 pb-15351499 pl-25706663 pr-15792326\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-89494637\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-05337457 text-89494637\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">fashion</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n<td style=\"width:8px; min-width:8px;\" width=\"8\">\n</td>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-31430127 pb-91357402 pl-90712465 pr-71962855\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-38884083\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-83569571 text-38884083\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">culture</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:30px; height:30px; font-size:30px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#ffffff\" style=\"background-color:#ffffff;   padding-left:10px; padding-right:10px;\" width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div style=\"line-height:20px; height:20px; font-size:20px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#ffffff\" class=\"pt-98259288 pb-65155241 pl-79781368 pr-71180685\" style=\"vertical-align: middle; background-color:#ffffff; border-radius:8px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;  \" width=\"550\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"stack-column-center\" style=\"vertical-align: middle;\" width=\"550\">\n<a data-index=\"3\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_2\"> <img border=\"0\" src=\"img_2.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"550\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:24px; height:24px; font-size:24px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" class=\"stack-column-center\" style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-52874266\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-64441042 text-52874266\" style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">DR\u00d4LE DE MONSIEUR : VENTE ARCHIVE</span>\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td width=\"266\">\n<div class=\"text-83943627\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-30447263 text-83943627\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">14 rue de Lancry, Paris 10</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-60115139\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-92260592 text-60115139\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">The Bradery invite Dr\u00f4le de Monsieur</span><span class=\"text-92260592 text-60115139\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\"> </span><span class=\"text-92260592 text-60115139\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;text-decoration:underline;\">aujourd\u2019hui et demain</span><span class=\"text-92260592 text-60115139\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\"> pour une vente exclusive \u00e0 La Manufacture. On explore leur esth\u00e9tique urbaine et on met la main sur des pi\u00e8ces iconiques \u00e0 prix doux !<br/>On se retrouve sur place ? </span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:24px; height:24px; font-size:24px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/4imx8ip\" style=\"height:42px;v-text-anchor:middle;width:173px;\" fillcolor=\"#f0f7e7\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE M\u2019INSCRIS</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"4\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_3\" style=\"white-space:nowrap;background-color:#f0f7e7;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:173px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE M\u2019INSCRIS</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"  padding-left:10px; padding-right:10px;\" width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div style=\"line-height:20px; height:20px; font-size:20px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#f0f7e7\" class=\"pt-78120329 pb-18170753 pl-58353486 pr-51253328\" style=\"vertical-align: middle; background-color:#f0f7e7; border-radius:8px;  padding-left:15px; padding-right:15px;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td class=\"pt-77691876 pb-21650390\" style=\"vertical-align: middle;  \" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div class=\"text-71946109\" style=\"line-height:normal;text-align:right;\">\n<span class=\"text-25180390 text-71946109\" style=\"color:#002961;font-weight:700;font-style:italic;font-family:Work Sans,Arial,sans-serif;font-size:20px;line-height:normal;text-align:right;\">On sort o\u00f9</span><span class=\"text-25180390 text-71946109\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:20px;line-height:normal;text-align:right;\"> ce week-end ?</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-94541152 pb-26469188 pl-86070845 pr-42533786\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-69592840\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-19687809 text-69592840\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">lifestyle</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" width=\"550\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"table-w-full-mobile\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"stack-column-center\" width=\"48.18%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"265\">\n<a data-index=\"5\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_4\"> <img border=\"0\" src=\"img_3.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"265\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"266\">\n<div style=\"line-height:24px;text-align:left;\">\n<span style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">SUPER FINE</span>\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"266\">\n<div class=\"text-24186239\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-79404971 text-24186239\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">8 Pass. Josset, Paris 11</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-57892164\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-33849994 text-57892164\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">Le dive bar nouvelle vague, </span><span class=\"text-33849994 text-57892164\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">transforme l\u2019ancien Motel en un lieu lumineux o\u00f9 musique, cuisine et mixologie se rencontrent.</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/49lGer3\" style=\"height:42px;v-text-anchor:middle;width:176px;\" fillcolor=\"#ffffff\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE D\u00c9COUVRE</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"6\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_5\" style=\"white-space:nowrap;background-color:#ffffff;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:176px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE D\u00c9COUVRE</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n<td class=\"stack-column-center\" height=\"20\" style=\"width:20px; min-width:20px; height:20px; min-height:20px;\" width=\"20\">\n</td>\n<td align=\"center\" class=\"stack-column-center\" width=\"48.18%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"265\">\n<a data-index=\"7\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_6\"> <img border=\"0\" src=\"img_4.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"265\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"266\">\n<div style=\"line-height:24px;text-align:left;\">\n<span style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">LA F\u00caTE DU CORNICHON</span>\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"266\">\n<div class=\"text-22188528\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-18163044 text-22188528\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">Jusqu\u2019au 30 novembre</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-32077599\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-65869328 text-32077599\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">Populaire, croquant et audacieux </span><span class=\"text-65869328 text-32077599\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">: on (re)d\u00e9couvre le cornichon dans toutes les adresses les plus styl\u00e9es de la capitale.</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/49lGer3\" style=\"height:42px;v-text-anchor:middle;width:176px;\" fillcolor=\"#ffffff\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE D\u00c9COUVRE</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"8\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_7\" style=\"white-space:nowrap;background-color:#ffffff;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:176px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE D\u00c9COUVRE</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"  padding-left:10px; padding-right:10px;\" width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div style=\"line-height:20px; height:20px; font-size:20px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#ffffff\" class=\"pt-30539283 pb-65845868 pl-58614815 pr-75232278\" style=\"vertical-align: middle; background-color:#ffffff; border-radius:8px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"right\" class=\"pt-20890066 pb-61809451\" style=\"vertical-align: middle;  \" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"right\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"right\" style=\"vertical-align: middle;\">\n<div class=\"text-82080768\" style=\"line-height:normal;text-align:right;\">\n<span class=\"text-89939382 text-82080768\" style=\"color:#002961;font-weight:700;font-style:italic;font-family:Work Sans,Arial,sans-serif;font-size:20px;line-height:normal;text-align:right;\">On va voir quoi</span><span class=\"text-89939382 text-82080768\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:20px;line-height:normal;text-align:right;\"> ce week-end ?</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"right\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-63217487 pb-75491371 pl-42203218 pr-62878905\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-16221895\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-24223627 text-16221895\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">culture</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" width=\"550\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"table-w-full-mobile\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"stack-column-center\" width=\"48.18%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"265\">\n<a data-index=\"9\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_8\"> <img border=\"0\" src=\"img_5.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"265\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"266\">\n<div class=\"text-46585611\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-14224177 text-46585611\" style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">GEORGE CONDO</span>\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"266\">\n<div class=\"text-43393502\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-13835562 text-43393502\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">Jusqu\u2019au 8 f\u00e9vrier 2026</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-75581340\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-97627193 text-75581340\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">Au Mus\u00e9e d\u2019Art Moderne,</span><span class=\"text-97627193 text-75581340\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\"> plongez dans l\u2019univers de George Condo, de ses influences classiques \u00e0 ses cr\u00e9ations les plus contemporaines.</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/49lGer3\" style=\"height:42px;v-text-anchor:middle;width:176px;\" fillcolor=\"#f0f7e7\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE D\u00c9COUVRE</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"10\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_9\" style=\"white-space:nowrap;background-color:#f0f7e7;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:176px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE D\u00c9COUVRE</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n<td class=\"stack-column-center\" height=\"20\" style=\"width:20px; min-width:20px; height:20px; min-height:20px;\" width=\"20\">\n</td>\n<td align=\"center\" class=\"stack-column-center\" width=\"48.18%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"265\">\n<a data-index=\"11\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_10\"> <img border=\"0\" src=\"img_6.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"265\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"266\">\n<div style=\"line-height:24px;text-align:left;\">\n<span style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">MAISON DE VICTOR HUGO</span>\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"266\">\n<div class=\"text-87842385\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-37298264 text-87842385\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">Du mardi au dimanche, 10h-18h</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-24105703\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-69440226 text-24105703\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">Place des Vosges</span><span class=\"text-69440226 text-24105703\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">,</span><span class=\"text-69440226 text-24105703\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\"> </span><span class=\"text-69440226 text-24105703\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">dans la Maison de Victor Hugo, plus de 50 000 \u0153uvres racontent la vie et l\u2019\u0153uvre du g\u00e9nie de la litt\u00e9rature.</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/49lGer3\" style=\"height:42px;v-text-anchor:middle;width:176px;\" fillcolor=\"#f0f7e7\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE D\u00c9COUVRE</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"12\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_11\" style=\"white-space:nowrap;background-color:#f0f7e7;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:176px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE D\u00c9COUVRE</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"  padding-left:10px; padding-right:10px;\" width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div style=\"line-height:20px; height:20px; font-size:20px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#f0f7e7\" class=\"pt-87375978 pb-53212123 pl-02659307 pr-08816319\" style=\"vertical-align: middle; background-color:#f0f7e7; border-radius:8px;  padding-left:15px; padding-right:15px;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td class=\"pt-26387044 pb-48673607\" style=\"vertical-align: middle;  \" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div class=\"text-91491728\" style=\"line-height:normal;text-align:right;\">\n<span class=\"text-23978732 text-91491728\" style=\"color:#002961;font-weight:700;font-style:italic;font-family:Work Sans,Arial,sans-serif;font-size:20px;line-height:normal;text-align:right;\">On mange o\u00f9</span><span class=\"text-23978732 text-91491728\" style=\"color:#002961;font-weight:700;font-family:Work Sans,Arial,sans-serif;font-size:20px;line-height:normal;text-align:right;\"> ce week-end ?</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"pt-00008710 pb-21711065 pl-09383030 pr-15378282\" style=\"vertical-align: middle; border-radius:100px; border:1px solid #00664e; padding-left:15px; padding-right:15px;\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<div class=\"text-34103548\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-55492684 text-34103548\" style=\"color:#00664e;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">food</span>\n</div>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:4px; height:4px; font-size:4px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" width=\"550\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"table-w-full-mobile\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" class=\"stack-column-center\" width=\"48.18%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"265\">\n<a data-index=\"13\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_12\"> <img border=\"0\" src=\"img_7.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"265\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"266\">\n<div class=\"text-33028009\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-02732538 text-33028009\" style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">KAMO</span>\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"266\">\n<div class=\"text-62617674\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-90278503 text-62617674\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">17 rue Martel, Paris 10</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td>\n<div class=\"text-92831080\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-88137494 text-92831080\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">Saveurs japonaises r\u00e9invent\u00e9es</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/49lGer3\" style=\"height:42px;v-text-anchor:middle;width:176px;\" fillcolor=\"#ffffff\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE D\u00c9COUVRE</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"14\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_13\" style=\"white-space:nowrap;background-color:#ffffff;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:176px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE D\u00c9COUVRE</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n<td class=\"stack-column-center\" height=\"20\" style=\"width:20px; min-width:20px; height:20px; min-height:20px;\" width=\"20\">\n</td>\n<td align=\"center\" class=\"stack-column-center\" width=\"48.18%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\" width=\"265\">\n<a data-index=\"15\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_14\"> <img border=\"0\" src=\"img_8.png\" style=\"width: 100%;\r\n        border-radius:8px; height: auto; display: block;\" width=\"265\"/></a>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"266\">\n<div style=\"line-height:24px;text-align:left;\">\n<span style=\"color:#00664e;font-weight:900;font-family:Work Sans,Arial,sans-serif;font-size:16px;line-height:24px;text-align:left;\">FL\u00c2NEUR COFFEE CLUB</span>\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"266\">\n<div class=\"text-30256848\" style=\"line-height:24px;text-align:left;\">\n<span class=\"text-44816943 text-30256848\" style=\"color:#979797;font-family:Work Sans,Arial,sans-serif;font-size:14px;line-height:24px;text-align:left;\">21 Rue Etienne Marcel, Paris 1</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:12px; height:12px; font-size:12px\">\n</div>\n</td>\n</tr>\n<tr>\n<td width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div class=\"text-21874034\" style=\"line-height:21px;text-align:left;\">\n<span class=\"text-37219595 text-21874034\" style=\"color:#002961;font-family:Work Sans,Arial,sans-serif;font-size:15px;line-height:21px;text-align:left;\">Art, caf\u00e9 et sensations</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:18px; height:18px; font-size:18px\">\n</div>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td style=\"vertical-align: middle;\">\n<div> <!--[if mso]>\r\n                        <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://bit.ly/49lGer3\" style=\"height:42px;v-text-anchor:middle;width:176px;\" fillcolor=\"#ffffff\" strokecolor=\"#00664e\" strokeweight=\"1pt\" arcsize=\"238%\">\r\n                        <w:anchorlock/>\r\n                        <center style=\"white-space:nowrap;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;\">JE D\u00c9COUVRE</center>\r\n                        </v:roundrect>\r\n                    <![endif]-->\n<a data-index=\"16\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_15\" style=\"white-space:nowrap;background-color:#ffffff;border-radius:100px; border:1px solid #00664e;display:inline-block;text-align:center;text-decoration:none;color:#00664e;font-weight:600;font-family:Work Sans,Arial,sans-serif;font-size:14px;text-transform:uppercase;line-height:42px;width:176px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);\">JE D\u00c9COUVRE</a>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:10px; height:10px; font-size:10px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr class=\"desktop\">\n<td>\n<div style=\"line-height:15px; height:15px; font-size:15px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:20px; height:20px; font-size:20px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#ffffff\" style=\"background-color:#ffffff; border-radius:0px 0px 20px 20px; \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td style=\"height:200px; border-radius:0px 0px 20px 20px; \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#002961\" class=\"sdegpljhgz\" style=\"vertical-align: middle; background-color:#002961; border-radius:0px 0px 20px 20px;  padding-left:24px; padding-right:24px;\" width=\"600\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td>\n<div style=\"line-height:24px; height:24px; font-size:24px\">\n</div>\n</td>\n</tr>\n<tr>\n<td style=\"vertical-align: middle;\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;  \" width=\"100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<a data-index=\"17\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_16\"> <img border=\"0\" src=\"img_9.png\" style=\"min-width:191px; width:191px;\r\n         height: auto; display: block;\" width=\"191\"/></a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:24px; height:24px; font-size:24px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;  \">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody><tr>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<a data-index=\"18\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_17\"> <img border=\"0\" src=\"img_10.png\" style=\"min-width:39px; width:39px;\r\n         height: auto; display: block;\" width=\"39\"/></a>\n</td>\n<td style=\"width:60px; min-width:60px;\" width=\"60\">\n</td>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<a data-index=\"19\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_18\"> <img border=\"0\" src=\"img_11.png\" style=\"min-width:39px; width:39px;\r\n         height: auto; display: block;\" width=\"39\"/></a>\n</td>\n<td style=\"width:60px; min-width:60px;\" width=\"60\">\n</td>\n<td align=\"center\" style=\"vertical-align: middle;\">\n<a data-index=\"20\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_19\"> <img border=\"0\" src=\"img_12.png\" style=\"min-width:39px; width:39px;\r\n         height: auto; display: block;\" width=\"39\"/></a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:24px; height:24px; font-size:24px\">\n</div>\n</td>\n</tr>\n<tr>\n<td align=\"center\">\n<div style=\"line-height:14px;text-align:center;\">\n<span style=\"color:#98a2b3;font-family:Work Sans,Arial,sans-serif;font-size:12px;line-height:14px;text-align:center;\">Modifier mes\u00a0<a class=\"manage-preferences\" data-index=\"21\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_20\">pr\u00e9f\u00e9rences</a><br/>ou me\u00a0<a class=\"unsubscribe-link\" data-index=\"22\" href=\"https://ctrk.klclick.com/l/01KB5BT9P8ZPM2WGV023C43RJP_21\">d\u00e9sinscrire</a>\u00a0de la newsletter.</span>\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n<tr>\n<td>\n<div style=\"line-height:24px; height:24px; font-size:24px\">\n</div>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody></table>\n</div>\n</body></html>";
         const frame = document.getElementById('emailFrame');
+        let linksHighlighted = false;
+        let overlayElements = [];
 
         function init() {
             const doc = frame.contentDocument;
@@ -983,85 +417,196 @@
             doc.write(content);
             doc.close();
 
-            // Apply base styles
-            applyFrameStyles(doc);
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+            `;
+            doc.head.appendChild(style);
 
-            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
-        function applyFrameStyles(doc) {
-            const style = doc.createElement('style');
-            style.innerHTML = `
-                body { margin: 0; font-family: sans-serif; background: #fff; }
-                /* Universal Scrollbar Hide */
-                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
-             `;
-            doc.head.appendChild(style);
-        }
-
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
+            const iframeEl = document.getElementById('emailFrame');
 
-            // Smooth transition exit (Scale only, no opacity)
-            frameEl.style.transform = 'scale(0.98)';
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.device-btn[onclick*="${mode}"]`);
+            if (btn) btn.classList.add('active');
 
-            setTimeout(() => {
-                frameEl.setAttribute('data-mode', mode);
+            // Remove/add scrollbar class
+            if (mode === 'mobile') {
+                frameEl.style.maxWidth = '375px';
+                iframeEl.classList.add('no-scrollbar');
+            } else if (mode === 'tablet') {
+                frameEl.style.maxWidth = '600px';
+                iframeEl.classList.add('no-scrollbar');
+            } else {
+                frameEl.style.maxWidth = '800px';
+                iframeEl.classList.remove('no-scrollbar');
+            }
 
-                const doc = frame.contentDocument;
-                if (doc) {
-                    if (mode !== 'desktop') {
-                        let mobileStyle = doc.getElementById('mobile-fix');
-                        if (!mobileStyle) {
-                            mobileStyle = doc.createElement('style');
-                            mobileStyle.id = 'mobile-fix';
-                            mobileStyle.innerHTML = `
-                                html, body { 
-                                    width: 100% !important; 
-                                    margin:0 !important; padding:0 !important;
-                                }
-                                table { width: 100% !important; max-width: 100% !important; }
-                                img { max-width: 100% !important; height: auto !important; }
-                             `;
-                            doc.head.appendChild(mobileStyle);
-                        }
+            // Update overlays if visible
+            if (linksHighlighted) {
+                setTimeout(updateOverlays, 100);
+            }
+        }
 
-                        if (mode === 'mobile') {
-                            if (doc.body) doc.body.style.paddingTop = '40px';
-                        } else {
-                            if (doc.body) doc.body.style.paddingTop = '0px';
-                        }
-                    } else {
-                        const s = doc.getElementById('mobile-fix');
-                        if (s) s.remove();
-                        if (doc.body) doc.body.style.paddingTop = '0';
-                    }
+        function highlightLink(idx) {
+            const doc = frame.contentDocument;
+            const link = doc.querySelector(`[data-index="${idx}"]`);
+            if (link) {
+                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Flash highlight
+                link.style.outline = '3px solid #50FA7B';
+                link.style.outlineOffset = '2px';
+                link.style.backgroundColor = 'rgba(80, 250, 123, 0.2)';
+
+                setTimeout(() => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                    link.style.backgroundColor = '';
+                }, 3000);
+            }
+        }
+
+        function toggleHighlightLinks() {
+            linksHighlighted = !linksHighlighted;
+            const btn = document.getElementById('highlightBtnText');
+            btn.textContent = linksHighlighted ? 'Hide Links' : 'Show Links';
+
+            if (linksHighlighted) {
+                createOverlays();
+            } else {
+                removeOverlays();
+            }
+        }
+
+        function createOverlays() {
+            removeOverlays();
+            const doc = frame.contentDocument;
+            const links = doc.querySelectorAll('[data-index]');
+            const container = document.getElementById('linkOverlays');
+            const frameRect = frame.getBoundingClientRect();
+            const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
+            const scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
+
+            links.forEach(link => {
+                const idx = link.getAttribute('data-index');
+                const rect = link.getBoundingClientRect();
+
+                // Create overlay badge
+                const badge = document.createElement('div');
+                badge.className = 'link-overlay-badge';
+                badge.textContent = idx;
+                badge.style.cssText = `
+                    position: fixed;
+                    left: ${frameRect.left + rect.left}px;
+                    top: ${frameRect.top + rect.top - 10}px;
+                    background: #BD93F9;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: bold;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-family: sans-serif;
+                    z-index: 1000;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    min-width: 16px;
+                    text-align: center;
+                `;
+                container.appendChild(badge);
+                overlayElements.push(badge);
+
+                // Add outline to link in iframe
+                link.style.outline = '2px solid #BD93F9';
+                link.style.outlineOffset = '1px';
+            });
+        }
+
+        function removeOverlays() {
+            const container = document.getElementById('linkOverlays');
+            container.innerHTML = '';
+            overlayElements = [];
+
+            // Remove outlines from iframe links
+            const doc = frame.contentDocument;
+            if (doc) {
+                const links = doc.querySelectorAll('[data-index]');
+                links.forEach(link => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                });
+            }
+        }
+
+        function updateOverlays() {
+            if (linksHighlighted) {
+                createOverlays();
+            }
+        }
+
+        // Update overlays on scroll
+        frame.addEventListener('load', () => {
+            frame.contentWindow.addEventListener('scroll', () => {
+                if (linksHighlighted) updateOverlays();
+            });
+        });
+
+        function openHtmlModal() {
+            const modal = document.getElementById('htmlModal');
+            const codeEl = document.getElementById('htmlSourceCode');
+            codeEl.textContent = content;
+            modal.classList.add('active');
+        }
+
+        function closeHtmlModal() {
+            document.getElementById('htmlModal').classList.remove('active');
+        }
+
+        function copyAllHtml() {
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Escape: close modal if open
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('htmlModal');
+                if (modal.classList.contains('active')) {
+                    closeHtmlModal();
                 }
-
-                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
-                if (targetBtn) targetBtn.classList.add('active');
-
-                // Smooth transition enter
-                frameEl.style.transform = 'scale(1)';
-            }, 200);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('closed');
-            event.currentTarget.classList.toggle('active');
-        }
-
-        function openSourceModal() {
-            document.getElementById('sourceText').value = content;
-            document.getElementById('sourceModal').style.display = 'flex';
-        }
-
-        function closeSourceModal() {
-            document.getElementById('sourceModal').style.display = 'none';
-        }
+            }
+            // 1, 2, 3: device modes
+            if (e.key === '1') setMode('mobile');
+            if (e.key === '2') setMode('tablet');
+            if (e.key === '3') setMode('desktop');
+            // T: toggle theme
+            if (e.key === 't' || e.key === 'T') toggleTheme();
+            // H: toggle highlight links
+            if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
+            // V: view HTML
+            if (e.key === 'v' || e.key === 'V') openHtmlModal();
+            // Arrow keys for scrolling iframe
+            if (e.key === 'ArrowDown') frame.contentWindow.scrollBy(0, 100);
+            if (e.key === 'ArrowUp') frame.contentWindow.scrollBy(0, -100);
+        });
 
         init();
     </script>

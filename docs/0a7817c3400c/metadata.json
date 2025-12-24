@@ -3,8 +3,8 @@
     "subject": "[TEST FR] Un email un peu différent… pour une cause qui nous tient à cœur",
     "date_rec": "28/11/2025 à 08:36",
     "date_iso": "2025-11-28T08:36:36+01:00",
-    "sender": "\"PeintureVoiture.fr\" <contact@peinturevoiture.fr>",
-    "date_arch": "21/12/2025 à 14:03",
+    "sender": "PeintureVoiture.fr",
+    "date_arch": "24/12/2025 à 23:20",
     "preheader": "Un email un peu différent… pour une cause qui nous tient à cœur Soutenir la Protection Civile, ensemble, ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...",
     "reading_time": "3 min",
     "audit": {
@@ -13,5 +13,6 @@
         "unsubscribe_found": false,
         "link_count": 11,
         "images_no_alt": 5
-    }
+    },
+    "crm": null
 }

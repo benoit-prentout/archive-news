@@ -26,31 +26,33 @@
             <!-- Header -->
             <header class="viewer-header">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <a href="../index.html"
-                        style="color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 6px;">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="m15 18-6-6 6-6" />
-                        </svg>
-                        <span>Back</span>
-                    </a>
                     <h1
-                        style="font-family: var(--font-header); font-size: 1rem; font-weight: 600; margin: 0; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        style="font-family: var(--font-header); font-size: 1rem; font-weight: 600; margin: 0; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent-blue);">
                         {{ subject }}
                     </h1>
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    {% if crm %}
-                    <span class="crm-badge" data-crm="{{ crm }}">{{ crm }}</span>
-                    {% endif %}
-
-                    <div class="device-toggle hide-mobile">
-                        <button class="device-btn" onclick="setMode('mobile')">Mobile</button>
-                        <button class="device-btn" onclick="setMode('tablet')">Tablet</button>
-                        <button class="device-btn active" onclick="setMode('desktop')">Desktop</button>
+                    <div class="viewer-toolbar">
+                        <button class="btn btn-secondary" onclick="toggleHighlightLinks()"
+                            title="Highlight all links (H)">
+                            <span id="highlightBtnText">Show Links</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
+                            View HTML
+                        </button>
                     </div>
 
-                    <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <span class="crm-badge" data-crm="{{ crm or 'Unknown' }}">{{ crm or 'Unknown' }}</span>
+
+                    <div class="device-toggle hide-mobile">
+                        <button class="device-btn" onclick="setMode('mobile')" title="Mobile (1)">Mobile</button>
+                        <button class="device-btn" onclick="setMode('tablet')" title="Tablet (2)">Tablet</button>
+                        <button class="device-btn active" onclick="setMode('desktop')"
+                            title="Desktop (3)">Desktop</button>
+                    </div>
+
+                    <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme (T)">
                         <svg class="icon icon-moon" viewBox="0 0 24 24">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                         </svg>
@@ -72,7 +74,7 @@
             <!-- Email Content -->
             <div class="viewer-content">
                 <div id="deviceFrame" data-mode="desktop"
-                    style="width: 100%; max-width: 700px; height: 100%; transition: all 0.3s ease;">
+                    style="width: 100%; max-width: 800px; height: 100%; transition: max-width 0.3s ease;">
                     <iframe id="emailFrame" class="email-frame"></iframe>
                 </div>
             </div>
@@ -93,19 +95,25 @@
                         <span class="meta-val">{{ sender_name }}</span>
                     </div>
                     <div class="meta-row">
+                        <span class="meta-key">Subject</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="{{ subject }}">{{ subject }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Preheader</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="{{ preheader }}">{{ preheader }}</span>
+                    </div>
+                    <div class="meta-row">
                         <span class="meta-key">Received</span>
                         <span class="meta-val">{{ email_date }}</span>
                     </div>
                     <div class="meta-row">
-                        <span class="meta-key">Archived</span>
-                        <span class="meta-val">{{ archiving_date }}</span>
-                    </div>
-                    {% if crm %}
-                    <div class="meta-row">
                         <span class="meta-key">CRM</span>
-                        <span class="meta-val text-cyan">{{ crm }}</span>
+                        <span class="meta-val text-cyan">{{ crm or 'Unknown' }}</span>
                     </div>
-                    {% endif %}
                 </div>
 
                 <!-- Technical -->
@@ -116,38 +124,9 @@
                         <span class="meta-val">{{ (email_size / 1024)|round(1) }} KB</span>
                     </div>
                     <div class="meta-row">
-                        <span class="meta-key">Read Time</span>
-                        <span class="meta-val">{{ reading_time }}</span>
-                    </div>
-                    <div class="meta-row">
                         <span class="meta-key">Clipping Risk</span>
-                        <span class="meta-val {% if email_size > 102000 %}text-red{% else %}text-green{% endif %}">
+                        <span class="meta-val {% if email_size > 102000 %}text-orange{% else %}text-green{% endif %}">
                             {% if email_size > 102000 %}High{% else %}Low{% endif %}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Quality Audit -->
-                <div class="meta-section">
-                    <div class="meta-section-title">Quality Audit</div>
-                    <div class="meta-row">
-                        <span class="meta-key">Subject Length</span>
-                        <span
-                            class="meta-val {% if audit.subject_check == 'Good' %}text-green{% else %}text-orange{% endif %}">
-                            {{ audit.subject_check }}
-                        </span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-key">Unsubscribe</span>
-                        <span class="meta-val {% if audit.unsubscribe_found %}text-green{% else %}text-red{% endif %}">
-                            {% if audit.unsubscribe_found %}Found{% else %}Missing{% endif %}
-                        </span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-key">Images w/o Alt</span>
-                        <span
-                            class="meta-val {% if audit.images_no_alt == 0 %}text-green{% else %}text-orange{% endif %}">
-                            {{ audit.images_no_alt }}
                         </span>
                     </div>
                 </div>
@@ -157,37 +136,70 @@
                 <div class="meta-section">
                     <div class="meta-section-title">Tracking Pixels ({{ detected_pixels|length }})</div>
                     {% for pixel in detected_pixels %}
-                    <div class="link-card">
-                        <div class="link-text text-cyan">{{ pixel.status }}</div>
-                        <div class="link-url">{{ pixel.url }}</div>
+                    <div class="link-card" style="cursor: default;">
+                        <div class="link-content">
+                            <div class="link-text text-green">{{ pixel.status }}</div>
+                            <div class="link-url">{{ pixel.url }}</div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
                 {% endif %}
 
-                <!-- Links -->
+                <!-- All Links -->
                 <div class="meta-section">
                     <div class="meta-section-title">Links ({{ links|length }})</div>
-                    {% for link in links[:10] %}
+                    {% for link in links %}
                     <div class="link-card" onclick="highlightLink({{ link.index }})">
-                        <div class="link-text">{{ link.txt or '(no text)' }}</div>
-                        <div class="link-url">{{ link.original_url }}</div>
+                        <span class="link-index">{{ link.index }}</span>
+                        <div class="link-content">
+                            <div class="link-text">{{ link.txt or '(no text)' }}</div>
+                            <div class="link-url">{{ link.original_url }}</div>
+                        </div>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('{{ link.original_url | e }}')">Copy</button>
                     </div>
                     {% endfor %}
-                    {% if links|length > 10 %}
-                    <div style="text-align: center; padding: 8px; color: var(--text-muted); font-size: 0.8rem;">
-                        + {{ links|length - 10 }} more links
-                    </div>
-                    {% endif %}
+                </div>
+
+                <!-- Footer -->
+                <div class="meta-section"
+                    style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+                        © 2025 <a href="https://github.com/benoit-prentout" target="_blank"
+                            style="color: var(--accent-blue); text-decoration: none;">Benoît Prentout</a>. All rights
+                        reserved.
+                    </p>
                 </div>
             </div>
         </aside>
     </div>
 
+    <!-- HTML Source Modal -->
+    <div class="modal-overlay" id="htmlModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">HTML Source</span>
+                <button class="modal-close" onclick="closeHtmlModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre class="code-block" id="htmlSourceCode"></pre>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="copyAllHtml()">Copy HTML</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link overlays container -->
+    <div id="linkOverlays" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100;"></div>
+
     <script src="../assets/js/main.js"></script>
     <script>
         const content = {{ safe_html }};
         const frame = document.getElementById('emailFrame');
+        let linksHighlighted = false;
+        let overlayElements = [];
 
         function init() {
             const doc = frame.contentDocument;
@@ -198,8 +210,6 @@
             const style = doc.createElement('style');
             style.innerHTML = `
                 body { margin: 0; font-family: sans-serif; background: #fff; }
-                ::-webkit-scrollbar { width: 6px; }
-                ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
             `;
             doc.head.appendChild(style);
 
@@ -209,16 +219,27 @@
 
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
+            const iframeEl = document.getElementById('emailFrame');
 
             document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            const btn = document.querySelector(`.device-btn[onclick*="${mode}"]`);
+            if (btn) btn.classList.add('active');
 
+            // Remove/add scrollbar class
             if (mode === 'mobile') {
                 frameEl.style.maxWidth = '375px';
+                iframeEl.classList.add('no-scrollbar');
             } else if (mode === 'tablet') {
-                frameEl.style.maxWidth = '768px';
+                frameEl.style.maxWidth = '600px';
+                iframeEl.classList.add('no-scrollbar');
             } else {
-                frameEl.style.maxWidth = '700px';
+                frameEl.style.maxWidth = '800px';
+                iframeEl.classList.remove('no-scrollbar');
+            }
+
+            // Update overlays if visible
+            if (linksHighlighted) {
+                setTimeout(updateOverlays, 100);
             }
         }
 
@@ -227,14 +248,155 @@
             const link = doc.querySelector(`[data-index="${idx}"]`);
             if (link) {
                 link.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                link.style.outline = '3px solid #BD93F9';
+
+                // Flash highlight
+                link.style.outline = '3px solid #50FA7B';
                 link.style.outlineOffset = '2px';
+                link.style.backgroundColor = 'rgba(80, 250, 123, 0.2)';
+
                 setTimeout(() => {
                     link.style.outline = '';
                     link.style.outlineOffset = '';
-                }, 2000);
+                    link.style.backgroundColor = '';
+                }, 3000);
             }
         }
+
+        function toggleHighlightLinks() {
+            linksHighlighted = !linksHighlighted;
+            const btn = document.getElementById('highlightBtnText');
+            btn.textContent = linksHighlighted ? 'Hide Links' : 'Show Links';
+
+            if (linksHighlighted) {
+                createOverlays();
+            } else {
+                removeOverlays();
+            }
+        }
+
+        function createOverlays() {
+            removeOverlays();
+            const doc = frame.contentDocument;
+            const links = doc.querySelectorAll('[data-index]');
+            const container = document.getElementById('linkOverlays');
+            const frameRect = frame.getBoundingClientRect();
+            const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
+            const scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
+
+            links.forEach(link => {
+                const idx = link.getAttribute('data-index');
+                const rect = link.getBoundingClientRect();
+
+                // Create overlay badge
+                const badge = document.createElement('div');
+                badge.className = 'link-overlay-badge';
+                badge.textContent = idx;
+                badge.style.cssText = `
+                    position: fixed;
+                    left: ${frameRect.left + rect.left}px;
+                    top: ${frameRect.top + rect.top - 10}px;
+                    background: #BD93F9;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: bold;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-family: sans-serif;
+                    z-index: 1000;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    min-width: 16px;
+                    text-align: center;
+                `;
+                container.appendChild(badge);
+                overlayElements.push(badge);
+
+                // Add outline to link in iframe
+                link.style.outline = '2px solid #BD93F9';
+                link.style.outlineOffset = '1px';
+            });
+        }
+
+        function removeOverlays() {
+            const container = document.getElementById('linkOverlays');
+            container.innerHTML = '';
+            overlayElements = [];
+
+            // Remove outlines from iframe links
+            const doc = frame.contentDocument;
+            if (doc) {
+                const links = doc.querySelectorAll('[data-index]');
+                links.forEach(link => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                });
+            }
+        }
+
+        function updateOverlays() {
+            if (linksHighlighted) {
+                createOverlays();
+            }
+        }
+
+        // Update overlays on scroll
+        frame.addEventListener('load', () => {
+            frame.contentWindow.addEventListener('scroll', () => {
+                if (linksHighlighted) updateOverlays();
+            });
+        });
+
+        function openHtmlModal() {
+            const modal = document.getElementById('htmlModal');
+            const codeEl = document.getElementById('htmlSourceCode');
+            codeEl.textContent = content;
+            modal.classList.add('active');
+        }
+
+        function closeHtmlModal() {
+            document.getElementById('htmlModal').classList.remove('active');
+        }
+
+        function copyAllHtml() {
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Escape: close modal if open
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('htmlModal');
+                if (modal.classList.contains('active')) {
+                    closeHtmlModal();
+                }
+            }
+            // 1, 2, 3: device modes
+            if (e.key === '1') setMode('mobile');
+            if (e.key === '2') setMode('tablet');
+            if (e.key === '3') setMode('desktop');
+            // T: toggle theme
+            if (e.key === 't' || e.key === 'T') toggleTheme();
+            // H: toggle highlight links
+            if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
+            // V: view HTML
+            if (e.key === 'v' || e.key === 'V') openHtmlModal();
+            // Arrow keys for scrolling iframe
+            if (e.key === 'ArrowDown') frame.contentWindow.scrollBy(0, 100);
+            if (e.key === 'ArrowUp') frame.contentWindow.scrollBy(0, -100);
+        });
 
         init();
     </script>

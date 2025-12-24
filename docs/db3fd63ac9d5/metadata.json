@@ -3,8 +3,8 @@
     "subject": "Offrez un colis de Noël pour un aîné isoléet illuminez son réveillon ! ✨",
     "date_rec": "20/11/2025 à 10:01",
     "date_iso": "2025-11-20T10:01:06+00:00",
-    "sender": "Atelier Loupiote | Lampes artisanales =?iso-8859-1?q?fran=E7aises?=\r\n\t<motsdoux@atelier-loupiote.fr>",
-    "date_arch": "21/12/2025 à 14:03",
+    "sender": "Atelier Loupiote | Lampes artisanales françaises",
+    "date_arch": "24/12/2025 à 23:20",
     "preheader": "En association avec Petits Frères des Pauvres 👴👵💓 ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...",
     "reading_time": "2 min",
     "audit": {
@@ -13,5 +13,6 @@
         "unsubscribe_found": false,
         "link_count": 8,
         "images_no_alt": 3
-    }
+    },
+    "crm": null
 }

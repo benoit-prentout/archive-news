@@ -12,720 +12,232 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        /* Viewer Specific Styles */
         body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewer-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .device-stage {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-
-        .device-frame {
-            background: #111;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Removed opacity transition */
-            transform: scale(1);
-        }
-
-        .device-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            flex: 1;
-        }
-
-        /* Device Modes */
-        .device-frame[data-mode="desktop"] {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            /* Lighter shadow */
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            /* Almost invisible border */
-        }
-
-        [data-theme="dark"] .device-frame[data-mode="desktop"] {
-            border-color: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .device-frame[data-mode="mobile"] {
-            width: 375px;
-            height: 812px;
-            max-height: 90vh;
-            border-radius: 40px;
-            border: 12px solid #111;
-        }
-
-        .device-frame[data-mode="mobile"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #111;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .device-frame[data-mode="tablet"] {
-            width: 768px;
-            height: 1024px;
-            max-height: 90vh;
-            border-radius: 24px;
-            border: 12px solid #111;
-        }
-
-        /* Sidebar */
-        .meta-sidebar {
-            width: 400px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border-color);
-            padding: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-
-        .meta-sidebar.closed {
-            transform: translateX(100%);
-            width: 0;
-            border: none;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-header);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin: 25px 0 10px 0;
-            font-weight: 700;
-        }
-
-        .section-title:first-child {
-            margin-top: 0;
-        }
-
-        .meta-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .meta-key {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-align: left;
-        }
-
-        .meta-key::after {
-            content: ":";
-        }
-
-        .meta-val {
-            color: var(--text-primary);
-            font-weight: 400;
-            text-align: right;
-            margin-left: 10px;
-            word-break: break-word;
-        }
-
-        /* Links */
-        .link-list {
-            list-style: none;
-            padding: 0;
             margin: 0;
-        }
-
-        .link-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .link-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(2px);
-        }
-
-        .link-num {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-secondary);
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        [data-theme="dark"] .link-num {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .link-content {
-            flex: 1;
             overflow: hidden;
-        }
-
-        .link-txt {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .link-url {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Pixels */
-        .pixel-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-        }
-
-        .pixel-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 8px 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2980b9;
-        }
-
-        .pixel-row {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            cursor: help;
-        }
-
-        .pixel-row:last-child {
-            border-bottom: none;
-        }
-
-        .pixel-reason {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .pixel-url {
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.75rem;
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-        }
-
-        .sidebar-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dotted currentColor;
-        }
-
-        /* Header Controls */
-        .viewer-header {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-glass);
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .action-btn {
-            height: 36px;
-            padding: 0 12px;
-            min-width: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover,
-        .action-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .device-toggles {
-            display: flex;
-            gap: 2px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px;
-            border-radius: 10px;
-        }
-
-        .device-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .device-btn.active {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .device-toggles {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="dark"] .pixel-header {
-            color: #8be9fd;
-            background: rgba(139, 233, 253, 0.1);
-        }
-
-        [data-theme="dark"] .pixel-box {
-            border-color: rgba(139, 233, 253, 0.2);
-        }
-
-        /* Modal for Source */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            width: 80%;
-            max-width: 800px;
-            height: 80vh;
-            background: var(--bg-body);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body {
-            flex: 1;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .source-area {
-            width: 100%;
-            height: 100%;
-            border: none;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            resize: none;
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        /* Copy Buttons */
-        .btn-copy-small {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            opacity: 0.6;
-        }
-
-        .btn-copy-small:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--accent-color);
-            opacity: 1;
-        }
-
-        .copy-success {
-            color: #50fa7b !important;
-            /* Dracula Green */
-            background: rgba(80, 250, 123, 0.1) !important;
-            border-color: #50fa7b !important;
-        }
-
-        @media (max-width: 768px) {
-            .hide-mobile {
-                display: none !important;
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="viewer-header">
-        <div style="font-weight:700; font-family:var(--font-header);">Newsletter Archive</div>
+    <div class="viewer-layout">
+        <!-- Main Content -->
+        <div class="viewer-main">
+            <!-- Header -->
+            <header class="viewer-header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <h1
+                        style="font-family: var(--font-header); font-size: 1rem; font-weight: 600; margin: 0; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent-blue);">
+                        Hello Fresh - Campagne Insertion Panier - Août 2025 Preview
+                    </h1>
+                </div>
 
-        <div class="device-toggles hide-mobile">
-            <button class="device-btn" onclick="setMode('mobile')" title="View in Mobile Mode (375px)">Mobile</button>
-            <button class="device-btn" onclick="setMode('tablet')" title="View in Tablet Mode (768px)">Tablet</button>
-            <button class="device-btn active" onclick="setMode('desktop')"
-                title="View in Desktop Mode (Filtered)">Desktop</button>
-        </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="viewer-toolbar">
+                        <button class="btn btn-secondary" onclick="toggleHighlightLinks()"
+                            title="Highlight all links (H)">
+                            <span id="highlightBtnText">Show Links</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
+                            View HTML
+                        </button>
+                    </div>
 
-        <div class="action-group">
-            <button class="action-btn" onclick="openSourceModal()" title="View Source Code">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            </button>
-            <button class="action-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                <svg class="icon icon-moon" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-                <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-            <button class="action-btn" id="highlight-toggle" onclick="toggleHighlight()"
-                title="Highlight Links in Email">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                </svg>
-            </button>
-            <button class="action-btn active" onclick="toggleSidebar()" title="Toggle Metadata Sidebar">
-                <span>Metadata</span>
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            </button>
-        </div>
-    </div>
+                    <span class="crm-badge" data-crm="Klaviyo">Klaviyo</span>
 
-    <div class="viewer-container">
-        <div class="device-stage">
-            <div class="device-frame" id="deviceFrame" data-mode="desktop">
-                <iframe id="emailFrame"></iframe>
+                    <div class="device-toggle hide-mobile">
+                        <button class="device-btn" onclick="setMode('mobile')" title="Mobile (1)">Mobile</button>
+                        <button class="device-btn" onclick="setMode('tablet')" title="Tablet (2)">Tablet</button>
+                        <button class="device-btn active" onclick="setMode('desktop')"
+                            title="Desktop (3)">Desktop</button>
+                    </div>
+
+                    <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme (T)">
+                        <svg class="icon icon-moon" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="icon icon-sun" style="display:none;" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Email Content -->
+            <div class="viewer-content">
+                <div id="deviceFrame" data-mode="desktop"
+                    style="width: 100%; max-width: 800px; height: 100%; transition: max-width 0.3s ease;">
+                    <iframe id="emailFrame" class="email-frame"></iframe>
+                </div>
             </div>
         </div>
 
-        <div class="meta-sidebar" id="sidebar">
-            <div class="sidebar-header">Metadata</div>
+        <!-- Sidebar -->
+        <aside class="viewer-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Metadata</span>
+            </div>
+
             <div class="sidebar-content">
-                <div class="section-title">General Info</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject</span>
-                    <span class="meta-val">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Sender</span>
-                    <span class="meta-val">benoit@getinside.fr</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Received</span>
-                    <span class="meta-val">24/11/2025 à 05:24</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Archived</span>
-                    <span class="meta-val">21/12/2025 à 14:03</span>
+                <!-- General Info -->
+                <div class="meta-section">
+                    <div class="meta-section-title">General</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Sender</span>
+                        <span class="meta-val">benoit@getinside.fr</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Subject</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="Hello Fresh - Campagne Insertion Panier - Août 2025 Preview">Hello Fresh - Campagne Insertion Panier - Août 2025 Preview</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Preheader</span>
+                        <span class="meta-val"
+                            style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...">Encore merci pour votre commande ! Voici votre code promo exclusif Suite à votre commande chez MieuxQueDesFleurs, bénéficiez de jusqu'à 95€ offerts sur vos prem...</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Received</span>
+                        <span class="meta-val">24/11/2025 à 05:24</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">CRM</span>
+                        <span class="meta-val text-cyan">Klaviyo</span>
+                    </div>
                 </div>
 
-                <div class="section-title">Technical</div>
-                <div class="meta-row">
-                    <span class="meta-key">Email Size</span>
-                    <span class="meta-val">36.1 KB</span>
+                <!-- Technical -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Technical</div>
+                    <div class="meta-row">
+                        <span class="meta-key">Size</span>
+                        <span class="meta-val">36.1 KB</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Clipping Risk</span>
+                        <span class="meta-val text-green">
+                            Low
+                        </span>
+                    </div>
                 </div>
-                <div class="meta-row">
-                    <span class="meta-key">Read Time</span>
-                    <span class="meta-val">2 min</span>
-                </div>
+
+                <!-- Tracking Pixels -->
                 
 
-                <div class="section-title">Quality Audit</div>
-                <div class="meta-row">
-                    <span class="meta-key">Subject Length</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Good
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Unsubscribe Link</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Found
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Images without Alt</span>
-                    <span class="meta-val" style="color: orange">
-                        3
-                    </span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-key">Clipping Risk</span>
-                    <span class="meta-val" style="color: var(--accent-color)">
-                        Low
-                    </span>
-                </div>
-
-                <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Links (6)</span>
-                    <button onclick="copyLinks([{'index': 1, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0', 'final_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0'}, {'index': 2, 'txt': "Profiter de l'offre", 'original_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1', 'final_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1'}, {'index': 3, 'txt': 'ce lien', 'original_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2', 'final_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2'}, {'index': 4, 'txt': '', 'original_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3', 'final_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3'}, {'index': 5, 'txt': 'www.hellofresh.fr/conditions-generales', 'original_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4', 'final_url': 'https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4'}, {'index': 6, 'txt': 'Vous pouvez vous désinscrire ici.', 'original_url': "http://HelloFresh,%20c'est%20quoi%20?_kx=A7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP", 'final_url': "http://HelloFresh,%20c'est%20quoi%20?_kx=A7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP"}])"
-                        style="border:none; background:none; color:var(--accent-color); cursor:pointer; font-size:0.7em; font-weight:600;">COPY
-                        ALL</button>
-                </div>
-                <ul class="link-list">
+                <!-- All Links -->
+                <div class="meta-section">
+                    <div class="meta-section-title">Links (6)</div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(1)">1</div>
-                        <div class="link-content" onclick="highlightLink(1)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(1)">
+                        <span class="link-index">1</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(2)">2</div>
-                        <div class="link-content" onclick="highlightLink(2)">
-                            <div class="link-txt">Profiter de l'offre</div>
+                    <div class="link-card" onclick="highlightLink(2)">
+                        <span class="link-index">2</span>
+                        <div class="link-content">
+                            <div class="link-text">Profiter de l'offre</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(3)">3</div>
-                        <div class="link-content" onclick="highlightLink(3)">
-                            <div class="link-txt">ce lien</div>
+                    <div class="link-card" onclick="highlightLink(3)">
+                        <span class="link-index">3</span>
+                        <div class="link-content">
+                            <div class="link-text">ce lien</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(4)">4</div>
-                        <div class="link-content" onclick="highlightLink(4)">
-                            <div class="link-txt"></div>
+                    <div class="link-card" onclick="highlightLink(4)">
+                        <span class="link-index">4</span>
+                        <div class="link-content">
+                            <div class="link-text">(no text)</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(5)">5</div>
-                        <div class="link-content" onclick="highlightLink(5)">
-                            <div class="link-txt">www.hellofresh.fr/conditions-generales</div>
+                    <div class="link-card" onclick="highlightLink(5)">
+                        <span class="link-index">5</span>
+                        <div class="link-content">
+                            <div class="link-text">www.hellofresh.fr/conditions-generales</div>
                             <div class="link-url">https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4')">Copy</button>
+                    </div>
                     
-                    <li class="link-item">
-                        <div class="link-num" onclick="highlightLink(6)">6</div>
-                        <div class="link-content" onclick="highlightLink(6)">
-                            <div class="link-txt">Vous pouvez vous désinscrire ici.</div>
+                    <div class="link-card" onclick="highlightLink(6)">
+                        <span class="link-index">6</span>
+                        <div class="link-content">
+                            <div class="link-text">Vous pouvez vous désinscrire ici.</div>
                             <div class="link-url">http://HelloFresh,%20c'est%20quoi%20?_kx=A7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP</div>
                         </div>
-                        <button class="btn-copy-small" onclick="copyToClipboard('http://HelloFresh,%20c'est%20quoi%20?_kx=A7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP', this)"
-                            title="Copy Link">
-                            <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </li>
+                        <button class="link-copy-btn"
+                            onclick="event.stopPropagation(); copyLink('http://HelloFresh,%20c&#39;est%20quoi%20?_kx=A7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP')">Copy</button>
+                    </div>
                     
-                </ul>
-            </div>
+                </div>
 
-            <div class="sidebar-footer">
-                &copy; 2025 <a href="https://github.com/benoit-prentout" target="_blank">Benoît Prentout</a>. All rights
-                reserved.
+                <!-- Footer -->
+                <div class="meta-section"
+                    style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+                        © 2025 <a href="https://github.com/benoit-prentout" target="_blank"
+                            style="color: var(--accent-blue); text-decoration: none;">Benoît Prentout</a>. All rights
+                        reserved.
+                    </p>
+                </div>
             </div>
-        </div>
+        </aside>
     </div>
 
-    <!-- Code Modal -->
-    <div id="sourceModal" class="modal-overlay">
-        <div class="modal">
+    <!-- HTML Source Modal -->
+    <div class="modal-overlay" id="htmlModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <span>HTML Source</span>
-                <button class="close-btn" onclick="closeSourceModal()">×</button>
+                <span class="modal-title">HTML Source</span>
+                <button class="modal-close" onclick="closeHtmlModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <textarea id="sourceText" class="source-area" readonly></textarea>
+                <pre class="code-block" id="htmlSourceCode"></pre>
             </div>
-            <div class="modal-footer"
-                style="padding: 10px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="action-btn" onclick="copySource()">
-                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span>Copy All</span>
-                </button>
-                <button class="action-btn" onclick="closeSourceModal()">Close</button>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="copyAllHtml()">Copy HTML</button>
             </div>
         </div>
     </div>
+
+    <!-- Link overlays container -->
+    <div id="linkOverlays" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100;"></div>
 
     <script src="../assets/js/main.js"></script>
     <script>
         const content = "<div class=\"m_1637812099911886316root-container-spacing\" style=\"font-size:0;padding-bottom:20px;padding-top:50px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td>\n<div style=\"margin:0px auto;max-width:600px\">\n<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:0px;text-align:center\">\n<div style=\"background:#ffffff url(https://ci3.googleusercontent.com/meips/ADKq_NaXhNmmrj4B9oToLH3SsPdUdkPZbn4kN2FSGUFNDT0PDVCb59097K49kPHAdPVE1qgALYhN7LXya9TZZRNH7G1dcUwGQXaoLi3QebiHZYUqbD34B-KIN-nHvEnecoR8nptcr8OA3L_EWsqTd1GwKGYLSOgaUGFy4JCt=s0-d-e1-ft#https://d3k81ch9hvuctc.cloudfront.net/company/Qb2tyP/images/c56f4fc7-b915-4599-86db-f1888f5d4272.png) center center/cover no-repeat;background-position:center center;background-repeat:no-repeat;background-size:cover;margin:0px auto;border-radius:0px 0px 0px 0px;max-width:600px\">\n<div style=\"line-height:0;font-size:0\">\n<table align=\"center\" background=\"https://ci3.googleusercontent.com/meips/ADKq_NaXhNmmrj4B9oToLH3SsPdUdkPZbn4kN2FSGUFNDT0PDVCb59097K49kPHAdPVE1qgALYhN7LXya9TZZRNH7G1dcUwGQXaoLi3QebiHZYUqbD34B-KIN-nHvEnecoR8nptcr8OA3L_EWsqTd1GwKGYLSOgaUGFy4JCt=s0-d-e1-ft#https://d3k81ch9hvuctc.cloudfront.net/company/Qb2tyP/images/c56f4fc7-b915-4599-86db-f1888f5d4272.png\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#ffffff url(https://ci3.googleusercontent.com/meips/ADKq_NaXhNmmrj4B9oToLH3SsPdUdkPZbn4kN2FSGUFNDT0PDVCb59097K49kPHAdPVE1qgALYhN7LXya9TZZRNH7G1dcUwGQXaoLi3QebiHZYUqbD34B-KIN-nHvEnecoR8nptcr8OA3L_EWsqTd1GwKGYLSOgaUGFy4JCt=s0-d-e1-ft#https://d3k81ch9hvuctc.cloudfront.net/company/Qb2tyP/images/c56f4fc7-b915-4599-86db-f1888f5d4272.png) center center/cover no-repeat;background-position:center center;background-repeat:no-repeat;background-size:cover;width:100%;border-radius:0px 0px 0px 0px\">\n<tbody>\n<tr>\n<td style=\"direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center\">\n<div class=\"m_1637812099911886316content-padding m_1637812099911886316first m_1637812099911886316last\" style=\"padding-left:0;padding-right:0;padding-top:0;padding-bottom:0\">\n<div class=\"m_1637812099911886316kl-row m_1637812099911886316colstack\" style=\"display:table;table-layout:fixed;width:100%\">\n<div class=\"m_1637812099911886316kl-column\" style=\"display:table-cell;vertical-align:top;width:100%\">\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td class=\"m_1637812099911886316kl-img-base-auto-width\" style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\">\n<img class=\"CToWUd\" data-bit=\"iit\" src=\"img_0.jpg\" style=\"border:0;height:auto;line-height:100%;max-width:100%;outline:none;text-decoration:none;display:block;font-size:13px;width:100%\" width=\"600\"/>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#01b9b5;vertical-align:top;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#01b9b5;font-size:0px;padding:0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center\"><span style=\"color:rgb(255,255,255);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal\">Encore merci pour votre commande ! Voici votre code promo exclusif <img alt=\"\ud83c\udf89\" aria-label=\"\ud83c\udf89\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83c\udf89\" draggable=\"false\" loading=\"lazy\" src=\"img_1.png\"/></span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#01b9b5;font-size:0px;word-break:break-word\">\n<div style=\"height:20px;line-height:20px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td class=\"m_1637812099911886316kl-img-base-auto-width\" style=\"border:0;padding:0px 0px 0px 0px;width:600px\" valign=\"top\">\n<a data-index=\"1\" data-saferedirecturl=\"https://www.google.com/url?q=https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0&amp;source=gmail&amp;ust=1764076998040000&amp;usg=AOvVaw284oJM6dgD5-9jMybBxVhu\" href=\"https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_0\" style=\"color:#4685d3;text-decoration:underline;display:block\" target=\"_blank\">\n<img class=\"CToWUd\" data-bit=\"iit\" src=\"img_2.jpg\" style=\"border:0;height:auto;line-height:100%;max-width:100%;outline:none;text-decoration:none;display:block;font-size:13px;width:100%\" width=\"600\"/>\n</a>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#ffffff;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#ffffff;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#ffffff;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center\"><br/><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-size:16px;font-weight:bold\"><span style=\"color:#000000\">Suite \u00e0 votre commande chez MieuxQueDesFleurs, b\u00e9n\u00e9ficiez de </span></span></div>\n<div style=\"text-align:center\"><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-size:26px;font-weight:bold\"><span style=\"color:#000000\">jusqu'\u00e0<span style=\"color:rgb(39,94,94)\"> 95\u20ac offerts</span> <span class=\"il\">sur vos premi\u00e8res Box</span> HelloFresh + une surprise \u00e0 chaque commande*</span></span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#ffffff;vertical-align:top;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;padding:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:separate;line-height:100%\">\n<tbody><tr>\n<td align=\"center\" bgcolor=\"#275E5E\" role=\"presentation\" style=\"border:none;border-radius:5px;background:#275e5e\" valign=\"middle\">\n<a data-index=\"2\" data-saferedirecturl=\"https://www.google.com/url?q=https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1&amp;source=gmail&amp;ust=1764076998040000&amp;usg=AOvVaw1wMeJ8nDF1vTuqgwFjdEgZ\" href=\"https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_1\" style='color:#fff;text-decoration:none;display:block;background:#275e5e;font-family:\"Cabin\",Geneva,Tahoma,Verdana,sans-serif;font-size:20px;font-weight:700;line-height:100%;letter-spacing:0;margin:0;text-transform:none;padding:15px 15px 15px 15px;border-radius:5px' target=\"_blank\">\n              Profiter de l'offre\n            </a>\n</td>\n</tr>\n</tbody></table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#ffffff;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#d9f8ed;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#d9f8ed;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#d9f8ed;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-size:26px;font-weight:bold\"><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif\">Comment utiliser mon code ?</span></span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#d9f8ed;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#d9f8ed;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center\">\n<div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">1. Rendez-vous sur\u00a0<a data-index=\"3\" data-saferedirecturl=\"https://www.google.com/url?q=https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2&amp;source=gmail&amp;ust=1764076998041000&amp;usg=AOvVaw0IgKSjUQ59rfEFwhSJjOFl\" href=\"https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_2\" rel=\"noopener\" style=\"color:#4685d3;text-decoration:underline;font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:bold;font-style:normal\" target=\"_blank\"><span style=\"color:rgb(2,67,67)\"><span style=\"font-weight:bold\">ce lien</span></span></a> et utilisez le <strong>code promo <span style=\"font-weight:bold;font-size:15px;font-family:'Source Sans Pro',sans-serif;color:rgb(0,0,0)\">MQDFB2S</span></strong></span></div>\n<div style=\"text-align:left\">\u00a0</div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">2. Cr\u00e9ez votre <span class=\"il\">Box</span> sur Mesure en s\u00e9lectionnant le nombre de personnes et de repas.</span></div>\n<div style=\"text-align:left\">\u00a0</div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">3. Choisissez <span class=\"il\">vos</span> recettes parmi notre s\u00e9lection et de nombreuses recettes chaque semaine.\u00a0</span></div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\u00a0</span></div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">4. Ajoutez votre extra du march\u00e9 HelloFresh \u00e0 votre panier et profitez de votre dessert gratuit chaque semaine.\u00a0</span></div>\n<div style=\"text-align:left\">\u00a0</div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">5. Votre <span class=\"il\">Box</span> arrive la semaine suivante au cr\u00e9neau de votre choix chez vous. R\u00e9galez-vous !<br/></span></div>\n</div>\n</div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#d9f8ed;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#e2fbbc;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#e2fbbc;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#e2fbbc;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-size:26px;font-weight:bold\"><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif\">HelloFresh, c'est quoi ?</span></span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#e2fbbc;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#e2fbbc;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center\">\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><img alt=\"\ud83d\udce6\" aria-label=\"\ud83d\udce6\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83d\udce6\" draggable=\"false\" loading=\"lazy\" src=\"img_3.png\"/> Une <span class=\"il\">Box</span> livr\u00e9e \u00e0 domicile : je choisis mon cr\u00e9neau de livraison et re\u00e7ois ma <span class=\"il\">Box</span> chez moi.\u00a0</span></div>\n<div style=\"text-align:left\">\u00a0</div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><img alt=\"\ud83e\udd55\" aria-label=\"\ud83e\udd55\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83e\udd55\" draggable=\"false\" loading=\"lazy\" src=\"img_4.png\"/> Des ingr\u00e9dients frais et de qualit\u00e9 en provenance de fournisseurs s\u00e9lectionn\u00e9s par nos soins. Nous donnons la priorit\u00e9 \u00e0 l\u2019origine France.</span></div>\n<div style=\"text-align:left\">\u00a0</div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><img alt=\"\ud83e\udd57\" aria-label=\"\ud83e\udd57\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83e\udd57\" draggable=\"false\" loading=\"lazy\" src=\"img_5.png\"/> Un large choix de recettes chaque semaine.</span></div>\n<div style=\"text-align:left\">\u00a0</div>\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\">\n<p dir=\"ltr\" role=\"presentation\" style=\"margin-bottom:0;margin-left:0;margin-right:0;margin-top:0;padding-bottom:1em\"><img alt=\"\ud83e\uddd1\u200d\ud83c\udf73\" aria-label=\"\ud83e\uddd1\u200d\ud83c\udf73\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83e\uddd1\u200d\ud83c\udf73\" draggable=\"false\" loading=\"lazy\" src=\"img_6.png\"/> Des fiches-recettes faciles \u00e0 suivre pour pr\u00e9parer de d\u00e9licieux d\u00eeners.</p>\n<p dir=\"ltr\" role=\"presentation\" style=\"margin-bottom:0;margin-left:0;margin-right:0;margin-top:0;padding-bottom:0\"><img alt=\"\ud83d\udd7a\ud83c\udffc\" aria-label=\"\ud83d\udd7a\ud83c\udffc\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83d\udd7a\ud83c\udffc\" draggable=\"false\" loading=\"lazy\" src=\"img_7.png\"/> Un abonnement 100% flexible : je peux mettre en pause ou suspendre mon abonnement (pas d\u2019engagement).\u00a0</p>\n</span></div>\n</div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#e2fbbc;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#e2fbbc;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-size:26px;font-weight:bold\"><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif\">Bonne nouvelle ! </span></span></div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#e2fbbc;vertical-align:top;padding-top:9px;padding-right:20px;padding-bottom:9px;padding-left:20px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#e2fbbc;font-size:0px;padding:0px;padding-top:0px;padding-right:33px;padding-bottom:0px;padding-left:33px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center\">\n<div style=\"text-align:left\"><span style=\"color:rgb(0,0,0);font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;font-size:16px\"><img alt=\"\ud83c\udf81\" aria-label=\"\ud83c\udf81\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\ud83c\udf81\" draggable=\"false\" loading=\"lazy\" src=\"img_8.png\"/> Un produit offert chaque semaine parmi une s\u00e9lection XXL : dessert, petit-d\u00e9j, ap\u00e9ro, go\u00fbter, charcuterie, fromage\u2026</span></div>\n</div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#e2fbbc;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"center\" style=\"font-size:0px;word-break:break-word\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\">\n<tbody>\n<tr>\n<td class=\"m_1637812099911886316kl-img-base-auto-width\" style=\"border:0;padding:0px 18px 0px 18px;width:564px\" valign=\"top\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;border-spacing:0px\"><tbody><tr>\n<td valign=\"top\">\n<a data-index=\"4\" data-saferedirecturl=\"https://www.google.com/url?q=https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3&amp;source=gmail&amp;ust=1764076998041000&amp;usg=AOvVaw3gfjXsnca4kpBdI_JgztEh\" href=\"https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_3\" style=\"color:#4685d3;text-decoration:underline;display:block\" target=\"_blank\">\n<img class=\"CToWUd\" data-bit=\"iit\" src=\"img_9.jpg\" style=\"border:0;height:auto;line-height:100%;max-width:100%;outline:none;text-decoration:none;display:block;font-size:13px;width:100%\" width=\"564\"/>\n</a>\n</td></tr></tbody></table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#ffffff;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background-color:#ffffff;vertical-align:top;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#ffffff;font-size:0px;padding:0px;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:20px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center;line-height:90%\">\n<div>\n<div style=\"line-height:95%;text-align:left\"><span id=\"m_1637812099911886316m_1520842216699208493m_-2374111106474214596m_3010284911725824315gmail-docs-internal-guid-e6b20c3d-7fff-2fb5-aee2-ec5059cdd877\" style=\"font-size:10px;font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;color:rgb(130,129,129)\">\n<div>\n<div style=\"line-height:120%\"><span style=\"font-size:10px;font-family:'Source Sans Pro',sans-serif;color:rgb(132,131,131)\">*Conditions de l\u2019offre : Pour toute souscription d\u2019un abonnement HelloFresh, jusqu\u2019\u00e0 95\u20ac de r\u00e9duction <span class=\"il\">sur vos</span> 5 <span class=\"il\">premi\u00e8res Box</span> (minimum 17\u20ac offerts incluant les frais de livraison pour la <span class=\"il\">Box</span> 1, 10\u20ac pour la <span class=\"il\">Box</span> 2 et la <span class=\"il\">Box</span> 3, et 5\u20ac pour la <span class=\"il\">Box</span> 4 et la <span class=\"il\">Box</span> 5). Frais de livraison offerts pour la <span class=\"il\">premi\u00e8re</span> <span class=\"il\">Box</span> uniquement. Le montant de la r\u00e9duction d\u00e9pend de la taille de la <span class=\"il\">Box</span>.</span></div>\n<div style=\"line-height:120%\"><span style=\"font-size:10px;font-family:'Source Sans Pro',sans-serif;color:rgb(132,131,131)\">\u00a0</span></div>\n<div style=\"line-height:120%\"><span style=\"font-size:10px;font-family:'Source Sans Pro',sans-serif;color:rgb(132,131,131)\">Cette offre comprend \u00e9galement un extra de notre March\u00e9 HelloFresh offert chaque semaine parmi une s\u00e9lection de produits, tant que l\u2019abonnement n\u2019est pas r\u00e9sili\u00e9. L\u2019ajout de cet extra doit \u00eatre fait par <span class=\"il\">vos</span> soins au moment du choix des recettes. HelloFresh se r\u00e9serve le droit de remplacer le produit choisi si celui-ci n\u2019est plus disponible.\u00a0</span></div>\n<br/>\n<div style=\"line-height:120%\"><span style=\"font-size:10px;font-family:'Source Sans Pro',sans-serif;color:rgb(132,131,131)\">Offre r\u00e9serv\u00e9e aux nouveaux clients et aux anciens clients ayant r\u00e9sili\u00e9 leur abonnement depuis plus de 52 semaines, valable \u00e0 condition de commander <span class=\"il\">vos</span> 5 <span class=\"il\">premi\u00e8res Box</span> dans les 9 semaines qui suivent la souscription de votre abonnement, non cumulable avec d'autres offres, limit\u00e9e \u00e0 une par foyer et ne donnant droit \u00e0 aucun \u00e9change, ni remboursement du montant de la r\u00e9duction.\u00a0</span></div>\n<br/>\n<div style=\"line-height:120%\"><span style=\"font-size:10px;font-family:'Source Sans Pro',sans-serif;color:rgb(132,131,131)\">L\u2019abonnement HelloFresh est flexible et sans engagement de dur\u00e9e. Les abonn\u00e9.e.s HelloFresh ont jusqu\u2019\u00e0 la date indiqu\u00e9e en haut de l\u2019onglet \u201cMon Menu\u201d (23h59) sur le site HelloFresh pour modifier ou mettre en pause leur prochaine <span class=\"il\">Box</span> ou r\u00e9silier leur abonnement.</span></div>\n<span style=\"font-size:10px;color:rgb(132,131,131)\"><span style=\"font-family:'Source Sans Pro',sans-serif\">Pour plus d\u2019informations, veuillez consulter les conditions g\u00e9n\u00e9rales sur : </span><a data-index=\"5\" data-saferedirecturl=\"https://www.google.com/url?q=https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4&amp;source=gmail&amp;ust=1764076998041000&amp;usg=AOvVaw3Aoyn-1KWFfMjr-BKwuzEQ\" href=\"https://ctrk.klclick.com/l/01K6HX6KQ4WCNSTY7S9A64652S_4\" style=\"color:rgb(132,131,131);text-decoration:underline\" target=\"_blank\"><span style=\"font-family:'Source Sans Pro',sans-serif;text-decoration:underline\">www.hellofresh.fr/conditions-<wbr/>generales</span></a><span style=\"font-family:'Source Sans Pro',sans-serif\">.</span></span></div>\n</span></div>\n</div>\n</div></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#ffffff;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#fef1e7;font-size:0px;word-break:break-word\">\n<div style=\"height:40px;line-height:40px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td align=\"left\" class=\"m_1637812099911886316kl-text\" style=\"background:#fef1e7;font-size:0px;padding:0px;padding-top:9px;padding-right:18px;padding-bottom:9px;padding-left:18px;word-break:break-word\">\n<div style=\"font-family:'Helvetica Neue',Arial;font-size:14px;font-style:normal;font-weight:400;letter-spacing:0px;line-height:1.3;text-align:left;color:#222222\"><div style=\"text-align:center\"><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal\">\u200bFait avec <img alt=\"\u2764\ufe0f\" aria-label=\"\u2764\ufe0f\" class=\"an1 CToWUd\" data-bit=\"iit\" data-emoji=\"\u2764\ufe0f\" draggable=\"false\" loading=\"lazy\" src=\"img_10.png\"/> \u00e0 Nice\u00a0</span></div>\n<div style=\"text-align:center\"><span style=\"font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal\">MieuxQueDesFleurs, Copyright 2015-2025</span></div>\n<div style=\"text-align:center\">\u00a0</div>\n<p style=\"margin-bottom:0;margin-left:0;margin-right:0;margin-top:0;padding-bottom:0;text-align:center\"><span style=\"font-size:10px;font-family:Cabin,Geneva,Tahoma,Verdana,sans-serif;font-weight:400;font-style:normal;color:rgb(130,129,129)\">Vous ne souhaitez plus recevoir nos emails ?<a data-index=\"6\" data-saferedirecturl=\"https://www.google.com/url?q=http://HelloFresh,%2520c'est%2520quoi%2520?_kx%3DA7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP&amp;source=gmail&amp;ust=1764076998041000&amp;usg=AOvVaw0XEzPXHUUql7wfhQbhbpHI\" href=\"http://HelloFresh,%20c'est%20quoi%20?_kx=A7is3Z3Pj3H_T-5E5S1ZKetI43DUjfu5pId0Q-ivdro.Qb2tyP\" style=\"color:#4685d3;text-decoration:underline\" target=\"_blank\" text=\" Vous pouvez vous d\u00e9sinscrire ici.\"> Vous pouvez vous d\u00e9sinscrire ici.</a></span></p></div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div class=\"m_1637812099911886316mj-column-per-100 m_1637812099911886316component-wrapper\" style=\"font-size:0px;text-align:left;direction:ltr;vertical-align:top;width:100%\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width:100%\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"vertical-align:top;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n<tbody>\n<tr>\n<td style=\"background:#fef1e7;font-size:0px;word-break:break-word\">\n<div style=\"height:20px;line-height:20px\">\u200a</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</div>";
         const frame = document.getElementById('emailFrame');
+        let linksHighlighted = false;
+        let overlayElements = [];
 
         function init() {
             const doc = frame.contentDocument;
@@ -733,85 +245,196 @@
             doc.write(content);
             doc.close();
 
-            // Apply base styles
-            applyFrameStyles(doc);
+            const style = doc.createElement('style');
+            style.innerHTML = `
+                body { margin: 0; font-family: sans-serif; background: #fff; }
+            `;
+            doc.head.appendChild(style);
 
-            // Apply theme
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') applyTheme('dark');
         }
 
-        function applyFrameStyles(doc) {
-            const style = doc.createElement('style');
-            style.innerHTML = `
-                body { margin: 0; font-family: sans-serif; background: #fff; }
-                /* Universal Scrollbar Hide */
-                ::-webkit-scrollbar { width: 0px !important; display: none !important; }
-             `;
-            doc.head.appendChild(style);
-        }
-
         function setMode(mode) {
             const frameEl = document.getElementById('deviceFrame');
+            const iframeEl = document.getElementById('emailFrame');
 
-            // Smooth transition exit (Scale only, no opacity)
-            frameEl.style.transform = 'scale(0.98)';
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.device-btn[onclick*="${mode}"]`);
+            if (btn) btn.classList.add('active');
 
-            setTimeout(() => {
-                frameEl.setAttribute('data-mode', mode);
+            // Remove/add scrollbar class
+            if (mode === 'mobile') {
+                frameEl.style.maxWidth = '375px';
+                iframeEl.classList.add('no-scrollbar');
+            } else if (mode === 'tablet') {
+                frameEl.style.maxWidth = '600px';
+                iframeEl.classList.add('no-scrollbar');
+            } else {
+                frameEl.style.maxWidth = '800px';
+                iframeEl.classList.remove('no-scrollbar');
+            }
 
-                const doc = frame.contentDocument;
-                if (doc) {
-                    if (mode !== 'desktop') {
-                        let mobileStyle = doc.getElementById('mobile-fix');
-                        if (!mobileStyle) {
-                            mobileStyle = doc.createElement('style');
-                            mobileStyle.id = 'mobile-fix';
-                            mobileStyle.innerHTML = `
-                                html, body { 
-                                    width: 100% !important; 
-                                    margin:0 !important; padding:0 !important;
-                                }
-                                table { width: 100% !important; max-width: 100% !important; }
-                                img { max-width: 100% !important; height: auto !important; }
-                             `;
-                            doc.head.appendChild(mobileStyle);
-                        }
+            // Update overlays if visible
+            if (linksHighlighted) {
+                setTimeout(updateOverlays, 100);
+            }
+        }
 
-                        if (mode === 'mobile') {
-                            if (doc.body) doc.body.style.paddingTop = '40px';
-                        } else {
-                            if (doc.body) doc.body.style.paddingTop = '0px';
-                        }
-                    } else {
-                        const s = doc.getElementById('mobile-fix');
-                        if (s) s.remove();
-                        if (doc.body) doc.body.style.paddingTop = '0';
-                    }
+        function highlightLink(idx) {
+            const doc = frame.contentDocument;
+            const link = doc.querySelector(`[data-index="${idx}"]`);
+            if (link) {
+                link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Flash highlight
+                link.style.outline = '3px solid #50FA7B';
+                link.style.outlineOffset = '2px';
+                link.style.backgroundColor = 'rgba(80, 250, 123, 0.2)';
+
+                setTimeout(() => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                    link.style.backgroundColor = '';
+                }, 3000);
+            }
+        }
+
+        function toggleHighlightLinks() {
+            linksHighlighted = !linksHighlighted;
+            const btn = document.getElementById('highlightBtnText');
+            btn.textContent = linksHighlighted ? 'Hide Links' : 'Show Links';
+
+            if (linksHighlighted) {
+                createOverlays();
+            } else {
+                removeOverlays();
+            }
+        }
+
+        function createOverlays() {
+            removeOverlays();
+            const doc = frame.contentDocument;
+            const links = doc.querySelectorAll('[data-index]');
+            const container = document.getElementById('linkOverlays');
+            const frameRect = frame.getBoundingClientRect();
+            const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
+            const scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
+
+            links.forEach(link => {
+                const idx = link.getAttribute('data-index');
+                const rect = link.getBoundingClientRect();
+
+                // Create overlay badge
+                const badge = document.createElement('div');
+                badge.className = 'link-overlay-badge';
+                badge.textContent = idx;
+                badge.style.cssText = `
+                    position: fixed;
+                    left: ${frameRect.left + rect.left}px;
+                    top: ${frameRect.top + rect.top - 10}px;
+                    background: #BD93F9;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: bold;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-family: sans-serif;
+                    z-index: 1000;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    min-width: 16px;
+                    text-align: center;
+                `;
+                container.appendChild(badge);
+                overlayElements.push(badge);
+
+                // Add outline to link in iframe
+                link.style.outline = '2px solid #BD93F9';
+                link.style.outlineOffset = '1px';
+            });
+        }
+
+        function removeOverlays() {
+            const container = document.getElementById('linkOverlays');
+            container.innerHTML = '';
+            overlayElements = [];
+
+            // Remove outlines from iframe links
+            const doc = frame.contentDocument;
+            if (doc) {
+                const links = doc.querySelectorAll('[data-index]');
+                links.forEach(link => {
+                    link.style.outline = '';
+                    link.style.outlineOffset = '';
+                });
+            }
+        }
+
+        function updateOverlays() {
+            if (linksHighlighted) {
+                createOverlays();
+            }
+        }
+
+        // Update overlays on scroll
+        frame.addEventListener('load', () => {
+            frame.contentWindow.addEventListener('scroll', () => {
+                if (linksHighlighted) updateOverlays();
+            });
+        });
+
+        function openHtmlModal() {
+            const modal = document.getElementById('htmlModal');
+            const codeEl = document.getElementById('htmlSourceCode');
+            codeEl.textContent = content;
+            modal.classList.add('active');
+        }
+
+        function closeHtmlModal() {
+            document.getElementById('htmlModal').classList.remove('active');
+        }
+
+        function copyAllHtml() {
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Escape: close modal if open
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('htmlModal');
+                if (modal.classList.contains('active')) {
+                    closeHtmlModal();
                 }
-
-                document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-                const targetBtn = Array.from(document.querySelectorAll('.device-btn')).find(b => b.getAttribute('onclick').includes(mode));
-                if (targetBtn) targetBtn.classList.add('active');
-
-                // Smooth transition enter
-                frameEl.style.transform = 'scale(1)';
-            }, 200);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('closed');
-            event.currentTarget.classList.toggle('active');
-        }
-
-        function openSourceModal() {
-            document.getElementById('sourceText').value = content;
-            document.getElementById('sourceModal').style.display = 'flex';
-        }
-
-        function closeSourceModal() {
-            document.getElementById('sourceModal').style.display = 'none';
-        }
+            }
+            // 1, 2, 3: device modes
+            if (e.key === '1') setMode('mobile');
+            if (e.key === '2') setMode('tablet');
+            if (e.key === '3') setMode('desktop');
+            // T: toggle theme
+            if (e.key === 't' || e.key === 'T') toggleTheme();
+            // H: toggle highlight links
+            if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
+            // V: view HTML
+            if (e.key === 'v' || e.key === 'V') openHtmlModal();
+            // Arrow keys for scrolling iframe
+            if (e.key === 'ArrowDown') frame.contentWindow.scrollBy(0, 100);
+            if (e.key === 'ArrowUp') frame.contentWindow.scrollBy(0, -100);
+        });
 
         init();
     </script>

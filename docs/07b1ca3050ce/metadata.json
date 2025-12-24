@@ -3,8 +3,8 @@
     "subject": "Mini livre photo offert 🎁",
     "date_rec": "08/12/2025 à 17:32",
     "date_iso": "2025-12-08T17:32:53+00:00",
-    "sender": "Berceau magique <newsletter@megara.fr>",
-    "date_arch": "21/12/2025 à 14:03",
+    "sender": "Berceau magique",
+    "date_arch": "24/12/2025 à 23:20",
     "preheader": "Revivez vos plus beaux souvenirs de l’année ✨ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...",
     "reading_time": "2 min",
     "audit": {
@@ -13,5 +13,6 @@
         "unsubscribe_found": true,
         "link_count": 11,
         "images_no_alt": 11
-    }
+    },
+    "crm": null
 }

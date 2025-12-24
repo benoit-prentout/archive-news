@@ -3,8 +3,8 @@
     "subject": "Le seul colis qu'ils attendent 👀",
     "date_rec": "03/12/2025 à 11:58",
     "date_iso": "2025-12-03T11:58:13+00:00",
-    "sender": "\"MieuxQueDesFleurs\" <bonjour@mieuxquedesfleurs.com>",
-    "date_arch": "21/12/2025 à 14:03",
+    "sender": "MieuxQueDesFleurs",
+    "date_arch": "24/12/2025 à 23:20",
     "preheader": "Livré grâce à vous ! ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­...",
     "reading_time": "1 min",
     "audit": {
@@ -13,5 +13,6 @@
         "unsubscribe_found": true,
         "link_count": 13,
         "images_no_alt": 7
-    }
+    },
+    "crm": "Klaviyo"
 }
