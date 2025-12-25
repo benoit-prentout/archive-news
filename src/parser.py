@@ -145,12 +145,19 @@ class EmailParser:
                 reason = "1x1 Pixel Dimensions"
                 
             if reason:
-                # Simplified Pixel Info: URL + Status
-                # "Integration: OK" is implied by detection, but user asked for "Integration correct or not".
-                # Since we detected it as a pixel, it's "OK" in the sense that it's a pixel.
-                # If the user meant "Is the pixel working?", we can't know without pinging.
-                # Use "Detected" as status.
-                self.detected_pixels.append({'url': src, 'status': 'Integration: OK'})
+                # Extract domain for pixel to match link layout
+                pixel_domain = ""
+                try:
+                    from urllib.parse import urlparse
+                    pixel_domain = urlparse(src).netloc.replace('www.', '')
+                except:
+                    pass
+                
+                self.detected_pixels.append({
+                    'url': src, 
+                    'status': 'Integration: OK',
+                    'domain': pixel_domain
+                })
                 img['src'] = "" 
                 img['style'] = "display:none !important;"
         
@@ -179,6 +186,18 @@ class EmailParser:
             a['data-index'] = str(link_idx)
             original_url = a['href']
             
+            # Domain Extraction
+            domain = ""
+            try:
+                from urllib.parse import urlparse
+                parsed = urlparse(original_url)
+                domain = parsed.netloc.replace('www.', '')
+            except:
+                pass
+
+            # Tracking Check
+            is_tracking = any(pattern in original_url.lower() for pattern in TRACKING_PATTERNS)
+            
             # Unsubscribe check
             txt = a.get_text(strip=True).lower()
             if 'unsubscribe' in txt or 'désinscrire' in txt or 'opt-out' in txt or 'manage preferences' in txt:
@@ -188,7 +207,9 @@ class EmailParser:
                 'index': link_idx,
                 'txt': a.get_text(strip=True)[:50],
                 'original_url': original_url,
-                'final_url': original_url
+                'final_url': original_url,
+                'domain': domain,
+                'is_tracking': is_tracking
             })
             
         self.audit['link_count'] = link_idx
