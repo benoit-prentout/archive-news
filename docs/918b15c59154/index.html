@@ -698,7 +698,8 @@
             <div class="sidebar-footer">
                 <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin: 0;">
                     © 2025 <a href="https://github.com/benoit-prentout" target="_blank"
-                        style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">Benoît Prentout</a>.
+                        style="color: var(--accent-cyan); text-decoration: underline dotted; font-weight: 600;">Benoît
+                        Prentout</a>.
                     All rights reserved.
                 </p>
             </div>
@@ -730,6 +731,8 @@
         const frame = document.getElementById('emailFrame');
         let linksHighlighted = false;
         let overlayElements = [];
+        let lastHighlightedIdx = null;
+        let spotlightTimeout = null;
 
         function init() {
             const doc = frame.contentDocument;
@@ -739,6 +742,16 @@
 
             const style = doc.createElement('style');
             style.innerHTML = `
+                :root {
+                    --spotlight-dim: rgba(0, 0, 0, 0.6);
+                    --spotlight-glow: #50FA7B;
+                }
+                [data-theme="dark"] {
+                    /* In Dark Mode (Inverted), we want the dimming to be light so it inverts to dark */
+                    --spotlight-dim: rgba(255, 255, 255, 0.7);
+                    /* And we use the complement of green so it inverts back to green */
+                    --spotlight-glow: #AF0584; 
+                }
                 body { margin: 0; font-family: sans-serif; background: #fff; position: relative; }
                 .link-outline { 
                     outline: 2px solid #8BE9FD !important; /* Cyan */
@@ -756,9 +769,9 @@
                 .link-flash-spotlight {
                     position: relative !important;
                     z-index: 2147483647 !important;
-                    outline: 8px solid #50FA7B !important; /* Green */
+                    outline: 8px solid var(--spotlight-glow) !important;
                     outline-offset: 4px !important;
-                    box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.6), 0 0 40px #50FA7B !important;
+                    box-shadow: 0 0 0 10000px var(--spotlight-dim), 0 0 40px var(--spotlight-glow) !important;
                     background-color: rgba(255, 255, 255, 1) !important;
                     color: #282a36 !important;
                 }
@@ -799,6 +812,19 @@
             const doc = frame.contentDocument;
             const link = doc.querySelector(`[data-index="${idx}"]`);
             if (link) {
+                // Toggle Logic: If clicking the same link again, remove highlight
+                if (lastHighlightedIdx === idx) {
+                    doc.querySelectorAll('.link-flash-spotlight').forEach(el => el.classList.remove('link-flash-spotlight'));
+                    if (!linksHighlighted) {
+                        link.classList.remove('link-outline');
+                    }
+                    lastHighlightedIdx = null;
+                    if (spotlightTimeout) clearTimeout(spotlightTimeout);
+                    return;
+                }
+
+                lastHighlightedIdx = idx;
+
                 // Ensure it's scrolled into view
                 link.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -812,15 +838,15 @@
                 const wasHighlighted = linksHighlighted;
                 if (!wasHighlighted) {
                     link.classList.add('link-outline');
-                    // Force a quick overlay update for just this badge if needed? 
-                    // No, let's just use the flash.
                 }
 
-                setTimeout(() => {
+                if (spotlightTimeout) clearTimeout(spotlightTimeout);
+                spotlightTimeout = setTimeout(() => {
                     link.classList.remove('link-flash-spotlight');
                     if (!wasHighlighted) {
                         link.classList.remove('link-outline');
                     }
+                    if (lastHighlightedIdx === idx) lastHighlightedIdx = null;
                 }, 4000); // 4 seconds spotlight
             }
         }

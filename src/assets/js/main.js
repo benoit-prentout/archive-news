@@ -26,6 +26,7 @@ function applyTheme(theme) {
             if (oldStyle) oldStyle.remove();
 
             if (theme === 'dark') {
+                doc.body.setAttribute('data-theme', 'dark');
                 const style = doc.createElement('style');
                 style.id = styleId;
                 // Smart Inversion
@@ -34,6 +35,8 @@ function applyTheme(theme) {
                     img, video, iframe, [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
                 `;
                 doc.head.appendChild(style);
+            } else {
+                doc.body.setAttribute('data-theme', 'light');
             }
         }
     }
