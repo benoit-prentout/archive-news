@@ -1,113 +1,81 @@
 # 📬 Newsletter Archiver
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
-[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-orange)](https://pages.github.com/)
-[![Actions Status](https://github.com/benoit-prentout/archive-news/workflows/Check%20Newsletter/badge.svg)](https://github.com/benoit-prentout/archive-news/actions)
-
 An automated DevOps solution that captures incoming newsletters from Gmail, sanitizes them, and archives them as a static, responsive website hosted on GitHub Pages.
 
 ---
 
-## 🚀 Key Features
+## 🏗️ Technical Architecture & Data Flow
 
-### 📥 Smart Ingestion
-* **Automated Fetching**: Retrieves emails from Gmail via IMAP using specific alias/filter strategies.
-* **Sanitization**: Automatically strips "Forward" headers (`Fwd:`, `Tr:`) and quoted history to keep only the original content.
-* **Asset Preservation**: Downloads remote images locally to ensure long-term availability and privacy.
+This project is designed for automated ingestion and high-fidelity archival. Below is the technical breakdown for developers and LLMs.
 
-### 📱 Modern Viewer Experience
-* **Responsive Design**: Toggle between **Desktop** and **Mobile** views to inspect how newsletters render on different devices.
-* **Dark Mode**: Intelligent dark mode that inverts text but preserves image quality.
-* **Metadata Rich**: Displays **Reading Time**, **Sender**, **Sent Date**, and **Preheader** preview.
-* **Internationalization (i18n)**: Switch the entire interface between **English** and **French**.
-* **Non-Destructive**: Uses a smart CSS injection strategy to preserve the original email layout (backgrounds, tables) while ensuring readability on small screens.
-
-### ⚙️ Automation & CI/CD
-* **Scheduled Runs**: GitHub Actions workflow runs periodically (e.g., every 30 mins) to check for new emails.
-* **Static Generation**: Auto-generates a searchable `index.html` hub.
-
----
-
-## 💉 Manual Injector (Streamlit)
-
-A companion web app to manually archive newsletters by pasting their HTML content.
-
-* **Fixes Broken Images**: Automatically converts relative image paths to absolute URLs using a base URL.
-* **Lazy Loading Support**: Detects and fixes lazy-loaded images (`data-src`) for proper archiving.
-* **Bypasses Filters**: Useful for newsletters that don't pass through the Gmail automated filter.
-
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
-
----
-
-## 🛠️ Tech Stack
-
-* **Core:** ![Python](https://img.shields.io/badge/Python-3.9-3776AB?style=flat&logo=python&logoColor=white)
-* **Parsing:** `BeautifulSoup4` (HTML Cleaning & Metadata Extraction)
-* **Email:** `imaplib`, `smtplib`
-* **Frontend:** HTML5, CSS3 (Variables, Flexbox, Grid), JavaScript (LocalStorage for preferences)
-* **Automation:** ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
-* **Hosting:** ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=flat&logo=github&logoColor=white)
-
----
-
-## ⚙️ Architecture
-
+### Granular Data Pipeline
 ```mermaid
-graph LR;
-    subgraph Sources
-        Nat["📩 External Newsletters<br>(Natural Flow)"] --> Gmail;
-        Inj["💉 Streamlit Injector<br>(Manual Flow)"] -- "SMTP" --> Gmail;
-    end
-
-    Gmail["Gmail<br>(Alias + Filter)"] -- "IMAP Fetch" --> Script("🐍 Python Script<br>(GitHub Actions)");
+graph TD;
+    A[Gmail Inbox] -- "IMAP Fetch" --> B[process_email.py];
+    B -- "Raw Content" --> C[src/parser.py];
     
-    subgraph Processing
-        Script -- "1. Extract & Clean" --> HTML["Sanitized HTML"];
-        Script -- "2. Download Assets" --> Img["Local Images"];
+    subgraph "Parsing & Sanitization"
+        C -- "Soup Parsing" --> C1[Remove Fwd/Quoted Headers];
+        C1 -- "Asset Localizing" --> C2[Download Images to /assets];
+        C2 -- "Metadata Extraction" --> C3[Detect CRM, Preheader, Reading Time];
+        C3 -- "Link Auditing" --> C4[Extract Domain/Tracking Info];
     end
     
-    HTML & Img --> Repo["📂 GitHub Repository<br>(/docs folder)"];
-    Repo -- "Auto Deploy" --> Page["🌐 GitHub Pages Website"];
-
+    C4 -- "Clean Data JSON" --> D[src/generator.py];
+    D -- "Jinja2 Templates" --> E[docs/ archives];
+    E -- "Deployment" --> F[GitHub Pages];
 ```
+
 ---
 
-## 🔧 Setup & Configuration
-### 1. Gmail Configuration
-* **Alias:** Use an alias (e.g., `you+news@gmail.com`) to subscribe to newsletters.
-* **Filter:** Create a filter to apply the label `Github/archive-newsletters` to these emails.
-* **Security:** Generate an **App Password** in your Google Account (required for IMAP).
+## 🛠️ Component Map
 
-### 2. Repository Secrets
-Go to `Settings` > `Secrets and variables` > `Actions` and add:
-* `GMAIL_USER`: Your email address.
-* `GMAIL_PASSWORD`: The App Password generated above.
+| Component | File Path | Responsibility |
+| :--- | :--- | :--- |
+| **Orchestrator** | `process_email.py` | Main entry point. Handles Gmail auth, IMAP fetching, and triggers parsing/generation. |
+| **Parser** | `src/parser.py` | `EmailParser` class. Handles BeautifulSoup logic, image localization, tracking pixel detection, and link metadata extraction (domain/tracking). |
+| **Generator** | `src/generator.py` | Render logic using Jinja2 templates (`templates/`). Handles the creation of `index.html` and individual `viewer.html` files. |
+| **Viewer UI** | `templates/viewer.html` | The responsive dashboard for emails. Contains the fixed sidebar, mobile simulator, and link interaction logic (Spotlight, Overlays). |
+| **Theme & UX** | `src/assets/js/main.js` | Client-side logic for theme toggling, search filtering, and "Smart Inversion" dark mode. |
+| **Manual Injector** | `injector.py` | Streamlit app for out-of-band archival. Fixes lazy-loading and relative paths. |
 
-### 3. GitHub Pages
-Go to `Settings` > `Pages`:
-* **Source:** Deploy from a branch.
-* **Branch:** `main`.
-* **Folder:** `/docs` (root folder).
+---
+
+## 🧠 Key Technical Concepts
+
+### 1. Smart Inversion Dark Mode
+Instead of complex CSS re-theming of unknown email HTML, we apply a global filter to the email iframe: `filter: invert(1) hue-rotate(180deg)`.
+- **Spotlight Problem**: Shadows and highlights are inverted. We use "Pre-inverted" CSS variables in `viewer.html` so that when the filter is applied, they flip back to the intended colors (e.g., purple inverts to green highlights).
+
+### 2. Multi-Zone Link Cards
+Links are parsed into structured objects:
+- **Header**: Index, Clean Domain, Tracking Tag.
+- **Body**: Anchor text.
+- **URL Zone**: Monospace URL + clipboard interaction with visual feedback.
+
+### 3. Dynamic Badge Overlays
+Since email HTML is sandboxed in an iframe, link numbering badges are rendered in the **parent** window using absolute positioning calculated via `getBoundingClientRect()`. 
+- **Clipping Logic**: Badges are hidden if the target link scrolls out of the iframe viewport.
+
+---
+
+## 🤖 Contributing Guidelines (For Humans & AI)
+
+1. **Parser Changes**: When adding new metadata, update the `EmailParser` in `src/parser.py` first. Ensure the dictionary returned is compatible with Jinja2 expectations.
+2. **Template Updates**: Updates to `templates/viewer.html` must maintain the JS-based sidebar logic. Be careful with variable escaping when injecting JSON into script tags.
+3. **Asset Isolation**: All archived images MUST be saved to `docs/assets/` to ensure offline/long-term availability.
+4. **CSS Architecture**: Use the Dracula-inspired color palette defined in `src/assets/css/style.css`.
+
+---
+
+## 🔧 Setup
+1. **Gmail**: Use an App Password and the label `Github/archive-newsletters`.
+2. **Secrets**: Set `GMAIL_USER` and `GMAIL_PASSWORD` in GitHub Repo Secrets.
+3. **Streamlit**: (Optional) Run `streamlit run injector.py` for manual uploads.
 
 ---
 
 ## ⚖️ Legal & Privacy
-
-* **Publisher:** Benoît Prentout
-* **Hosting:** GitHub Inc.
-* **Content:** This is a personal archive for portfolio and technical demonstration purposes. Newsletter contents remain the property of their respective authors.
-
----
-
-## 👤 Author
-
-**Benoît Prentout**
-* GitHub: [@benoit-prentout](https://github.com/benoit-prentout)
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- **Author**: Benoît Prentout
+- **License**: MIT
+- Contents remain the property of their respective authors. This is a technical demonstration.
