@@ -21,27 +21,29 @@ CRM_PATTERNS = {
     'Klaviyo': ['klaviyo.com', 'klclick.com', 'kclick.com'],
     'Mailjet': ['mailjet.com', 'mjt.lu'],
     'HubSpot': ['hubspot.com', 'hs-analytics.net', 'hubspotemail.net', 'hsforms.com'],
-    'Salesforce': ['salesforce.com', 'exacttarget.com', 'sfmc-content.com'],
+    'Salesforce': ['salesforce.com', 'exacttarget.com', 'sfmc-content.com', 'igodigital.com'],
+    'Oracle Responsys': ['responsys.net', 'rsys2.com', 'rsys5.com'],
+    'Braze': ['braze.com', 'appboy.com'],
     'ActiveCampaign': ['activecampaign.com', 'activehosted.com', 'acems.com'],
-    'GetResponse': ['getresponse.com', 'gr8.com'],
-    'Campaign Monitor': ['createsend.com', 'cmail1.com', 'cmail2.com', 'cmail19.com', 'cmail20.com'],
-    'Constant Contact': ['constantcontact.com', 'ctct.io'],
-    'Omnisend': ['omnisend.com', 'omnisrc.com'],
-    'Drip': ['getdrip.com', 'dripemail2.com'],
-    'ConvertKit': ['convertkit.com', 'convertkit-mail.com', 'ck.page'],
-    'Customer.io': ['customer.io', 'customeriomail.com'],
-    'Iterable': ['iterable.com', 'links.iterable.com'],
-    'Emarsys': ['emarsys.com', 'emarsys.net'],
-    'Selligent': ['selligent.com', 'slgnt.eu'],
-    'Sendgrid': ['sendgrid.net', 'sendgrid.com'],
-    'Amazon SES': ['amazonses.com', 'aws.com'],
+    'Adobe Marketo': ['marketo.com', 'mktotrack.com'],
+    'Dotdigital': ['dotdigital.com', 'dotmailer.com', 'dmptrk.com'],
+    'Campaign Monitor': ['createsend.com', 'cmail'],
+    'MailerLite': ['mailerlite.com', 'mlsend.com'],
+    'SendPulse': ['sendpulse.com', 'sendpulse.me'],
+    'Moosend': ['moosend.com'],
+    'Emma': ['myemma.com', 'e2ma.net'],
+    'Listrak': ['listrak.com', 'listrakbi.com'],
+    'Sailthru': ['sailthru.com'],
+    'Bluecore': ['bluecore.com'],
+    'Mad Mimi': ['madmimi.com'],
+    'iContact': ['icontact.com'],
+    'AWeber': ['aweber.com'],
     'Postmark': ['postmarkapp.com', 'pstmrk.it'],
-    'Sparkpost': ['sparkpost.com', 'sparkpostmail.com'],
-    'Mailgun': ['mailgun.com', 'mailgun.org'],
-    'Mandrill': ['mandrill.com', 'mandrillapp.com'],
-    'Sarbacane': ['sarbacane.com', 'sbc25.com', 'sbc33.com'],
-    'Splio': ['splio.com', 'message-business.com'],
+    'Sendgrid': ['sendgrid.net', 'sendgrid.com'],
+    'Sarbacane': ['sarbacane.com', 'sbc'],
+    'Splio': ['splio.com'],
     'Dolist': ['dolist.com', 'dolist.net'],
+    'Shopify': ['shopify.com', 'shopifyemail.com'],
 }
 
 RESOLVE_REDIRECTS = False
@@ -50,37 +52,79 @@ HEADERS = {
 }
 
 class EmailParser:
-    def __init__(self, raw_html, output_folder):
+    def __init__(self, raw_html, output_folder, headers=None):
         self.soup = BeautifulSoup(raw_html, "html.parser")
         self.output_folder = output_folder
+        self.headers = headers or {}
         self.links = []
         self.detected_pixels = []
         self.detected_crm = None
 
     def detect_crm(self):
-        """Detect which CRM/ESP was used to send this email by analyzing URLs."""
-        # Collect all URLs from the email
-        all_urls = []
+        """Detect which CRM/ESP was used to send this email by analyzing URLs and headers."""
         
-        # From links
+        # 1. Check Headers (Most reliable)
+        header_mapping = {
+            'X-Mailer': {
+                'Mailchimp': 'mailchimp',
+                'Brevo': 'brevo',
+                'Sendinblue': 'sendinblue',
+                'Mailjet': 'mailjet',
+                'Klaviyo': 'klaviyo',
+                'HubSpot': 'hubspot',
+                'Salesforce': 'salesforce',
+                'ActiveCampaign': 'activecampaign',
+                'Shopify': 'shopify'
+            },
+            'X-Report-Abuse-To': {
+                'Mailchimp': 'mcsv.net',
+                'Brevo': 'brevo',
+                'Sendinblue': 'sendinblue'
+            },
+            'List-Unsubscribe': {
+                'Mailchimp': 'list-manage.com',
+                'Brevo': 'brevo',
+                'Klaviyo': 'klclick',
+                'HubSpot': 'hubspot',
+                'Shopify': 'shopifyemail'
+            }
+        }
+
+        for header_key, mapping in header_mapping.items():
+            val = str(self.headers.get(header_key, '')).lower()
+            if val:
+                for crm_name, marker in mapping.items():
+                    if marker in val:
+                        self.detected_crm = crm_name
+                        return crm_name
+
+        # 2. Check URLs as fallback
+        all_urls = []
         for a in self.soup.find_all('a', href=True):
             all_urls.append(a['href'].lower())
-        
-        # From images
         for img in self.soup.find_all('img', src=True):
             all_urls.append(img['src'].lower())
         
-        # From inline styles (background-image)
-        for tag in self.soup.find_all(style=True):
-            style = tag['style'].lower()
-            if 'url(' in style:
-                all_urls.append(style)
-        
-        # Check against patterns
+        # Priority check for specific strong markers
+        for url in all_urls:
+            if 'shopifyemail.com' in url or 'shopify.com' in url:
+                self.detected_crm = 'Shopify'
+                return 'Shopify'
+            if 'klclick.com' in url or 'klaviyo' in url:
+                self.detected_crm = 'Klaviyo'
+                return 'Klaviyo'
+            if 'mcsv.net' in url or 'list-manage.com' in url:
+                self.detected_crm = 'Mailchimp'
+                return 'Mailchimp'
+
+        # Generic pattern check
         for crm_name, patterns in CRM_PATTERNS.items():
             for pattern in patterns:
                 for url in all_urls:
                     if pattern in url:
+                        # Extra validation: if it's sendgrid/amazonses, only set if nothing else found
+                        if crm_name in ['Sendgrid', 'Amazon SES'] and self.detected_crm:
+                            continue
                         self.detected_crm = crm_name
                         return crm_name
         

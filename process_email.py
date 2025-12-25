@@ -83,9 +83,12 @@ def process_emails():
                 print(f"Skipping {f_id}: No content found.")
                 continue
 
+            # Extract Headers for CRM detection
+            headers_dict = {k: v for k, v in msg.items()}
+
             # PARSE
-            parser = EmailParser(html_payload, folder_path)
-            parser.detect_crm()  # Detect CRM before processing
+            parser = EmailParser(html_payload, folder_path, headers=headers_dict)
+            parser.detect_crm()  # Detect CRM using headers + content
             parser.clean_and_process()
             parser.download_images_parallel()
             

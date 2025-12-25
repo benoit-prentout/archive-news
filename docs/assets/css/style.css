@@ -5,33 +5,40 @@
 
 /* === DRACULA PALETTE === */
 :root {
-    /* Light Mode (Default) */
-    --bg-body: #f8f8f2;
+    /* Tech-Vibes Dracula Palette (Default: Light Mode) */
+    --bg-body: #f1f2f6;
+    /* Clean professional grey-white */
     --bg-card: #ffffff;
-    --bg-glass: rgba(255, 255, 255, 0.85);
+    --bg-glass: rgba(241, 242, 246, 0.9);
     --text-primary: #282a36;
     --text-secondary: #44475a;
     --text-muted: #6272a4;
 
-    /* Accent Colors - Dracula Palette */
-    --accent-blue: #bd93f9;
-    --accent-purple: #ff79c6;
-    --accent-cyan: #8be9fd;
-    --accent-green: #50fa7b;
-    --accent-orange: #ffb86c;
-    --accent-red: #ff5555;
-    --accent-yellow: #f1fa8c;
+    /* Accent Colors - Tech Focus */
+    --accent-blue: #6272a4;
+    --accent-cyan: #00bcd4;
+    /* More vivid in light mode */
+    --accent-green: #2ecc71;
+    --accent-purple: #9b59b6;
+    --accent-orange: #e67e22;
+    --accent-red: #e74c3c;
+    --accent-yellow: #f1c40f;
 
-    /* Semantic */
-    --accent-primary: var(--accent-blue);
-    --accent-secondary: var(--accent-green);
-    --border-color: rgba(40, 42, 54, 0.1);
-    --border-hover: var(--accent-blue);
+    /* Semantic Accents */
+    --accent-primary: #00bcd4;
+    /* Cyan primary for Tech look */
+    --accent-secondary: var(--accent-blue);
+    --accent-success: var(--accent-green);
+    --accent-info: var(--accent-cyan);
+    --accent-warning: var(--accent-yellow);
+    --accent-danger: var(--accent-red);
+    --border-color: rgba(98, 114, 164, 0.2);
+    --border-hover: var(--accent-primary);
 
     /* Effects */
     --shadow-sm: 0 2px 8px rgba(40, 42, 54, 0.06);
     --shadow-md: 0 8px 24px rgba(40, 42, 54, 0.1);
-    --shadow-glow: 0 0 20px rgba(189, 147, 249, 0.3);
+    --shadow-glow: 0 0 20px rgba(0, 188, 212, 0.2);
     --blur-strength: 8px;
     --transition-fast: 0.2s ease;
     --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -46,18 +53,22 @@
     --font-header: 'Outfit', sans-serif;
 }
 
-/* Dark Mode */
+/* Default Dark Theme Logic */
 [data-theme="dark"] {
-    --bg-body: #282a36;
-    --bg-card: #44475a;
-    --bg-glass: rgba(40, 42, 54, 0.9);
+    --bg-body: #1e1f29;
+    --bg-card: #282a36;
+    --bg-glass: rgba(30, 31, 41, 0.9);
     --text-primary: #f8f8f2;
-    --text-secondary: #bd93f9;
+    --text-secondary: #8be9fd;
     --text-muted: #6272a4;
-    --border-color: rgba(248, 248, 242, 0.1);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
-    --shadow-glow: 0 0 25px rgba(189, 147, 249, 0.4);
+
+    /* High contrast tech colors for dark mode */
+    --accent-cyan: #8be9fd;
+    --accent-green: #50fa7b;
+    --accent-primary: #8be9fd;
+    --accent-blue: #6272a4;
+    --border-color: rgba(98, 114, 164, 0.4);
+    --shadow-glow: 0 0 25px rgba(139, 233, 253, 0.4);
 }
 
 /* === BASE RESET === */
@@ -338,6 +349,7 @@ h1.logo {
     font-size: 0.75rem;
     font-weight: 600;
     margin-bottom: 10px;
+    border: 1px solid rgba(189, 147, 249, 0.2);
 }
 
 [data-theme="dark"] .sender-pill {
@@ -360,6 +372,7 @@ h1.logo {
     flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin-bottom: 16px;
@@ -388,7 +401,7 @@ h1.logo {
 }
 
 .news-card:hover .arrow {
-    color: var(--accent-cyan);
+    color: var(--accent-info);
     transform: translateX(4px);
 }
 
@@ -409,7 +422,7 @@ footer a {
 }
 
 footer a:hover {
-    color: var(--accent-cyan);
+    color: var(--accent-info);
 }
 
 /* === ICONS === */
@@ -483,61 +496,38 @@ footer a:hover {
 }
 
 /* === CRM BADGES === */
+/* Unified CRM Badges */
 .crm-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    border-radius: 4px;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
-    background: rgba(139, 233, 253, 0.15);
-    color: var(--accent-cyan);
-    border: 1px solid rgba(139, 233, 253, 0.3);
+    letter-spacing: 0.5px;
+    background: rgba(0, 188, 212, 0.1);
+    color: var(--accent-primary);
+    border: 1px solid rgba(0, 188, 212, 0.2);
+    transition: all var(--transition-smooth);
+}
+
+.crm-badge[data-crm="Unknown"] {
+    background: rgba(98, 114, 164, 0.1) !important;
+    color: var(--text-muted) !important;
+    border-color: rgba(98, 114, 164, 0.2) !important;
 }
 
 [data-theme="dark"] .crm-badge {
     background: rgba(139, 233, 253, 0.1);
-}
-
-/* CRM-specific colors */
-.crm-badge[data-crm="Mailchimp"] {
-    background: rgba(255, 225, 25, 0.15);
-    color: #FFE119;
-    border-color: rgba(255, 225, 25, 0.3);
-}
-
-.crm-badge[data-crm="Brevo"],
-.crm-badge[data-crm="Sendinblue"] {
-    background: rgba(80, 250, 123, 0.15);
-    color: var(--accent-green);
-    border-color: rgba(80, 250, 123, 0.3);
-}
-
-.crm-badge[data-crm="Klaviyo"] {
-    background: rgba(189, 147, 249, 0.15);
-    color: var(--accent-blue);
-    border-color: rgba(189, 147, 249, 0.3);
-}
-
-.crm-badge[data-crm="HubSpot"] {
-    background: rgba(255, 121, 198, 0.15);
-    color: var(--accent-pink);
-    border-color: rgba(255, 121, 198, 0.3);
-}
-
-.crm-badge[data-crm="Salesforce"] {
-    background: rgba(139, 233, 253, 0.15);
     color: var(--accent-cyan);
-    border-color: rgba(139, 233, 253, 0.3);
+    border-color: rgba(139, 233, 253, 0.2);
 }
 
-.crm-badge[data-crm="ActiveCampaign"] {
-    background: rgba(255, 184, 108, 0.15);
-    color: var(--accent-orange);
-    border-color: rgba(255, 184, 108, 0.3);
+[data-theme="dark"] .crm-badge[data-crm="Unknown"] {
+    background: rgba(68, 71, 90, 0.3) !important;
+    color: var(--text-muted) !important;
+    border-color: var(--border-color) !important;
 }
 
 /* === MULTI-COLOR UTILITIES === */
@@ -625,12 +615,21 @@ footer a:hover {
 
 .email-frame {
     width: 100%;
-    max-width: 700px;
+    max-width: 800px;
     height: 100%;
     border: none;
     background: #fff;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
+}
+
+.email-frame.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.email-frame.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .viewer-sidebar {
@@ -639,7 +638,7 @@ footer a:hover {
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    height: 100vh;
 }
 
 .sidebar-header {
@@ -660,6 +659,15 @@ footer a:hover {
     flex: 1;
     overflow-y: auto;
     padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-card);
+    margin-top: auto;
 }
 
 .meta-section {
@@ -671,8 +679,18 @@ footer a:hover {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--text-muted);
-    margin-bottom: 10px;
-    font-weight: 600;
+    margin-bottom: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
 }
 
 .meta-row {
@@ -774,10 +792,11 @@ footer a:hover {
 .link-url {
     font-size: 0.75rem;
     color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-all;
+    /* Full URL display */
+    line-height: 1.4;
 }
+
 
 .link-copy-btn {
     flex-shrink: 0;
@@ -873,6 +892,42 @@ footer a:hover {
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-smooth);
+}
+
+/* === ANIMATIONS === */
+@keyframes pulse-highlight {
+    0% {
+        outline-color: var(--accent-primary);
+        outline-offset: 1px;
+    }
+
+    50% {
+        outline-color: var(--accent-success);
+        outline-offset: 4px;
+        box-shadow: 0 0 15px var(--accent-success);
+    }
+
+    100% {
+        outline-color: var(--accent-primary);
+        outline-offset: 1px;
+    }
+}
+
+.link-highlight-pulse {
+    animation: pulse-highlight 2s infinite;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    display: inline-block !important;
+    /* Ensure small icons are visible targets */
+}
+
+.link-overlay-badge {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.link-overlay-badge:hover {
+    transform: scale(1.3);
+    z-index: 1001;
 }
 
 .btn-primary {

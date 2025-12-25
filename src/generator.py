@@ -45,7 +45,7 @@ def generate_index(emails_metadata, output_path, stats=None):
     """
     template = env.get_template('index.html')
     # Sort by date desc
-    sorted_emails = sorted(emails_metadata, key=lambda x: x.get('date_obj', ''), reverse=True)
+    sorted_emails = sorted(emails_metadata, key=lambda x: x.get('date_iso', ''), reverse=True)
     
     rendered_html = template.render(
         emails=sorted_emails,
