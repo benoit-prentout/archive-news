@@ -198,6 +198,11 @@ class EmailParser:
             # Tracking Check
             is_tracking = any(pattern in original_url.lower() for pattern in TRACKING_PATTERNS)
             
+            # Security & Dev Audit
+            is_secure = original_url.startswith('https://') or original_url.startswith('//')
+            dev_patterns = ['test', 'staging', 'dev.', 'localhost', 'internal', 'bat.', 'preprod']
+            is_dev = any(p in original_url.lower() for p in dev_patterns)
+
             # Unsubscribe check
             txt = a.get_text(strip=True).lower()
             if 'unsubscribe' in txt or 'désinscrire' in txt or 'opt-out' in txt or 'manage preferences' in txt:
@@ -209,7 +214,9 @@ class EmailParser:
                 'original_url': original_url,
                 'final_url': original_url,
                 'domain': domain,
-                'is_tracking': is_tracking
+                'is_tracking': is_tracking,
+                'is_secure': is_secure,
+                'is_dev': is_dev
             })
             
         self.audit['link_count'] = link_idx

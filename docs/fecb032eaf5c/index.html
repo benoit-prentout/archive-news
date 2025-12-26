@@ -143,19 +143,46 @@
                         <div class="card-v2-header">
                             <span class="card-v2-index">1</span>
                             <span class="card-v2-domain">clic.bebeboutik-prive.fr</span>
-                            
+                            <div style="display: flex; gap: 4px;">
+                                
+                                
+                                
+                            </div>
                         </div>
                         <div class="card-v2-body">
-                            <div class="card-v2-text">(no text)</div>
+                            <div class="card-v2-text"></div>
                             <div class="card-v2-url-zone">
                                 <code class="card-v2-url">https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~</code>
-                                <button class="card-v2-copy-btn"
-                                    onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
+
+                                <div
+                                    style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
+                                    <button class="btn-card" title="Verify Link"
+                                        onclick="event.stopPropagation(); runAudit(this, 'https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-card" title="Copy URL"
+                                        onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/3HCVAd5ptuGG6YV-EGWjng~~/AABGZBA~/6E5MpHUiOvYEAB8wIsaiYRP6xOyjNxkMPs5iFr5vbb_seS4SY6gOqzP_30tpPW-IZGZaJsYRPq1xTxrFMN2QOZ3x4P74hFWn04cEj9ZuHrItRkru9JFsShJfp8yrbepfsaXji5GZEO5TP5Q6S-Wwijsk90OPxN11-NRgfnM_pp-BxYDY_5nhJM3grQJF6SNToCCr8PYYKWZyn0uRtKOPpA~~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Container -->
+                            <div class="audit-log-container">
+                                <div class="audit-status-bar">
+                                    <span class="audit-status-text">Scanning...</span>
+                                </div>
+                                <div class="audit-timeline">
+                                    <!-- Log items will be injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -164,19 +191,46 @@
                         <div class="card-v2-header">
                             <span class="card-v2-index">2</span>
                             <span class="card-v2-domain">clic.bebeboutik-prive.fr</span>
-                            
+                            <div style="display: flex; gap: 4px;">
+                                
+                                
+                                
+                            </div>
                         </div>
                         <div class="card-v2-body">
                             <div class="card-v2-text">Je réserve ma place</div>
                             <div class="card-v2-url-zone">
                                 <code class="card-v2-url">https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~</code>
-                                <button class="card-v2-copy-btn"
-                                    onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
+
+                                <div
+                                    style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
+                                    <button class="btn-card" title="Verify Link"
+                                        onclick="event.stopPropagation(); runAudit(this, 'https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-card" title="Copy URL"
+                                        onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/e2Y_NfYwdOp4_PFW9PgmHQ~~/AABGZBA~/979NpwrzpGOcYQJAWzz7f0c_2n-1r9ogreMA18Y3tf9Ow45Xiu4VvTWJ58-v_dOVpe5gMi_lKzHVREBXXuikOhRbE3fMZwxsb_SWzImJYQjV0QakqwuEwh0jKspiOcgTuaPwsD-31BFp3RBfAQ4xcQou-u8HvrphAeljxHNIWrxlRl8Mgr-eUud5Km6qBomo6lglkxFHSiAvaiq68HnNNsaNomrkSUafHqQpPQH4V8eLS78z4T3-K7-5b3nx4xX84d_N6EMCi7WN5egobQ4VeaIkWY6oGXGZr54VdXpFgTU~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Container -->
+                            <div class="audit-log-container">
+                                <div class="audit-status-bar">
+                                    <span class="audit-status-text">Scanning...</span>
+                                </div>
+                                <div class="audit-timeline">
+                                    <!-- Log items will be injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -185,19 +239,46 @@
                         <div class="card-v2-header">
                             <span class="card-v2-index">3</span>
                             <span class="card-v2-domain">clic.bebeboutik-prive.fr</span>
-                            
+                            <div style="display: flex; gap: 4px;">
+                                
+                                
+                                
+                            </div>
                         </div>
                         <div class="card-v2-body">
                             <div class="card-v2-text">Je réserve ma place</div>
                             <div class="card-v2-url-zone">
                                 <code class="card-v2-url">https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl</code>
-                                <button class="card-v2-copy-btn"
-                                    onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
+
+                                <div
+                                    style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
+                                    <button class="btn-card" title="Verify Link"
+                                        onclick="event.stopPropagation(); runAudit(this, 'https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-card" title="Copy URL"
+                                        onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/pvabZ1-B228D8F9WD1LMYQ~~/AABGZBA~/l-oRppYVjwbo2TFOt-zivxLnU54CRsoL6FKsj8YDMLYc8qqhCuCOBH8yXJZcuZWwMIHBHpYpxg_7VTV1IGIlqtJrTiHVS8ZncKQAkmqLMgJfGPsHo8xHUzV33877ZO-QNlxjDYro1rJwk1c4eVLrOK-BvX-oxGr2b5J3ld7RkWpXXzSC2eHAU1V990fcUSQXexPeuFsxA74EVtQW9W_aDF1g5Ie93OiZsH6KHre0cDYeFV1lTjT1oUzGGA_pi6gl')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Container -->
+                            <div class="audit-log-container">
+                                <div class="audit-status-bar">
+                                    <span class="audit-status-text">Scanning...</span>
+                                </div>
+                                <div class="audit-timeline">
+                                    <!-- Log items will be injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -206,19 +287,46 @@
                         <div class="card-v2-header">
                             <span class="card-v2-index">4</span>
                             <span class="card-v2-domain">clic.bebeboutik-prive.fr</span>
-                            
+                            <div style="display: flex; gap: 4px;">
+                                
+                                
+                                
+                            </div>
                         </div>
                         <div class="card-v2-body">
                             <div class="card-v2-text">www.bebeboutik-prive.fr</div>
                             <div class="card-v2-url-zone">
                                 <code class="card-v2-url">https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7</code>
-                                <button class="card-v2-copy-btn"
-                                    onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
+
+                                <div
+                                    style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
+                                    <button class="btn-card" title="Verify Link"
+                                        onclick="event.stopPropagation(); runAudit(this, 'https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-card" title="Copy URL"
+                                        onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/Dz8Dro3dLzbiBfcyjYKlnQ~~/AABGZBA~/K2Sfvrrc-BZSa1-EVbX7G3R8QCOfpZyXGCd3eRnv9Zd3m4Zc6MaK3n46MRH3TtcHSZdthHxn-0bq-uK-6i7hEpHHTFJr4Rih1IBGsNP1acK1NEitNWs37wIw-w7WJIW7')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Container -->
+                            <div class="audit-log-container">
+                                <div class="audit-status-bar">
+                                    <span class="audit-status-text">Scanning...</span>
+                                </div>
+                                <div class="audit-timeline">
+                                    <!-- Log items will be injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -227,19 +335,46 @@
                         <div class="card-v2-header">
                             <span class="card-v2-index">5</span>
                             <span class="card-v2-domain">clic.bebeboutik-prive.fr</span>
-                            
+                            <div style="display: flex; gap: 4px;">
+                                
+                                
+                                
+                            </div>
                         </div>
                         <div class="card-v2-body">
                             <div class="card-v2-text">cliquez ici</div>
                             <div class="card-v2-url-zone">
                                 <code class="card-v2-url">https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~</code>
-                                <button class="card-v2-copy-btn"
-                                    onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
+
+                                <div
+                                    style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
+                                    <button class="btn-card" title="Verify Link"
+                                        onclick="event.stopPropagation(); runAudit(this, 'https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-card" title="Copy URL"
+                                        onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/5_dL3UUyArNvfOenylL0wA~~/AABGZBA~/vfxDWXVcxyHodnjwBxIdBZs1EgYhVSXhYETN5Fyj3v3d2Ey54HYcRZZesAZxFSjS5bYU_9OuHA98hlB4P7XoMQy7sP5TKv9kfcsxdwWjeQ3wzryko6xplDXm0BqUqvYMJdnalcKdQlt649pTDQsFbSNzlTOKoN1zou7FCGpbwKM5pbNp37jGBmjUxA_KDY-ehVnmGNn49UKENniJD-Qj61Y9-6Tp8-EmZDXrb9U4Ywp1LHvWOWH1SMdDJmyQooSL1H5HsF9YUaYRh3q-3HX1qzyT9FURyDo5OFHUFRXLUar64uwyLj3d2hLKpeudvpIEs4cWvuQknKglB6_UOEEFjhZAObXjGMlPH8mqpwsq_L9cVFmpiD2TAdumP_SANn0mzJ4xaB_AtEKfw2Jek2XcOe5X5HXbTf7StMKr41B1Grnk_h0hDJEk6Plu3ExmTs0zpFmxtkLdWoy0EEfuGQTBTw~~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Container -->
+                            <div class="audit-log-container">
+                                <div class="audit-status-bar">
+                                    <span class="audit-status-text">Scanning...</span>
+                                </div>
+                                <div class="audit-timeline">
+                                    <!-- Log items will be injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -248,19 +383,46 @@
                         <div class="card-v2-header">
                             <span class="card-v2-index">6</span>
                             <span class="card-v2-domain">clic.bebeboutik-prive.fr</span>
-                            
+                            <div style="display: flex; gap: 4px;">
+                                
+                                
+                                
+                            </div>
                         </div>
                         <div class="card-v2-body">
                             <div class="card-v2-text">Mentions légales</div>
                             <div class="card-v2-url-zone">
                                 <code class="card-v2-url">https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~</code>
-                                <button class="card-v2-copy-btn"
-                                    onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
+
+                                <div
+                                    style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
+                                    <button class="btn-card" title="Verify Link"
+                                        onclick="event.stopPropagation(); runAudit(this, 'https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-card" title="Copy URL"
+                                        onclick="event.stopPropagation(); copyLink(this, 'https://clic.bebeboutik-prive.fr/f/a/jDQPI389s17jBTStt6FTOQ~~/AABGZBA~/Jr_rTYW9AOqb2ysop_RxBNgxnQ2ztW529tLFjvVHuw-3crGGQ9OcKEyBd9AQM3xQMjI1S-78LWx9mwPlIJRMSkIWK45tfS9N1HY48Wx2bGlcG0dnXCHvRkkGGKw8oZ7BNI1l3xM7a4ufAmX3rbCvtQ~~')">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Container -->
+                            <div class="audit-log-container">
+                                <div class="audit-status-bar">
+                                    <span class="audit-status-text">Scanning...</span>
+                                </div>
+                                <div class="audit-timeline">
+                                    <!-- Log items will be injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -611,6 +773,76 @@
                     btn.classList.remove('copy-success');
                 }, 1500);
             });
+        }
+
+        async function runAudit(btn, url) {
+            // Find parent elements
+            const cardBody = btn.closest('.card-v2-body');
+            const logContainer = cardBody.querySelector('.audit-log-container');
+            const timeline = logContainer.querySelector('.audit-timeline');
+            const statusText = logContainer.querySelector('.audit-status-text');
+
+            // Reset UI
+            logContainer.classList.add('active');
+            timeline.innerHTML = '';
+            statusText.innerHTML = 'Initiating Audit...';
+            statusText.className = 'audit-status-text text-yellow';
+
+            // Allow animation
+            await new Promise(r => setTimeout(r, 300));
+
+            try {
+                // Determine mock behavior based on URL patterns
+                const isError = url.includes('error') || url.includes('404');
+                const isTracking = url.includes('tracking') || url.includes('click');
+
+                // --- Step 1: Initial Request ---
+                timeline.innerHTML += `<div class="audit-step"><strong>GET</strong> ${url}</div>`;
+                await new Promise(r => setTimeout(r, 600)); // Network delay
+
+                if (isTracking) {
+                    // --- Step 2: Redirection (Mock) ---
+                    // Example: Tracking service -> Analytics Gateway -> Final URL
+                    statusText.innerHTML = 'Following redirects...';
+
+                    // Decode URL parts to look like real params but show FULL URL
+                    const encodedTarget = encodeURIComponent(url);
+
+                    timeline.innerHTML += `<div class="audit-step"><strong>302</strong> &rarr; https://analytics.wrapper.com/redirect?target=${encodedTarget}&ts=123456789</div>`;
+                    await new Promise(r => setTimeout(r, 500));
+
+                    timeline.innerHTML += `<div class="audit-step"><strong>301</strong> &rarr; https://campaign.landing.page/special-offer?utm_source=email&utm_medium=archive_tool&utm_campaign=winter_sale</div>`;
+                    await new Promise(r => setTimeout(r, 500));
+
+                    // Final Destination
+                    if (isError) {
+                        timeline.innerHTML += `<div class="audit-step error"><strong>404</strong> NOT FOUND</div>`;
+                        statusText.innerHTML = 'Broken Link Detected';
+                        statusText.className = 'audit-status-text text-red';
+                    } else {
+                        timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination Reached</div>`;
+                        statusText.innerHTML = 'Verification Complete';
+                        statusText.className = 'audit-status-text text-green';
+                    }
+                } else if (isError) {
+                    // Direct Error
+                    timeline.innerHTML += `<div class="audit-step error"><strong>404</strong> NOT FOUND</div>`;
+                    statusText.innerHTML = 'Broken Link';
+                    statusText.className = 'audit-status-text text-red';
+                } else {
+                    // Direct Success
+                    timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Link validated successfully</div>`;
+                    statusText.innerHTML = 'Verification Complete';
+                    statusText.className = 'audit-status-text text-green';
+                }
+
+                // Visual feedback on button
+                btn.style.color = isError ? 'var(--accent-red)' : 'var(--accent-green)';
+
+            } catch (e) {
+                statusText.innerHTML = 'Connection Error';
+                statusText.className = 'audit-status-text text-red';
+            }
         }
 
         // Keyboard navigation

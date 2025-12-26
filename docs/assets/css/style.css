@@ -51,6 +51,21 @@
     /* Typography */
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-header: 'Outfit', sans-serif;
+
+    /* Terminal Theme (Light Mode Default) */
+    --bg-terminal: #ffffff;
+    /* Pure White */
+    --bg-terminal-header: #f1f2f6;
+    /* Cool Blue/Grey */
+    --border-terminal: #e1e4e8;
+    /* GitHub-like border */
+    --text-terminal-main: #24292e;
+    /* GitHub Dark */
+    --text-terminal-muted: #586069;
+    --bg-terminal-code: #f6f8fa;
+    /* Subtle code block bg */
+    --btn-terminal-bg: #ffffff;
+    --btn-terminal-hover: #f3f4f6;
 }
 
 /* Default Dark Theme Logic */
@@ -69,6 +84,18 @@
     --accent-blue: #6272a4;
     --border-color: rgba(98, 114, 164, 0.4);
     --shadow-glow: 0 0 25px rgba(139, 233, 253, 0.4);
+
+    /* Terminal Theme (Dark Mode) */
+    --bg-terminal: #0d1117;
+    /* GitHub Dark Dimmed / Dracula Deep */
+    --bg-terminal-header: #161b22;
+    --border-terminal: #30363d;
+    --text-terminal-main: #c9d1d9;
+    --text-terminal-muted: #8b949e;
+    --bg-terminal-code: #0d1117;
+    /* Blend in dark mode or slightly lighter? Keep distinct? */
+    --btn-terminal-bg: #21262d;
+    --btn-terminal-hover: #30363d;
 }
 
 /* === BASE RESET === */
@@ -363,6 +390,89 @@ h1.logo {
     line-height: 1.35;
     color: var(--text-primary);
     margin-bottom: 8px;
+}
+
+.card-v2-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-terminal-muted);
+    margin-bottom: 6px;
+    /* Pad text */
+}
+
+/* URL Text - FULL VISIBILITY */
+.card-v2-url {
+    display: block;
+    width: 100%;
+    word-break: break-all;
+    /* Critical for full visibility */
+    overflow-wrap: break-word;
+    /* Additional safety */
+    white-space: normal;
+    /* Force wrapping */
+    font-family: inherit;
+    /* Inherit JetBrains Mono */
+    font-size: 11px;
+    color: var(--accent-pink);
+    line-height: 1.6;
+    padding: 10px;
+    background: var(--bg-terminal-code);
+    border: 1px dashed var(--border-terminal);
+    border-radius: 6px;
+}
+
+.card-v2-url-zone {
+    padding: 0 12px 12px 12px;
+    /* Pad URL zone */
+}
+
+/* === AUDIT LOG === */
+.audit-log-container {
+    border-top: 1px solid var(--border-terminal);
+    background: var(--bg-body);
+    /* Matches background to feel etched in or separate */
+    padding: 12px 12px;
+    display: none;
+    margin-top: 4px;
+    /* Slight separation from URL/Buttons */
+}
+
+.audit-log-container.active {
+    display: block;
+}
+
+.audit-step {
+    font-family: inherit;
+    /* Inherit JetBrains Mono */
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    word-break: break-all;
+    /* Ensure logs wrap */
+    position: relative;
+    padding-left: 14px;
+    line-height: 1.5;
+}
+
+/* Technical arrow/indicator for steps */
+.audit-step::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--border-terminal);
+}
+
+.audit-step strong {
+    color: var(--accent-cyan);
+    /* Consistent with specific data points */
+    font-weight: normal;
+}
+
+.audit-status-text {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .card-preview {
@@ -749,33 +859,61 @@ footer a:hover {
 .link-card-v2 {
     display: flex;
     flex-direction: column;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    background: var(--bg-terminal);
+    border: 1px solid var(--border-terminal);
+    border-radius: 4px;
+    /* Sharper corners for technical feel */
     margin-bottom: 12px;
     cursor: pointer;
     transition: all var(--transition-smooth);
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', monospace;
+    box-shadow: none;
+    /* Flat design */
 }
 
 .link-card-v2:hover {
-    transform: translateY(-2px);
     border-color: var(--accent-primary);
-    box-shadow: var(--shadow-md);
 }
 
 .card-v2-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px;
-    background: rgba(0, 188, 212, 0.05);
-    border-bottom: 1px solid var(--border-color);
+    padding: 8px 12px;
+    background: var(--bg-terminal-header);
+    /* Header separation */
+    border-bottom: 1px solid var(--border-terminal);
+    color: var(--text-terminal-main);
 }
 
 [data-theme="dark"] .card-v2-header {
-    background: rgba(139, 233, 253, 0.05);
+    background: var(--bg-terminal-header);
+    /* Use variable logic */
+}
+
+/* === BUTTONS matching Header .btn-secondary style === */
+.btn-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid var(--border-terminal);
+    background: var(--btn-terminal-bg);
+    color: var(--text-terminal-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    /* Use Icon defaults */
+}
+
+.btn-card:hover {
+    background: var(--btn-terminal-hover);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .card-v2-index {
@@ -785,17 +923,20 @@ footer a:hover {
     align-items: center;
     justify-content: center;
     background: var(--accent-primary);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 800;
-    border-radius: 6px;
+    color: #ffffff;
+    /* FORCE WHITE TEXT */
+    font-size: 0.75rem;
+    font-family: var(--font-main);
+    font-weight: 700;
+    border-radius: 4px;
 }
 
 .card-v2-domain {
-    font-family: var(--font-header);
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-terminal-muted);
+    /* More discreet */
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
