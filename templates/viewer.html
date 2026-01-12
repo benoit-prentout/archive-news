@@ -199,7 +199,7 @@
                                 <div
                                     style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; justify-content: flex-end;">
                                     <button class="btn-card" title="Verify Link"
-                                        onclick="event.stopPropagation(); runAudit(this, '{{ link.original_url | e }}')">
+                                        onclick="event.stopPropagation(); runAudit(this, '{{ link.original_url | e }}', {{ link.index }})">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2">
                                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -266,6 +266,7 @@
     <script src="../assets/js/main.js"></script>
     <script>
         const content = {{ safe_html }};
+        const emailLinks = {{ links_json }};
         const frame = document.getElementById('emailFrame');
         let linksHighlighted = false;
         let overlayElements = [];
@@ -577,12 +578,13 @@
             });
         }
 
-        async function runAudit(btn, url) {
+        async function runAudit(btn, url, index) {
             // Find parent elements
             const cardBody = btn.closest('.card-v2-body');
             const logContainer = cardBody.querySelector('.audit-log-container');
             const timeline = logContainer.querySelector('.audit-timeline');
             const statusText = logContainer.querySelector('.audit-status-text');
+            const linkData = emailLinks.find(l => l.index === index);
 
             // Reset UI
             logContainer.classList.add('active');
@@ -594,55 +596,58 @@
             await new Promise(r => setTimeout(r, 300));
 
             try {
-                // Determine mock behavior based on URL patterns
-                const isError = url.includes('error') || url.includes('404');
-                const isTracking = url.includes('tracking') || url.includes('click');
+                if (linkData && linkData.redirect_chain && linkData.redirect_chain.length > 0) {
+                    statusText.innerHTML = 'Analyzing Redirection Chain...';
 
-                // --- Step 1: Initial Request ---
-                timeline.innerHTML += `<div class="audit-step"><strong>GET</strong> ${url}</div>`;
-                await new Promise(r => setTimeout(r, 600)); // Network delay
+                    for (let i = 0; i < linkData.redirect_chain.length; i++) {
+                        const step = linkData.redirect_chain[i];
+                        const isLast = i === linkData.redirect_chain.length - 1;
 
-                if (isTracking) {
-                    // --- Step 2: Redirection (Mock) ---
-                    // Example: Tracking service -> Analytics Gateway -> Final URL
-                    statusText.innerHTML = 'Following redirects...';
+                        // Initial request
+                        if (i === 0) {
+                            timeline.innerHTML += `<div class="audit-step"><strong>GET</strong> ${step.url}</div>`;
+                            await new Promise(r => setTimeout(r, 400));
+                        }
 
-                    // Decode URL parts to look like real params but show FULL URL
-                    const encodedTarget = encodeURIComponent(url);
+                        // If it's a redirect
+                        if (step.status >= 300 && step.status < 400 && i + 1 < linkData.redirect_chain.length) {
+                            const nextStep = linkData.redirect_chain[i + 1];
+                            timeline.innerHTML += `<div class="audit-step"><strong>${step.status}</strong> &rarr; ${nextStep.url}</div>`;
+                            await new Promise(r => setTimeout(r, 400));
+                        }
 
-                    timeline.innerHTML += `<div class="audit-step"><strong>302</strong> &rarr; https://analytics.wrapper.com/redirect?target=${encodedTarget}&ts=123456789</div>`;
-                    await new Promise(r => setTimeout(r, 500));
-
-                    timeline.innerHTML += `<div class="audit-step"><strong>301</strong> &rarr; https://campaign.landing.page/special-offer?utm_source=email&utm_medium=archive_tool&utm_campaign=winter_sale</div>`;
-                    await new Promise(r => setTimeout(r, 500));
-
-                    // Final Destination
-                    if (isError) {
-                        timeline.innerHTML += `<div class="audit-step error"><strong>404</strong> NOT FOUND</div>`;
-                        statusText.innerHTML = 'Broken Link Detected';
-                        statusText.className = 'audit-status-text text-red';
-                    } else {
-                        timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination Reached</div>`;
-                        statusText.innerHTML = 'Verification Complete';
-                        statusText.className = 'audit-status-text text-green';
+                        // Final step
+                        if (isLast) {
+                            if (step.status === 200) {
+                                timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination Reached</div>`;
+                                statusText.innerHTML = 'Verification Complete';
+                                statusText.className = 'audit-status-text text-green';
+                                btn.style.color = 'var(--accent-green)';
+                            } else if (step.status === 'Error' || step.status >= 400) {
+                                timeline.innerHTML += `<div class="audit-step error"><strong>${step.status}</strong> &bull; Request Failed</div>`;
+                                statusText.innerHTML = 'Broken Link Detected';
+                                statusText.className = 'audit-status-text text-red';
+                                btn.style.color = 'var(--accent-red)';
+                            } else {
+                                timeline.innerHTML += `<div class="audit-step"><strong>${step.status || 'Done'}</strong> &bull; Path ended</div>`;
+                                statusText.innerHTML = 'Audit Finished';
+                                statusText.className = 'audit-status-text text-cyan';
+                            }
+                        }
                     }
-                } else if (isError) {
-                    // Direct Error
-                    timeline.innerHTML += `<div class="audit-step error"><strong>404</strong> NOT FOUND</div>`;
-                    statusText.innerHTML = 'Broken Link';
-                    statusText.className = 'audit-status-text text-red';
                 } else {
-                    // Direct Success
+                    // Fallback for non-tracking links or missing data
+                    timeline.innerHTML += `<div class="audit-step"><strong>GET</strong> ${url}</div>`;
+                    await new Promise(r => setTimeout(r, 600));
                     timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Link validated successfully</div>`;
                     statusText.innerHTML = 'Verification Complete';
                     statusText.className = 'audit-status-text text-green';
+                    btn.style.color = 'var(--accent-green)';
                 }
 
-                // Visual feedback on button
-                btn.style.color = isError ? 'var(--accent-red)' : 'var(--accent-green)';
-
             } catch (e) {
-                statusText.innerHTML = 'Connection Error';
+                console.error("Audit error:", e);
+                statusText.innerHTML = 'Analysis Error';
                 statusText.className = 'audit-status-text text-red';
             }
         }

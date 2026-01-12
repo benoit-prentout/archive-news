@@ -46,7 +46,7 @@ CRM_PATTERNS = {
     'Shopify': ['shopify.com', 'shopifyemail.com'],
 }
 
-RESOLVE_REDIRECTS = False
+RESOLVE_REDIRECTS = True
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
@@ -270,6 +270,60 @@ class EmailParser:
             for f in as_completed(futures):
                 img, local = f.result()
                 if local: img['src'] = local
+
+    def resolve_redirects_parallel(self):
+        """Pre-calculate redirect chains for tracking links to avoid CORS issues in the statics viewer."""
+        if not RESOLVE_REDIRECTS:
+            return
+
+        tracking_links = [l for l in self.links if l.get('is_tracking')]
+        if not tracking_links:
+            return
+
+        def _resolve(link_obj):
+            url = link_obj['original_url']
+            chain = []
+            try:
+                # Use a session to persist cookies if needed (often required for tracking links)
+                session = requests.Session()
+                session.headers.update(HEADERS)
+                
+                # Manual redirect following to capture each step
+                current_url = url
+                max_redirects = 10
+                for _ in range(max_redirects):
+                    # We use HEAD first to be faster, but some trackers require GET
+                    try:
+                        resp = session.get(current_url, allow_redirects=False, timeout=10)
+                    except:
+                        break
+                        
+                    step = {
+                        'status': resp.status_code,
+                        'url': current_url
+                    }
+                    chain.append(step)
+                    
+                    if 300 <= resp.status_code < 400 and 'Location' in resp.headers:
+                        next_url = resp.headers['Location']
+                        # Handle relative URLs
+                        from urllib.parse import urljoin
+                        current_url = urljoin(current_url, next_url)
+                    else:
+                        break
+                
+                link_obj['redirect_chain'] = chain
+                if chain:
+                    link_obj['final_url'] = chain[-1]['url']
+                    
+            except Exception as e:
+                print(f"Error resolving {url}: {e}")
+                link_obj['redirect_chain'] = [{'status': 'Error', 'url': url}]
+
+        with ThreadPoolExecutor(max_workers=5) as ex:
+            futures = [ex.submit(_resolve, link) for link in tracking_links]
+            for _ in as_completed(futures):
+                pass
 
     def get_html(self):
         return str(self.soup)

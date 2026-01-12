@@ -90,6 +90,7 @@ def process_emails():
             parser = EmailParser(html_payload, folder_path, headers=headers_dict)
             parser.detect_crm()  # Detect CRM using headers + content
             parser.clean_and_process()
+            parser.resolve_redirects_parallel()
             parser.download_images_parallel()
             
             # Extract Date from headers

@@ -34,7 +34,8 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr', detec
         lang=lang,
         detected_pixels=detected_pixels,
         audit=metadata.get('audit', {}),
-        crm=metadata.get('crm')
+        crm=metadata.get('crm'),
+        links_json=json.dumps(links).replace('</script>', r'<\/script>')
     )
     
     with open(output_path, 'w', encoding='utf-8') as f:
