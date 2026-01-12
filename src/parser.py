@@ -48,7 +48,9 @@ CRM_PATTERNS = {
 
 RESOLVE_REDIRECTS = True
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
 }
 
 class EmailParser:
@@ -284,27 +286,35 @@ class EmailParser:
         results_cache = {}
 
         def _resolve(url):
+            chain = []
             try:
                 session = requests.Session()
                 session.headers.update(HEADERS)
                 
-                # We follow redirects automatically and capture the history
-                # This is much more robust than a manual loop
-                resp = session.get(url, allow_redirects=True, timeout=15)
-                
-                chain = []
-                # First, capture all intermediate redirects
-                for r in resp.history:
+                current_url = url
+                max_redirects = 15
+                for _ in range(max_redirects):
+                    # Use a generous timeout for slow trackers
+                    try:
+                        resp = session.get(current_url, allow_redirects=False, timeout=15)
+                    except requests.exceptions.Timeout:
+                        chain.append({'status': 'Timeout', 'url': current_url})
+                        break
+                    except Exception as e:
+                        chain.append({'status': 'Error', 'url': current_url})
+                        break
+                        
                     chain.append({
-                        'status': r.status_code,
-                        'url': r.url
+                        'status': resp.status_code,
+                        'url': current_url
                     })
-                
-                # Finally, capture the destination
-                chain.append({
-                    'status': resp.status_code,
-                    'url': resp.url
-                })
+                    
+                    if 300 <= resp.status_code < 400 and 'Location' in resp.headers:
+                        next_url = resp.headers['Location']
+                        from urllib.parse import urljoin
+                        current_url = urljoin(current_url, next_url)
+                    else:
+                        break
                 
                 return chain
                     

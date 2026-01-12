@@ -609,27 +609,30 @@
                         const stepClass = isGtinsi ? 'audit-step highlighted' : 'audit-step';
 
                         // Display the step
-                        if (i < linkData.redirect_chain.length - 1) {
+                        if (!isLast) {
                             // It's a redirect step
                             const nextStep = linkData.redirect_chain[i + 1];
                             timeline.innerHTML += `<div class="${stepClass}"><strong>${step.status}</strong> &rarr; ${nextStep.url}</div>`;
                         } else {
                             // It's the final destination
+                            const statusColor = (step.status === 200) ? 'text-green' : (step.status >= 400 || step.status === 'Error' || step.status === 'Timeout' ? 'text-red' : 'text-cyan');
+                            const statusIcon = (step.status === 200) ? 'final' : (step.status >= 400 || step.status === 'Error' || step.status === 'Timeout' ? 'error' : '');
+
+                            timeline.innerHTML += `<div class="audit-step ${statusIcon}"><strong>${step.status || 'Done'}</strong> &bull; ${step.url}</div>`;
+
+                            // Update status text
                             if (step.status === 200) {
-                                timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination: ${step.url}</div>`;
                                 statusText.innerHTML = containsGtinsi ? 'Verification Complete (GTINSI Detected)' : 'Verification Complete';
-                                statusText.className = containsGtinsi ? 'audit-status-text text-green' : 'audit-status-text text-green';
-                                btn.style.color = 'var(--accent-green)';
-                            } else if (step.status === 'Error' || step.status >= 400) {
-                                timeline.innerHTML += `<div class="audit-step error"><strong>${step.status}</strong> &bull; Request Failed: ${step.url}</div>`;
-                                statusText.innerHTML = 'Broken Link';
-                                statusText.className = 'audit-status-text text-red';
-                                btn.style.color = 'var(--accent-red)';
+                            } else if (step.status === 'Timeout') {
+                                statusText.innerHTML = 'Request Timed Out';
+                            } else if (step.status >= 400 || step.status === 'Error') {
+                                statusText.innerHTML = 'Audit Finished (Error Found)';
                             } else {
-                                timeline.innerHTML += `<div class="audit-step"><strong>${step.status || 'Done'}</strong> &bull; ${step.url}</div>`;
                                 statusText.innerHTML = 'Audit Finished';
-                                statusText.className = 'audit-status-text text-cyan';
                             }
+
+                            statusText.className = `audit-status-text ${statusColor}`;
+                            btn.style.color = (step.status === 200) ? 'var(--accent-green)' : (step.status >= 400 || step.status === 'Error' || step.status === 'Timeout' ? 'var(--accent-red)' : 'var(--accent-cyan)');
                         }
                         await new Promise(r => setTimeout(r, 400));
                     }
