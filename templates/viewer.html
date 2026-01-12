@@ -597,7 +597,8 @@
 
             try {
                 if (linkData && linkData.redirect_chain && linkData.redirect_chain.length > 0) {
-                    statusText.innerHTML = 'Analyzing Redirection Chain...';
+                    const auditDateStr = linkData.audit_date ? `<br><small style="opacity: 0.7; font-size: 0.8em;">Audit: ${linkData.audit_date}</small>` : '';
+                    statusText.innerHTML = 'Analyzing Redirection Chain...' + auditDateStr;
 
                     let containsGtinsi = false;
                     for (let i = 0; i < linkData.redirect_chain.length; i++) {

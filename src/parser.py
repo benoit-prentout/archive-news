@@ -285,11 +285,21 @@ class EmailParser:
         unique_urls = list(set(l['original_url'] for l in self.links))
         results_cache = {}
 
+        import datetime
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         def _resolve(url):
             chain = []
             try:
                 session = requests.Session()
                 session.headers.update(HEADERS)
+                # Browser-like headers
+                session.headers.update({
+                    'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                    'Sec-Ch-Ua-Mobile': '?0',
+                    'Sec-Ch-Ua-Platform': '"Windows"',
+                    'Upgrade-Insecure-Requests': '1',
+                })
                 
                 current_url = url
                 max_redirects = 15
@@ -316,11 +326,17 @@ class EmailParser:
                     else:
                         break
                 
-                return chain
+                return {
+                    'chain': chain,
+                    'date': now
+                }
                     
             except Exception as e:
                 print(f"Error resolving {url}: {e}")
-                return [{'status': 'Error', 'url': url}]
+                return {
+                    'chain': [{'status': 'Error', 'url': url}],
+                    'date': now
+                }
 
         with ThreadPoolExecutor(max_workers=10) as ex:
             futures = {ex.submit(_resolve, url): url for url in unique_urls}
@@ -332,7 +348,9 @@ class EmailParser:
         for link in self.links:
             url = link['original_url']
             if url in results_cache:
-                link['redirect_chain'] = results_cache[url]
+                res = results_cache[url]
+                link['redirect_chain'] = res['chain']
+                link['audit_date'] = res['date']
                 if link['redirect_chain']:
                     link['final_url'] = link['redirect_chain'][-1]['url']
 
