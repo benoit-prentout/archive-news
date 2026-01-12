@@ -603,54 +603,45 @@
                     for (let i = 0; i < linkData.redirect_chain.length; i++) {
                         const step = linkData.redirect_chain[i];
                         const isLast = i === linkData.redirect_chain.length - 1;
-                        const isGtinsi = step.url.includes('gtinsi.de');
+                        const isGtinsi = step.url && step.url.includes('gtinsi.de');
                         if (isGtinsi) containsGtinsi = true;
 
                         const stepClass = isGtinsi ? 'audit-step highlighted' : 'audit-step';
 
-                        // Initial request
-                        if (i === 0) {
-                            timeline.innerHTML += `<div class="${stepClass}"><strong>GET</strong> ${step.url}</div>`;
-                            await new Promise(r => setTimeout(r, 400));
-                        }
-
-                        // If it's a redirect
-                        if (step.status >= 300 && step.status < 400 && i + 1 < linkData.redirect_chain.length) {
+                        // Display the step
+                        if (i < linkData.redirect_chain.length - 1) {
+                            // It's a redirect step
                             const nextStep = linkData.redirect_chain[i + 1];
-                            const nextIsGtinsi = nextStep.url.includes('gtinsi.de');
-                            const nextStepClass = nextIsGtinsi ? 'audit-step highlighted' : 'audit-step';
-
-                            timeline.innerHTML += `<div class="${nextStepClass}"><strong>${step.status}</strong> &rarr; ${nextStep.url}</div>`;
-                            await new Promise(r => setTimeout(r, 400));
-                        }
-
-                        // Final step
-                        if (isLast) {
+                            timeline.innerHTML += `<div class="${stepClass}"><strong>${step.status}</strong> &rarr; ${nextStep.url}</div>`;
+                        } else {
+                            // It's the final destination
                             if (step.status === 200) {
-                                timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination Reached</div>`;
+                                timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination: ${step.url}</div>`;
                                 statusText.innerHTML = containsGtinsi ? 'Verification Complete (GTINSI Detected)' : 'Verification Complete';
                                 statusText.className = containsGtinsi ? 'audit-status-text text-green' : 'audit-status-text text-green';
                                 btn.style.color = 'var(--accent-green)';
                             } else if (step.status === 'Error' || step.status >= 400) {
-                                timeline.innerHTML += `<div class="audit-step error"><strong>${step.status}</strong> &bull; Request Failed</div>`;
-                                statusText.innerHTML = 'Broken Link Detected';
+                                timeline.innerHTML += `<div class="audit-step error"><strong>${step.status}</strong> &bull; Request Failed: ${step.url}</div>`;
+                                statusText.innerHTML = 'Broken Link';
                                 statusText.className = 'audit-status-text text-red';
                                 btn.style.color = 'var(--accent-red)';
                             } else {
-                                timeline.innerHTML += `<div class="audit-step"><strong>${step.status || 'Done'}</strong> &bull; Path ended</div>`;
+                                timeline.innerHTML += `<div class="audit-step"><strong>${step.status || 'Done'}</strong> &bull; ${step.url}</div>`;
                                 statusText.innerHTML = 'Audit Finished';
                                 statusText.className = 'audit-status-text text-cyan';
                             }
                         }
+                        await new Promise(r => setTimeout(r, 400));
                     }
                 } else {
-                    // Fallback for non-tracking links or missing data
-                    timeline.innerHTML += `<div class="audit-step"><strong>GET</strong> ${url}</div>`;
+                    // Fallback for archives created before this feature or if resolution failed
+                    timeline.innerHTML += `<div class="audit-step"><strong>INFO</strong> Pre-calculated redirect data missing.</div>`;
+                    timeline.innerHTML += `<div class="audit-step"><strong>URL</strong> ${url}</div>`;
                     await new Promise(r => setTimeout(r, 600));
-                    timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Link validated successfully</div>`;
-                    statusText.innerHTML = 'Verification Complete';
-                    statusText.className = 'audit-status-text text-green';
-                    btn.style.color = 'var(--accent-green)';
+                    timeline.innerHTML += `<div class="audit-step final"><strong>ACTION</strong> Please re-archive this email to enable full redirect auditing.</div>`;
+                    statusText.innerHTML = 'Direct Link Check';
+                    statusText.className = 'audit-status-text text-yellow';
+                    btn.style.color = 'var(--accent-yellow)';
                 }
 
             } catch (e) {

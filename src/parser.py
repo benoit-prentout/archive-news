@@ -284,31 +284,27 @@ class EmailParser:
         results_cache = {}
 
         def _resolve(url):
-            chain = []
             try:
                 session = requests.Session()
                 session.headers.update(HEADERS)
                 
-                current_url = url
-                max_redirects = 10
-                for _ in range(max_redirects):
-                    try:
-                        resp = session.get(current_url, allow_redirects=False, timeout=10)
-                    except:
-                        break
-                        
-                    step = {
-                        'status': resp.status_code,
-                        'url': current_url
-                    }
-                    chain.append(step)
-                    
-                    if 300 <= resp.status_code < 400 and 'Location' in resp.headers:
-                        next_url = resp.headers['Location']
-                        from urllib.parse import urljoin
-                        current_url = urljoin(current_url, next_url)
-                    else:
-                        break
+                # We follow redirects automatically and capture the history
+                # This is much more robust than a manual loop
+                resp = session.get(url, allow_redirects=True, timeout=15)
+                
+                chain = []
+                # First, capture all intermediate redirects
+                for r in resp.history:
+                    chain.append({
+                        'status': r.status_code,
+                        'url': r.url
+                    })
+                
+                # Finally, capture the destination
+                chain.append({
+                    'status': resp.status_code,
+                    'url': resp.url
+                })
                 
                 return chain
                     
@@ -316,7 +312,7 @@ class EmailParser:
                 print(f"Error resolving {url}: {e}")
                 return [{'status': 'Error', 'url': url}]
 
-        with ThreadPoolExecutor(max_workers=8) as ex:
+        with ThreadPoolExecutor(max_workers=10) as ex:
             futures = {ex.submit(_resolve, url): url for url in unique_urls}
             for f in as_completed(futures):
                 url = futures[f]
