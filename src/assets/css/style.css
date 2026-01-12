@@ -454,6 +454,14 @@ h1.logo {
     line-height: 1.5;
 }
 
+.audit-step.highlighted {
+    color: var(--accent-green);
+    background: rgba(80, 250, 123, 0.1);
+    border-radius: 4px;
+    padding: 4px 14px 4px 14px;
+    border-left: 2px solid var(--accent-green);
+}
+
 /* Technical arrow/indicator for steps */
 .audit-step::before {
     content: '>';

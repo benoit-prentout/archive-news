@@ -272,27 +272,26 @@ class EmailParser:
                 if local: img['src'] = local
 
     def resolve_redirects_parallel(self):
-        """Pre-calculate redirect chains for tracking links to avoid CORS issues in the statics viewer."""
+        """Pre-calculate redirect chains for all links to avoid CORS issues in the statics viewer."""
         if not RESOLVE_REDIRECTS:
             return
 
-        tracking_links = [l for l in self.links if l.get('is_tracking')]
-        if not tracking_links:
+        if not self.links:
             return
 
-        def _resolve(link_obj):
-            url = link_obj['original_url']
+        # Use a list to maintain order if needed, but we care about unique URLs for efficiency
+        unique_urls = list(set(l['original_url'] for l in self.links))
+        results_cache = {}
+
+        def _resolve(url):
             chain = []
             try:
-                # Use a session to persist cookies if needed (often required for tracking links)
                 session = requests.Session()
                 session.headers.update(HEADERS)
                 
-                # Manual redirect following to capture each step
                 current_url = url
                 max_redirects = 10
                 for _ in range(max_redirects):
-                    # We use HEAD first to be faster, but some trackers require GET
                     try:
                         resp = session.get(current_url, allow_redirects=False, timeout=10)
                     except:
@@ -306,24 +305,30 @@ class EmailParser:
                     
                     if 300 <= resp.status_code < 400 and 'Location' in resp.headers:
                         next_url = resp.headers['Location']
-                        # Handle relative URLs
                         from urllib.parse import urljoin
                         current_url = urljoin(current_url, next_url)
                     else:
                         break
                 
-                link_obj['redirect_chain'] = chain
-                if chain:
-                    link_obj['final_url'] = chain[-1]['url']
+                return chain
                     
             except Exception as e:
                 print(f"Error resolving {url}: {e}")
-                link_obj['redirect_chain'] = [{'status': 'Error', 'url': url}]
+                return [{'status': 'Error', 'url': url}]
 
-        with ThreadPoolExecutor(max_workers=5) as ex:
-            futures = [ex.submit(_resolve, link) for link in tracking_links]
-            for _ in as_completed(futures):
-                pass
+        with ThreadPoolExecutor(max_workers=8) as ex:
+            futures = {ex.submit(_resolve, url): url for url in unique_urls}
+            for f in as_completed(futures):
+                url = futures[f]
+                results_cache[url] = f.result()
+
+        # Apply results back to links
+        for link in self.links:
+            url = link['original_url']
+            if url in results_cache:
+                link['redirect_chain'] = results_cache[url]
+                if link['redirect_chain']:
+                    link['final_url'] = link['redirect_chain'][-1]['url']
 
     def get_html(self):
         return str(self.soup)

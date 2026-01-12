@@ -599,20 +599,28 @@
                 if (linkData && linkData.redirect_chain && linkData.redirect_chain.length > 0) {
                     statusText.innerHTML = 'Analyzing Redirection Chain...';
 
+                    let containsGtinsi = false;
                     for (let i = 0; i < linkData.redirect_chain.length; i++) {
                         const step = linkData.redirect_chain[i];
                         const isLast = i === linkData.redirect_chain.length - 1;
+                        const isGtinsi = step.url.includes('gtinsi.de');
+                        if (isGtinsi) containsGtinsi = true;
+
+                        const stepClass = isGtinsi ? 'audit-step highlighted' : 'audit-step';
 
                         // Initial request
                         if (i === 0) {
-                            timeline.innerHTML += `<div class="audit-step"><strong>GET</strong> ${step.url}</div>`;
+                            timeline.innerHTML += `<div class="${stepClass}"><strong>GET</strong> ${step.url}</div>`;
                             await new Promise(r => setTimeout(r, 400));
                         }
 
                         // If it's a redirect
                         if (step.status >= 300 && step.status < 400 && i + 1 < linkData.redirect_chain.length) {
                             const nextStep = linkData.redirect_chain[i + 1];
-                            timeline.innerHTML += `<div class="audit-step"><strong>${step.status}</strong> &rarr; ${nextStep.url}</div>`;
+                            const nextIsGtinsi = nextStep.url.includes('gtinsi.de');
+                            const nextStepClass = nextIsGtinsi ? 'audit-step highlighted' : 'audit-step';
+
+                            timeline.innerHTML += `<div class="${nextStepClass}"><strong>${step.status}</strong> &rarr; ${nextStep.url}</div>`;
                             await new Promise(r => setTimeout(r, 400));
                         }
 
@@ -620,8 +628,8 @@
                         if (isLast) {
                             if (step.status === 200) {
                                 timeline.innerHTML += `<div class="audit-step final"><strong>200 OK</strong> &bull; Final Destination Reached</div>`;
-                                statusText.innerHTML = 'Verification Complete';
-                                statusText.className = 'audit-status-text text-green';
+                                statusText.innerHTML = containsGtinsi ? 'Verification Complete (GTINSI Detected)' : 'Verification Complete';
+                                statusText.className = containsGtinsi ? 'audit-status-text text-green' : 'audit-status-text text-green';
                                 btn.style.color = 'var(--accent-green)';
                             } else if (step.status === 'Error' || step.status >= 400) {
                                 timeline.innerHTML += `<div class="audit-step error"><strong>${step.status}</strong> &bull; Request Failed</div>`;
