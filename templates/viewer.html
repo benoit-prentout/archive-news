@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -40,6 +41,9 @@
                         </button>
                         <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
                             View HTML
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadEmailZip()" title="Download Email (D)">
+                            Download
                         </button>
                     </div>
 
@@ -655,6 +659,80 @@
             }
         }
 
+        async function downloadEmailZip() {
+            try {
+                const zip = new JSZip();
+                const subject = "{{ subject }}".replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                const timestamp = new Date().toISOString().split('T')[0];
+                const zipFilename = `${subject}_${timestamp}.zip`;
+
+                // Add HTML content
+                zip.file("email.html", content);
+
+                // Get all images from the current directory
+                const currentPath = window.location.pathname;
+                const emailDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+
+                // Find all image references in the HTML
+                const doc = frame.contentDocument;
+                const images = doc.querySelectorAll('img[src]');
+
+                // Create a folder for images
+                const imgFolder = zip.folder("images");
+
+                // Download each image
+                let downloadCount = 0;
+                const imagePromises = [];
+
+                images.forEach((img, index) => {
+                    const imgSrc = img.getAttribute('src');
+                    if (imgSrc && !imgSrc.startsWith('data:') && !imgSrc.startsWith('http')) {
+                        // It's a local image
+                        const imgPath = emailDir + '/' + imgSrc;
+                        const imgFilename = imgSrc.split('/').pop();
+
+                        const promise = fetch(imgPath)
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.blob();
+                                }
+                                throw new Error(`Failed to fetch ${imgFilename}`);
+                            })
+                            .then(blob => {
+                                imgFolder.file(imgFilename, blob);
+                                downloadCount++;
+                            })
+                            .catch(err => {
+                                console.warn(`Could not download ${imgFilename}:`, err);
+                            });
+
+                        imagePromises.push(promise);
+                    }
+                });
+
+                // Wait for all images to be added
+                await Promise.all(imagePromises);
+
+                // Generate zip file
+                const blob = await zip.generateAsync({ type: "blob" });
+
+                // Create download link
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = zipFilename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                console.log(`Downloaded ${downloadCount} images and HTML as ${zipFilename}`);
+            } catch (error) {
+                console.error('Error creating zip file:', error);
+                alert('Failed to create download. Please try again.');
+            }
+        }
+
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -667,6 +745,7 @@
             if (e.key === 't' || e.key === 'T') toggleTheme();
             if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
             if (e.key === 'v' || e.key === 'V') openHtmlModal();
+            if (e.key === 'd' || e.key === 'D') downloadEmailZip();
 
             // Scroll iframe with arrows
             if (e.key === 'ArrowDown') frame.contentWindow.scrollBy(0, 150);
