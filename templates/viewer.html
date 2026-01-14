@@ -39,9 +39,6 @@
                             title="Highlight all links (H)">
                             <span id="highlightBtnText">Show Links</span>
                         </button>
-                        <button class="btn btn-secondary" onclick="openHtmlModal()" title="View HTML (V)">
-                            View HTML
-                        </button>
                         <button class="btn btn-secondary" onclick="downloadEmailZip()" title="Download Email (D)">
                             Download
                         </button>
@@ -248,21 +245,7 @@
         </aside>
     </div>
 
-    <!-- HTML Source Modal -->
-    <div class="modal-overlay" id="htmlModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-title" style="color: var(--accent-blue);">HTML Source</span>
-                <button class="modal-close" onclick="closeHtmlModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <pre class="code-block" id="htmlSourceCode"></pre>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="copyAllHtml()">Copy HTML</button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Link overlays container -->
     <div id="linkOverlays" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100;"></div>
@@ -548,25 +531,7 @@
             });
         });
 
-        function openHtmlModal() {
-            const modal = document.getElementById('htmlModal');
-            const codeEl = document.getElementById('htmlSourceCode');
-            codeEl.textContent = content;
-            modal.classList.add('active');
-        }
 
-        function closeHtmlModal() {
-            document.getElementById('htmlModal').classList.remove('active');
-        }
-
-        function copyAllHtml() {
-            navigator.clipboard.writeText(content).then(() => {
-                const btn = event.target;
-                const original = btn.textContent;
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = original, 1500);
-            });
-        }
 
         function copyLink(btn, url) {
             navigator.clipboard.writeText(url).then(() => {
@@ -666,9 +631,6 @@
                 const timestamp = new Date().toISOString().split('T')[0];
                 const zipFilename = `${subject}_${timestamp}.zip`;
 
-                // Add HTML content
-                zip.file("email.html", content);
-
                 // Get all images from the current directory
                 const currentPath = window.location.pathname;
                 const emailDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
@@ -680,9 +642,10 @@
                 // Create a folder for images
                 const imgFolder = zip.folder("images");
 
-                // Download each image
+                // Download each image and track the mapping
                 let downloadCount = 0;
                 const imagePromises = [];
+                const imageMapping = new Map(); // old path -> new path
 
                 images.forEach((img, index) => {
                     const imgSrc = img.getAttribute('src');
@@ -690,6 +653,9 @@
                         // It's a local image
                         const imgPath = emailDir + '/' + imgSrc;
                         const imgFilename = imgSrc.split('/').pop();
+
+                        // Store the mapping: old src -> new path in zip
+                        imageMapping.set(imgSrc, 'images/' + imgFilename);
 
                         const promise = fetch(imgPath)
                             .then(response => {
@@ -713,6 +679,17 @@
                 // Wait for all images to be added
                 await Promise.all(imagePromises);
 
+                // Fix image paths in HTML content
+                let fixedHtml = content;
+                imageMapping.forEach((newPath, oldPath) => {
+                    // Replace all occurrences of the old path with the new path
+                    const regex = new RegExp(oldPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                    fixedHtml = fixedHtml.replace(regex, newPath);
+                });
+
+                // Add HTML content with fixed paths
+                zip.file("email.html", fixedHtml);
+
                 // Generate zip file
                 const blob = await zip.generateAsync({ type: "blob" });
 
@@ -735,16 +712,11 @@
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('htmlModal');
-                if (modal.classList.contains('active')) closeHtmlModal();
-            }
             if (e.key === '1') setMode('mobile');
             if (e.key === '2') setMode('tablet');
             if (e.key === '3') setMode('desktop');
             if (e.key === 't' || e.key === 'T') toggleTheme();
             if (e.key === 'h' || e.key === 'H') toggleHighlightLinks();
-            if (e.key === 'v' || e.key === 'V') openHtmlModal();
             if (e.key === 'd' || e.key === 'D') downloadEmailZip();
 
             // Scroll iframe with arrows
