@@ -54,10 +54,11 @@ HEADERS = {
 }
 
 class EmailParser:
-    def __init__(self, raw_html, output_folder, headers=None):
+    def __init__(self, raw_html, output_folder, headers=None, attachments=None):
         self.soup = BeautifulSoup(raw_html, "html.parser")
         self.output_folder = output_folder
         self.headers = headers or {}
+        self.attachments = attachments or {} # {cid: bytes_content}
         self.links = []
         self.detected_pixels = []
         self.detected_crm = None
@@ -239,7 +240,35 @@ class EmailParser:
                     break
             
             src = img.get("src")
-            if not src or src.startswith("data:") or src.startswith("cid:"): continue
+            if not src or src.startswith("data:"): continue
+            
+            # Special case for CID images
+            if src.startswith("cid:"):
+                cid = src.replace("cid:", "").strip("<>")
+                if cid in self.attachments:
+                    content = self.attachments[cid]
+                    
+                    # Detect extension from magic bytes
+                    ext = ".jpg" # Default
+                    if content.startswith(b'\x89PNG\r\n\x1a\n'):
+                        ext = ".png"
+                    elif content.startswith(b'GIF87a') or content.startswith(b'GIF89a'):
+                        ext = ".gif"
+                    elif content.startswith(b'\xff\xd8\xff'):
+                        ext = ".jpg"
+                    elif content.startswith(b'RIFF') and content[8:12] == b'WEBP':
+                        ext = ".webp"
+                    
+                    local_name = f"img_{len(images_to_download)}{ext}"
+                    path = os.path.join(self.output_folder, local_name)
+                    with open(path, "wb") as f:
+                        f.write(content)
+                    img['src'] = local_name
+                    continue # Already processed
+                else:
+                    print(f"Warning: CID {cid} not found in attachments.")
+                    continue
+
             if src.startswith("//"): src = "https:" + src
             images_to_download.append((img, src))
             

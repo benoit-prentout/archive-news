@@ -56,17 +56,30 @@ def process_emails():
             
             msg = fetcher.fetch_full_message(num)
             
-            # Extract HTML
+            # Extract HTML and attachments
             html_payload = None
             text_payload = None
+            attachments = {} # {cid: bytes}
             
             if msg.is_multipart():
                 for part in msg.walk():
                     ctype = part.get_content_type()
+                    cdisp = str(part.get('Content-Disposition'))
+                    cid = part.get('Content-ID')
+                    
                     if ctype == "text/html":
                         html_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='ignore')
-                    elif ctype == "text/plain":
+                    elif ctype == "text/plain" and 'attachment' not in cdisp:
                          text_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='ignore')
+                    elif cid:
+                        # It's an inline attachment (like an image with CID)
+                        clean_cid = cid.strip("<>")
+                        attachments[clean_cid] = part.get_payload(decode=True)
+                    elif 'attachment' in cdisp:
+                        # It's a regular attachment
+                        filename = part.get_filename()
+                        if filename:
+                            attachments[filename] = part.get_payload(decode=True)
             else:
                 ctype = msg.get_content_type()
                 if ctype == "text/html":
@@ -87,7 +100,7 @@ def process_emails():
             headers_dict = {k: v for k, v in msg.items()}
 
             # PARSE
-            parser = EmailParser(html_payload, folder_path, headers=headers_dict)
+            parser = EmailParser(html_payload, folder_path, headers=headers_dict, attachments=attachments)
             parser.detect_crm()  # Detect CRM using headers + content
             parser.clean_and_process()
             parser.resolve_redirects_parallel()
