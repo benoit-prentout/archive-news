@@ -20,6 +20,8 @@ st.markdown("Cet outil permet d'envoyer manuellement du HTML brut ou un fichier 
 default_user = st.secrets["GMAIL_USER"] if "GMAIL_USER" in st.secrets else ""
 default_pass = st.secrets["GMAIL_PASSWORD"] if "GMAIL_PASSWORD" in st.secrets else ""
 
+upload_type = st.radio("Type d'import", ["Code HTML", "Fichier ZIP (.zip comprenant html + images)"])
+
 with st.form("email_form", clear_on_submit=False):
     col1, col2 = st.columns(2)
     with col1:
@@ -31,8 +33,6 @@ with st.form("email_form", clear_on_submit=False):
     
     st.write("---")
     subject = st.text_input("Sujet de la Newsletter")
-    
-    upload_type = st.radio("Type d'import", ["Code HTML", "Fichier ZIP (.zip comprenant html + images)"])
     
     html_content = ""
     zip_file = None
