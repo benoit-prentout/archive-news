@@ -75,7 +75,7 @@ if submitted:
                         soup = BeautifulSoup(html_content, "html.parser")
                         
                         # Process images in ZIP
-                        img_extensions = ('.png', '.jpg', '.jpeg', '.gif', '.webp')
+                        cid_count = 0
                         for img_tag in soup.find_all('img', src=True):
                             src = img_tag['src']
                             # If it's a local reference (not a URL)
@@ -84,11 +84,14 @@ if submitted:
                                 img_path = os.path.normpath(os.path.join(os.path.dirname(main_html_file), src)).replace('\\', '/')
                                 if img_path in z.namelist():
                                     img_data = z.read(img_path)
-                                    filename = os.path.basename(img_path)
+                                    # Create a unique CID using a counter
+                                    basename = os.path.basename(img_path)
+                                    cid_name = f"cid_{cid_count}_{basename}"
+                                    cid_count += 1
                                     # Update HTML to use CID
-                                    img_tag['src'] = f"cid:{filename}"
+                                    img_tag['src'] = f"cid:{cid_name}"
                                     # Prepare attachment
-                                    attachments.append((filename, img_data))
+                                    attachments.append((cid_name, img_data))
                         
                         html_content = str(soup)
                 else:

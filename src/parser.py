@@ -232,6 +232,7 @@ class EmailParser:
             
     def download_images_parallel(self):
         images_to_download = []
+        image_idx = 0
         for img in self.soup.find_all("img"):
             # Handle lazy attrs
             for attr in ['data-src', 'data-original', 'data-url']:
@@ -259,7 +260,8 @@ class EmailParser:
                     elif content.startswith(b'RIFF') and content[8:12] == b'WEBP':
                         ext = ".webp"
                     
-                    local_name = f"img_{len(images_to_download)}{ext}"
+                    local_name = f"img_{image_idx}{ext}"
+                    image_idx += 1
                     path = os.path.join(self.output_folder, local_name)
                     with open(path, "wb") as f:
                         f.write(content)
@@ -270,7 +272,8 @@ class EmailParser:
                     continue
 
             if src.startswith("//"): src = "https:" + src
-            images_to_download.append((img, src))
+            images_to_download.append((img, src, image_idx))
+            image_idx += 1
             
         def _download(img_obj, url, idx):
             try:
@@ -297,7 +300,7 @@ class EmailParser:
             return img_obj, None
 
         with ThreadPoolExecutor(max_workers=5) as ex:
-            futures = {ex.submit(_download, item[0], item[1], i): item for i, item in enumerate(images_to_download)}
+            futures = {ex.submit(_download, item[0], item[1], item[2]): item for item in images_to_download}
             for f in as_completed(futures):
                 img, local = f.result()
                 if local: img['src'] = local
