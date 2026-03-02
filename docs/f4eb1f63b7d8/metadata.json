@@ -1,0 +1,18 @@
+{
+    "id": "f4eb1f63b7d8",
+    "subject": "[TEST ILLICADO - project.common 23/02/2026 09:51:37] On a encore une surprise pour vous 👀",
+    "date_rec": "23/02/2026 à 08:51",
+    "date_iso": "2026-02-23T08:51:38+00:00",
+    "sender": "noreply@dartagnan.io",
+    "date_arch": "02/03/2026 à 09:44",
+    "preheader": "On a encore une surprise pour vous 👀 La liberté est un cadeau Saviez-vous que votre carte illicado cachait un petit secret ? En plus de votre cadeau, elle vous ...",
+    "reading_time": "4 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": false,
+        "link_count": 23,
+        "images_no_alt": 0
+    },
+    "crm": null
+}
