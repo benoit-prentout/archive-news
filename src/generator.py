@@ -1,12 +1,17 @@
 
-import os
-import json
-import jinja2
 import datetime
+import json
+import os
+
+import jinja2
+from markupsafe import Markup
 
 # Setup Jinja2 environment
 TEMPLATE_DIR = os.path.join(os.getcwd(), 'templates')
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
+env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
+    autoescape=jinja2.select_autoescape(['html', 'xml'])
+)
 env.globals.update(format_date=lambda d: d) # Placeholder, can process date filter if needed
 
 def generate_viewer(metadata, html_content, links, output_path, lang='fr', detected_pixels=[], audit={}):
@@ -18,8 +23,8 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr', detec
     # Calculate size for Gmail clipping warning
     email_size = len(html_content.encode('utf-8'))
     
-    # Escape </script> to avoid breaking the viewer's script tag
-    safe_html_json = json.dumps(html_content).replace('</script>', r'<\/script>')
+    # Escape </script> to avoid breaking the viewer's script tag, then mark as safe for Jinja2
+    safe_html_json = Markup(json.dumps(html_content).replace('</script>', r'<\/script>'))
     
     rendered_html = template.render(
         subject=metadata.get('subject', 'No Subject'),
@@ -35,7 +40,7 @@ def generate_viewer(metadata, html_content, links, output_path, lang='fr', detec
         detected_pixels=detected_pixels,
         audit=metadata.get('audit', {}),
         crm=metadata.get('crm'),
-        links_json=json.dumps(links).replace('</script>', r'<\/script>')
+        links_json=Markup(json.dumps(links).replace('</script>', r'<\/script>'))
     )
     
     with open(output_path, 'w', encoding='utf-8') as f:

@@ -1,12 +1,15 @@
 
 from bs4 import BeautifulSoup
 import html
-import re
-import requests
+import logging
 import mimetypes
 import os
-import hashlib
+import re
+import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.parse import urlparse, urljoin
+
+logger = logging.getLogger(__name__)
 
 TRACKING_PATTERNS = [
     "api.getinside.media", "google-analytics.com", "doubleclick.net", "facebook.com/tr",
@@ -151,9 +154,8 @@ class EmailParser:
                 # Extract domain for pixel to match link layout
                 pixel_domain = ""
                 try:
-                    from urllib.parse import urlparse
                     pixel_domain = urlparse(src).netloc.replace('www.', '')
-                except:
+                except Exception:
                     pass
                 
                 self.detected_pixels.append({
@@ -192,10 +194,9 @@ class EmailParser:
             # Domain Extraction
             domain = ""
             try:
-                from urllib.parse import urlparse
                 parsed = urlparse(original_url)
                 domain = parsed.netloc.replace('www.', '')
-            except:
+            except Exception:
                 pass
 
             # Tracking Check
@@ -268,7 +269,7 @@ class EmailParser:
                     img['src'] = local_name
                     continue # Already processed
                 else:
-                    print(f"Warning: CID {cid} not found in attachments.")
+                    logger.warning("CID %s not found in attachments.", cid)
                     continue
 
             if src.startswith("//"): src = "https:" + src
@@ -296,7 +297,8 @@ class EmailParser:
                     path = os.path.join(self.output_folder, local_name)
                     with open(path, "wb") as f: f.write(r.content)
                     return img_obj, local_name
-            except: pass
+            except Exception:
+                pass
             return img_obj, None
 
         with ThreadPoolExecutor(max_workers=5) as ex:
@@ -307,71 +309,64 @@ class EmailParser:
 
     def resolve_redirects_parallel(self):
         """Pre-calculate redirect chains for all links to avoid CORS issues in the statics viewer."""
-        if not RESOLVE_REDIRECTS:
+        if not RESOLVE_REDIRECTS or not self.links:
             return
 
-        if not self.links:
-            return
-
-        # Use a list to maintain order if needed, but we care about unique URLs for efficiency
         unique_urls = list(set(l['original_url'] for l in self.links))
         results_cache = {}
 
-        import datetime
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        from datetime import datetime
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        def _resolve(url):
+        # One shared session per worker thread
+        _extra_headers = {
+            'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Upgrade-Insecure-Requests': '1',
+        }
+
+        def _make_session():
+            s = requests.Session()
+            s.headers.update(HEADERS)
+            s.headers.update(_extra_headers)
+            return s
+
+        def _resolve(args):
+            url, session = args
             chain = []
             try:
-                session = requests.Session()
-                session.headers.update(HEADERS)
-                # Browser-like headers
-                session.headers.update({
-                    'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-                    'Sec-Ch-Ua-Mobile': '?0',
-                    'Sec-Ch-Ua-Platform': '"Windows"',
-                    'Upgrade-Insecure-Requests': '1',
-                })
-                
                 current_url = url
-                max_redirects = 15
-                for _ in range(max_redirects):
-                    # Use a generous timeout for slow trackers
+                for _ in range(15):
                     try:
                         resp = session.get(current_url, allow_redirects=False, timeout=15)
                     except requests.exceptions.Timeout:
                         chain.append({'status': 'Timeout', 'url': current_url})
                         break
-                    except Exception as e:
+                    except Exception:
                         chain.append({'status': 'Error', 'url': current_url})
                         break
-                        
-                    chain.append({
-                        'status': resp.status_code,
-                        'url': current_url
-                    })
-                    
+
+                    chain.append({'status': resp.status_code, 'url': current_url})
+
                     if 300 <= resp.status_code < 400 and 'Location' in resp.headers:
-                        next_url = resp.headers['Location']
-                        from urllib.parse import urljoin
-                        current_url = urljoin(current_url, next_url)
+                        current_url = urljoin(current_url, resp.headers['Location'])
                     else:
                         break
-                
-                return {
-                    'chain': chain,
-                    'date': now
-                }
-                    
-            except Exception as e:
-                print(f"Error resolving {url}: {e}")
-                return {
-                    'chain': [{'status': 'Error', 'url': url}],
-                    'date': now
-                }
 
-        with ThreadPoolExecutor(max_workers=10) as ex:
-            futures = {ex.submit(_resolve, url): url for url in unique_urls}
+                return {'chain': chain, 'date': now}
+
+            except Exception as e:
+                logger.warning("Error resolving %s: %s", url, e)
+                return {'chain': [{'status': 'Error', 'url': url}], 'date': now}
+
+        # Build (url, session) pairs — one session reused per worker
+        n_workers = 10
+        sessions = [_make_session() for _ in range(n_workers)]
+        work = [(url, sessions[i % n_workers]) for i, url in enumerate(unique_urls)]
+
+        with ThreadPoolExecutor(max_workers=n_workers) as ex:
+            futures = {ex.submit(_resolve, item): item[0] for item in work}
             for f in as_completed(futures):
                 url = futures[f]
                 results_cache[url] = f.result()

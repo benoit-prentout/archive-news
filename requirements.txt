@@ -1,5 +1,5 @@
-jinja2
-beautifulsoup4
-requests
-lxml
-streamlit
+jinja2>=3.0,<4.0
+beautifulsoup4>=4.11,<5.0
+requests>=2.28,<3.0
+lxml>=4.9,<6.0
+streamlit>=1.20,<2.0

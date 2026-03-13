@@ -1,12 +1,13 @@
 
 import imaplib
 import email
-from email.header import decode_header
-from email.utils import parsedate_to_datetime, parseaddr
-import os
-import datetime
 import hashlib
+import logging
 import re
+from email.header import decode_header
+from email.utils import parseaddr
+
+logger = logging.getLogger(__name__)
 
 class EmailFetcher:
     def __init__(self, user, password, label):
@@ -16,18 +17,16 @@ class EmailFetcher:
         self.mail = None
 
     def connect(self):
-        print("Connecting to Gmail...")
+        logger.info("Connecting to Gmail...")
         self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
         self.mail.login(self.user, self.password)
         rv, _ = self.mail.select(f'"{self.label}"')
         if rv != 'OK':
-            # Diagnostic: List labels
-            print(f"Error: Label {self.label} not found.")
-            print("Listing available labels:")
+            logger.error("Label %s not found. Listing available labels:", self.label)
             status, labels = self.mail.list()
             if status == 'OK':
-                for l in labels:
-                    print(f" - {l.decode('utf-8')}")
+                for label in labels:
+                    logger.error(" - %s", label.decode('utf-8'))
             raise Exception(f"Label {self.label} not found")
 
     def search_all(self):
@@ -57,7 +56,7 @@ class EmailFetcher:
                 f_id = self._get_deterministic_id(clean_subj, date_header, msg_id)
                 email_map[f_id] = num
             except Exception as e:
-                print(f"Error fetching headers for msg {num}: {e}")
+                logger.warning("Error fetching headers for msg %s: %s", num, e)
         return email_map
 
     def fetch_full_message(self, num):
@@ -67,14 +66,13 @@ class EmailFetcher:
     def close(self):
         if self.mail:
             try:
-                # CLOSE is only allowed in SELECTED state
                 if self.mail.state == 'SELECTED':
                     self.mail.close()
-            except:
+            except Exception:
                 pass
             try:
                 self.mail.logout()
-            except:
+            except Exception:
                 pass
 
     # --- HELPERS ---

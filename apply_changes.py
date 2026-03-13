@@ -1,15 +1,19 @@
-import os
-import json
-import re
 import datetime
+import json
+import logging
+import os
+import re
+from email.header import decode_header
+
 from src.parser import EmailParser
 from src.generator import generate_viewer, generate_index, copy_assets
-from email.header import decode_header
+
+logger = logging.getLogger(__name__)
 
 DOCS_DIR = "docs"
 
 def apply_changes():
-    print("Starting update of existing archives...")
+    logger.info("Starting update of existing archives...")
     
     all_metadata = []
     
@@ -25,14 +29,14 @@ def apply_changes():
         if not os.path.exists(meta_path) or not os.path.exists(viewer_path):
             continue
             
-        print(f"Processing {item}...")
+        logger.info("Processing %s...", item)
         
         # 1. Load Metadata
         try:
             with open(meta_path, 'r', encoding='utf-8') as f:
                 metadata = json.load(f)
-        except:
-            print(f"  Error loading metadata for {item}")
+        except Exception as e:
+            logger.error("Error loading metadata for %s: %s", item, e)
             continue
             
         # 2. Extract HTML from Viewer
@@ -47,9 +51,9 @@ def apply_changes():
         end_pos = viewer_content.find(end_marker)
         
         if start_pos == -1 or end_pos == -1:
-             print(f"  Warning: Could not extract content markers from {item}")
-             all_metadata.append(metadata)
-             continue
+            logger.warning("Could not extract content markers from %s — skipping re-render.", item)
+            all_metadata.append(metadata)
+            continue
              
         # Extract everything between
         raw_segment = viewer_content[start_pos + len(start_marker):end_pos]
@@ -61,7 +65,7 @@ def apply_changes():
         try:
             html_content = json.loads(raw_json)
         except Exception as e:
-            print(f"  Error parsing HTML JSON in {item}: {e}")
+            logger.error("Error parsing HTML JSON in %s: %s", item, e)
             all_metadata.append(metadata)
             continue
             
@@ -88,8 +92,9 @@ def apply_changes():
                     else:
                         new_sender += str(part)
                 metadata['sender'] = new_sender.strip()
-                print(f"  Decoded sender: {metadata['sender']}")
-            except: pass
+                logger.info("Decoded sender for %s: %s", item, metadata['sender'])
+            except Exception as e:
+                logger.warning("Error decoding sender for %s: %s", item, e)
 
         # Note: We can't re-decode sender here easily because we don't have the MIME msg,
         # but the next import will behave correctly.
@@ -110,7 +115,7 @@ def apply_changes():
         all_metadata.append(metadata)
         
     # 6. Re-Generate Index
-    print("Regenerating Homepage...")
+    logger.info("Regenerating Homepage...")
     
     # Calculate Stats
     total_size = 0
@@ -121,7 +126,6 @@ def apply_changes():
                 total_size += os.path.getsize(fp)
     
     size_mb = f"{total_size / (1024*1024):.1f} MB"
-    import datetime
     last_updated = datetime.datetime.now().strftime("%d %b %Y, %H:%M")
     
     stats = {
@@ -133,7 +137,7 @@ def apply_changes():
     generate_index(all_metadata, os.path.join(DOCS_DIR, "index.html"), stats)
     copy_assets(DOCS_DIR)
     
-    print("Done! All archives updated.")
+    logger.info("Done! All archives updated.")
 
 if __name__ == "__main__":
     apply_changes()

@@ -1,12 +1,22 @@
 
+import html
+import json
+import logging
 import os
 import shutil
 from datetime import datetime
+from email.utils import parsedate_to_datetime
+
 from src.imap_client import EmailFetcher
 from src.parser import EmailParser
 from src.generator import generate_viewer, generate_index
-from email.utils import parsedate_to_datetime
-import json
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 # CONFIG
 GMAIL_USER = os.environ.get("GMAIL_USER")
@@ -19,7 +29,7 @@ FORCE_UPDATE = os.environ.get("FORCE_UPDATE", "false").lower() == "true"
 
 def process_emails():
     if not GMAIL_USER or not GMAIL_PASSWORD:
-        print("Missing Credentials")
+        logger.error("Missing credentials: set GMAIL_USER and GMAIL_PASSWORD env vars.")
         return
 
     if not os.path.exists(OUTPUT_FOLDER):
@@ -31,133 +41,135 @@ def process_emails():
         fetcher.connect()
         ids = fetcher.search_all()
         ids.reverse() # Process newest first
-        print(f"Found {len(ids)} emails.")
+        logger.info("Found %d emails.", len(ids))
         
         # 2. Sync / Phase 1
         email_map = fetcher.fetch_headers(ids)
         
         # 3. Process
         all_metadata = []
-        
-        folders = [d for d in os.listdir(OUTPUT_FOLDER) if os.path.isdir(os.path.join(OUTPUT_FOLDER, d))]
-        
+
         for f_id, num in list(email_map.items())[:BATCH_SIZE]:
             folder_path = os.path.join(OUTPUT_FOLDER, f_id)
             meta_path = os.path.join(folder_path, "metadata.json")
-            
+
             if os.path.exists(meta_path) and not FORCE_UPDATE:
-                print(f"Skipping {f_id}")
+                logger.info("Skipping %s (already archived).", f_id)
                 with open(meta_path, 'r', encoding='utf-8') as f:
                     all_metadata.append(json.load(f))
                 continue
-                
-            print(f"Processing {f_id}...")
-            os.makedirs(folder_path, exist_ok=True)
-            
-            msg = fetcher.fetch_full_message(num)
-            
-            # Extract HTML and attachments
-            html_payload = None
-            text_payload = None
-            attachments = {} # {cid: bytes}
-            
-            if msg.is_multipart():
-                for part in msg.walk():
-                    ctype = part.get_content_type()
-                    cdisp = str(part.get('Content-Disposition'))
-                    cid = part.get('Content-ID')
-                    
+
+            try:
+                logger.info("Processing %s...", f_id)
+                os.makedirs(folder_path, exist_ok=True)
+
+                msg = fetcher.fetch_full_message(num)
+
+                # Extract HTML and attachments
+                html_payload = None
+                text_payload = None
+                attachments = {} # {cid: bytes}
+
+                if msg.is_multipart():
+                    for part in msg.walk():
+                        ctype = part.get_content_type()
+                        cdisp = str(part.get('Content-Disposition'))
+                        cid = part.get('Content-ID')
+
+                        if ctype == "text/html":
+                            html_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='replace')
+                        elif ctype == "text/plain" and 'attachment' not in cdisp:
+                             text_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='replace')
+                        elif cid:
+                            # It's an inline attachment (like an image with CID)
+                            clean_cid = cid.strip("<>")
+                            attachments[clean_cid] = part.get_payload(decode=True)
+                        elif 'attachment' in cdisp:
+                            # It's a regular attachment
+                            filename = part.get_filename()
+                            if filename:
+                                attachments[filename] = part.get_payload(decode=True)
+                else:
+                    ctype = msg.get_content_type()
                     if ctype == "text/html":
-                        html_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='ignore')
-                    elif ctype == "text/plain" and 'attachment' not in cdisp:
-                         text_payload = part.get_payload(decode=True).decode(part.get_content_charset() or 'utf-8', errors='ignore')
-                    elif cid:
-                        # It's an inline attachment (like an image with CID)
-                        clean_cid = cid.strip("<>")
-                        attachments[clean_cid] = part.get_payload(decode=True)
-                    elif 'attachment' in cdisp:
-                        # It's a regular attachment
-                        filename = part.get_filename()
-                        if filename:
-                            attachments[filename] = part.get_payload(decode=True)
-            else:
-                ctype = msg.get_content_type()
-                if ctype == "text/html":
-                    html_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='ignore')
-                elif ctype == "text/plain":
-                    text_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='ignore')
-            
-            # Fallback to text/plain if no HTML
-            if not html_payload and text_payload:
-                print(f"Warning: {f_id} has no HTML. Converting text/plain.")
-                html_payload = f"<html><body><pre style='white-space: pre-wrap; font-family: monospace;'>{html.escape(text_payload)}</pre></body></html>"
-                
-            if not html_payload: 
-                print(f"Skipping {f_id}: No content found.")
-                continue
+                        html_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='replace')
+                    elif ctype == "text/plain":
+                        text_payload = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8', errors='replace')
 
-            # Extract Headers for CRM detection
-            headers_dict = {k: v for k, v in msg.items()}
+                # Fallback to text/plain if no HTML
+                if not html_payload and text_payload:
+                    logger.warning("%s has no HTML body — converting text/plain.", f_id)
+                    html_payload = f"<html><body><pre style='white-space: pre-wrap; font-family: monospace;'>{html.escape(text_payload)}</pre></body></html>"
 
-            # PARSE
-            parser = EmailParser(html_payload, folder_path, headers=headers_dict, attachments=attachments)
-            parser.detect_crm()  # Detect CRM using headers + content
-            parser.clean_and_process()
-            parser.resolve_redirects_parallel()
-            parser.download_images_parallel()
-            
-            # Extract Date from headers
-            date_str = msg.get('Date')
-            if date_str:
-                try:
-                    dt = parsedate_to_datetime(date_str)
-                    date_rec = dt.strftime('%d/%m/%Y à %H:%M')
-                    date_iso = dt.isoformat()
-                except:
-                    date_rec = date_str
+                if not html_payload:
+                    logger.warning("Skipping %s: no content found.", f_id)
+                    continue
+
+                # Extract Headers for CRM detection
+                headers_dict = {k: v for k, v in msg.items()}
+
+                # PARSE
+                parser = EmailParser(html_payload, folder_path, headers=headers_dict, attachments=attachments)
+                parser.detect_crm()  # Detect CRM using headers + content
+                parser.clean_and_process()
+                parser.resolve_redirects_parallel()
+                parser.download_images_parallel()
+
+                # Extract Date from headers
+                date_str = msg.get('Date')
+                if date_str:
+                    try:
+                        dt = parsedate_to_datetime(date_str)
+                        date_rec = dt.strftime('%d/%m/%Y à %H:%M')
+                        date_iso = dt.isoformat()
+                    except Exception:
+                        date_rec = date_str
+                        date_iso = datetime.now().isoformat()
+                else:
+                    date_rec = datetime.now().strftime('%d/%m/%Y à %H:%M')
                     date_iso = datetime.now().isoformat()
-            else:
-                date_rec = datetime.now().strftime('%d/%m/%Y à %H:%M')
-                date_iso = datetime.now().isoformat()
-            
-            # Metadata structure
-            metadata = {
-                'id': f_id,
-                'subject': fetcher.get_decoded_subject(msg), 
-                'date_rec': date_rec,
-                'date_iso': date_iso,
-                'sender': EmailFetcher.get_decoded_sender(msg),
-                'date_arch': datetime.now().strftime('%d/%m/%Y à %H:%M'),
-                'preheader': parser.preheader,
-                'reading_time': parser.reading_time,
-                'audit': parser.audit,
-                'crm': parser.detected_crm
-            }
-            
-            # Subject Length Audit
-            subj_len = len(metadata['subject'])
-            if subj_len < 10: metadata['audit']['subject_check'] = "Too Short"
-            elif subj_len > 60: metadata['audit']['subject_check'] = "Too Long"
-            else: metadata['audit']['subject_check'] = "Good"
-            
-            # Save metadata for index
-            with open(meta_path, 'w', encoding='utf-8') as f:
-                json.dump(metadata, f, ensure_ascii=False, indent=4)
-            
-            all_metadata.append(metadata)
-            
-            generate_viewer(
-                metadata, 
-                parser.get_html(), 
-                parser.links, 
-                os.path.join(folder_path, "index.html"),
-                detected_pixels=parser.detected_pixels
-            )
+
+                # Metadata structure
+                metadata = {
+                    'id': f_id,
+                    'subject': fetcher.get_decoded_subject(msg),
+                    'date_rec': date_rec,
+                    'date_iso': date_iso,
+                    'sender': EmailFetcher.get_decoded_sender(msg),
+                    'date_arch': datetime.now().strftime('%d/%m/%Y à %H:%M'),
+                    'preheader': parser.preheader,
+                    'reading_time': parser.reading_time,
+                    'audit': parser.audit,
+                    'crm': parser.detected_crm
+                }
+
+                # Subject Length Audit
+                subj_len = len(metadata['subject'])
+                if subj_len < 10: metadata['audit']['subject_check'] = "Too Short"
+                elif subj_len > 60: metadata['audit']['subject_check'] = "Too Long"
+                else: metadata['audit']['subject_check'] = "Good"
+
+                # Save metadata for index
+                with open(meta_path, 'w', encoding='utf-8') as f:
+                    json.dump(metadata, f, ensure_ascii=False, indent=4)
+
+                all_metadata.append(metadata)
+
+                generate_viewer(
+                    metadata,
+                    parser.get_html(),
+                    parser.links,
+                    os.path.join(folder_path, "index.html"),
+                    detected_pixels=parser.detected_pixels
+                )
+
+            except Exception as e:
+                logger.error("Error processing %s: %s. Skipping.", f_id, e)
             
         # 4. Generate Main Index
         # Sort by date ISO (descending)
         all_metadata.sort(key=lambda x: x.get('date_iso', ''), reverse=True)
-        print("Generating index...")
+        logger.info("Generating index...")
         
         # Calculate Stats
         total_size = 0
@@ -178,16 +190,14 @@ def process_emails():
 
         generate_index(all_metadata, os.path.join(OUTPUT_FOLDER, "index.html"), stats)
         
-        print("Done!")
-        
+        logger.info("Done!")
+
         # 5. Copy Assets
         from src.generator import copy_assets
         copy_assets(OUTPUT_FOLDER)
-        print("Assets copied.")
+        logger.info("Assets copied.")
         
         
-    except Exception as e:
-        print(f"Error: {e}")
     finally:
         fetcher.close()
 
