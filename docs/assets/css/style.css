@@ -66,7 +66,10 @@
 
     /* Typography */
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-header: 'Garnett', 'Outfit', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-heading: 'Garnett', 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-header: 'Garnett', sans-serif;
 
     /* Terminal Theme (Light Mode Default) */
     --bg-terminal: #ffffff;
@@ -1254,10 +1257,10 @@ footer a:hover {
 
 /* Scoped viewer CSS variables */
 .viewer-layout {
-    --vw-bg: #0C0D10;
-    --vw-sidebar: #111318;
-    --vw-border: rgba(255, 255, 255, 0.07);
-    --vw-mint: #6AE7C8;
+    --vw-bg: var(--bg-body);
+    --vw-sidebar: var(--bg-card);
+    --vw-border: var(--border-color);
+    --vw-mint: var(--accent-mint);
     --vw-mint-dim: rgba(106, 231, 200, 0.1);
 }
 
@@ -1293,8 +1296,8 @@ footer a:hover {
     align-items: center;
     gap: 10px;
     padding: 5px 14px;
-    background: rgba(17, 19, 24, 0.98);
-    border-bottom: 1px solid var(--vw-border, rgba(255, 255, 255, 0.07));
+    background: var(--vw-sidebar);
+    border-bottom: 1px solid var(--vw-border);
     min-height: 36px;
     flex-wrap: wrap;
 }
@@ -1304,17 +1307,17 @@ footer a:hover {
     align-items: center;
     gap: 10px;
     padding: 7px 14px;
-    background: rgba(12, 13, 16, 0.99);
-    border-bottom: 1px solid var(--vw-border, rgba(255, 255, 255, 0.07));
+    background: var(--vw-bg);
+    border-bottom: 1px solid var(--vw-border);
     min-height: 40px;
     overflow: hidden;
 }
 
 .vh-subject {
-    font-family: 'Garnett', var(--font-header), sans-serif;
+    font-family: 'Garnett', sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--vw-mint, #6AE7C8);
+    color: var(--accent-primary);
     margin: 0;
     flex: 1;
     white-space: nowrap;
@@ -1392,10 +1395,10 @@ footer a:hover {
 /* Tab bar */
 .tab-bar {
     display: flex;
-    border-bottom: 1px solid var(--vw-border, rgba(255, 255, 255, 0.07));
+    border-bottom: 1px solid var(--vw-border);
     padding: 0 8px;
     flex-shrink: 0;
-    background: var(--vw-sidebar, #111318);
+    background: var(--vw-sidebar);
 }
 
 .tab-btn {
@@ -1640,7 +1643,7 @@ body.index-page .logo {
 }
 
 body.index-page .logo-word {
-    font-family: 'Garnett', 'Outfit', sans-serif;
+    font-family: 'Garnett', sans-serif;
     font-weight: 700;
     font-size: 2.2rem;
     color: var(--ix-brand);
@@ -1685,7 +1688,7 @@ body.index-page .ix-stat-block {
 }
 
 body.index-page .ix-stat-num {
-    font-family: 'Garnett', 'Outfit', sans-serif;
+    font-family: 'Garnett', sans-serif;
     font-weight: 600;
     font-size: 1.8rem;
     color: var(--ix-brand);
@@ -1855,7 +1858,7 @@ body.index-page .sender-pill {
 }
 
 body.index-page .card-title {
-    font-family: 'Garnett', 'Outfit', sans-serif;
+    font-family: 'Garnett', sans-serif;
     font-weight: 600;
     font-size: 1.0rem;
     color: var(--ix-text);
@@ -2000,7 +2003,7 @@ body.index-page mark {
     position: fixed;
     bottom: 56px;
     right: 16px;
-    background: #111318;
+    background: var(--vw-sidebar);
     border: 1px solid rgba(106, 231, 200, 0.25);
     padding: 16px 18px;
     z-index: 500;
