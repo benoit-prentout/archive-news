@@ -1,0 +1,18 @@
+{
+    "id": "69fa59b69784",
+    "subject": "[TEST BEAUMANOIR - Sarenza 30/04/2026 12:04:57] 95€ offerts + du chocolat : HelloFresh x Sarenza",
+    "date_rec": "30/04/2026 à 10:04",
+    "date_iso": "2026-04-30T10:04:57+00:00",
+    "sender": "noreply@dartagnan.io",
+    "date_arch": "04/05/2026 à 09:02",
+    "preheader": "95€ offerts + du chocolat : HelloFresh x Sarenza Découvrez la box à cuisiner dès 2,86€ par assiette Voir la version en ligne Se désabonner Code promo : SARENZAC...",
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": false,
+        "link_count": 15,
+        "images_no_alt": 7
+    },
+    "crm": null
+}
