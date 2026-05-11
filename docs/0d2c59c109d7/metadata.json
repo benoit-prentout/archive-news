@@ -1,0 +1,18 @@
+{
+    "id": "0d2c59c109d7",
+    "subject": "🎁 Choisissez votre magazine préféré et recevez un cadeau high tech !",
+    "date_rec": "11/05/2026 à 06:42",
+    "date_iso": "2026-05-11T06:42:10-07:00",
+    "sender": "benoit@getinside.fr",
+    "date_arch": "11/05/2026 à 13:45",
+    "preheader": "[TEST] 🎁 Choisissez votre magazine préféré et recevez un cadeau high-tech ! 🎁 Choisissez votre magazine préféré et recevez un cadeau high-tech ! Plus de 300 mag...",
+    "reading_time": "3 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": false,
+        "link_count": 22,
+        "images_no_alt": 2
+    },
+    "crm": null
+}
