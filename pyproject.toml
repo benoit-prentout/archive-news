@@ -20,6 +20,9 @@ dev = ["pytest>=8.0"]
 [project.scripts]
 archive = "newsletter_archive.cli:main"
 
+[tool.setuptools.packages.find]
+include = ["newsletter_archive*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
