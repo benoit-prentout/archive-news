@@ -44,6 +44,8 @@ CREATE VIRTUAL TABLE IF NOT EXISTS newsletters_fts USING fts5(
   newsletter_id UNINDEXED, subject, brand_display, preheader, body,
   tokenize='unicode61 remove_diacritics 2'
 );
+CREATE INDEX IF NOT EXISTS idx_newsletters_brand_key
+  ON newsletters(brand_key, date_iso DESC);
 """
 
 
@@ -74,22 +76,24 @@ def upsert_brand(conn: sqlite3.Connection, b: Brand) -> int:
 
 
 def insert_newsletter(conn: sqlite3.Connection, n: Newsletter, brand_id: int, body_text: str = "") -> None:
-    conn.execute(
-        """INSERT OR REPLACE INTO newsletters
-           (id, brand_id, brand_key, subject, slug, sender_display, from_domain, list_id, dkim_d,
-            preheader, date_iso, date_rec, date_arch, reading_time, crm, email_size, html_key, thumb_url)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-        (n.id, brand_id, n.brand_key, n.subject, n.slug, n.sender_display, n.from_domain, n.list_id,
-         n.dkim_d, n.preheader, n.date_iso, n.date_rec, n.date_arch, n.reading_time, n.crm,
-         n.email_size, n.html_key, n.thumb_url),
-    )
-    brand = conn.execute("SELECT display_name FROM brands WHERE id=?", (brand_id,)).fetchone()
-    conn.execute("DELETE FROM newsletters_fts WHERE newsletter_id=?", (n.id,))
-    conn.execute(
-        "INSERT INTO newsletters_fts (newsletter_id, subject, brand_display, preheader, body) VALUES (?,?,?,?,?)",
-        (n.id, n.subject, brand["display_name"] if brand else "", n.preheader, body_text),
-    )
-    conn.commit()
+    # `with conn:` commits on success / rolls back on error, keeping the newsletter row
+    # and its FTS row atomic (no searchable-gap if the process dies mid-write).
+    with conn:
+        conn.execute(
+            """INSERT OR REPLACE INTO newsletters
+               (id, brand_id, brand_key, subject, slug, sender_display, from_domain, list_id, dkim_d,
+                preheader, date_iso, date_rec, date_arch, reading_time, crm, email_size, html_key, thumb_url)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (n.id, brand_id, n.brand_key, n.subject, n.slug, n.sender_display, n.from_domain, n.list_id,
+             n.dkim_d, n.preheader, n.date_iso, n.date_rec, n.date_arch, n.reading_time, n.crm,
+             n.email_size, n.html_key, n.thumb_url),
+        )
+        brand = conn.execute("SELECT display_name FROM brands WHERE id=?", (brand_id,)).fetchone()
+        conn.execute("DELETE FROM newsletters_fts WHERE newsletter_id=?", (n.id,))
+        conn.execute(
+            "INSERT INTO newsletters_fts (newsletter_id, subject, brand_display, preheader, body) VALUES (?,?,?,?,?)",
+            (n.id, n.subject, brand["display_name"] if brand else "", n.preheader, body_text),
+        )
 
 
 def list_newsletters_for_brand(conn: sqlite3.Connection, brand_key: str) -> List[sqlite3.Row]:
