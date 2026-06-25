@@ -1,4 +1,3 @@
-import importlib
 from newsletter_archive import config
 
 def test_defaults_and_env_override(monkeypatch):

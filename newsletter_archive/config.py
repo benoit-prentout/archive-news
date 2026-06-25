@@ -1,3 +1,4 @@
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,7 +8,7 @@ class Settings(BaseSettings):
 
     # Gmail / IMAP
     gmail_user: str = ""
-    gmail_password: str = ""
+    gmail_password: SecretStr = SecretStr("")
     target_label: str = "Github/archive-newsletters"
     batch_size: int = 9999
     force_update: bool = False
@@ -18,8 +19,8 @@ class Settings(BaseSettings):
 
     # R2 (S3-compatible) — filled in Wave 2
     r2_account_id: str = ""
-    r2_access_key_id: str = ""
-    r2_secret_access_key: str = ""
+    r2_access_key_id: SecretStr = SecretStr("")
+    r2_secret_access_key: SecretStr = SecretStr("")
     r2_bucket: str = "newsletter-assets"
     r2_public_base_url: str = ""
 
