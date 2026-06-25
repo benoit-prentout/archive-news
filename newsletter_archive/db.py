@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Optional
+from typing import List
 from .models import Brand, Newsletter
 
 SCHEMA = """
@@ -24,20 +24,20 @@ CREATE TABLE IF NOT EXISTS images (
   first_seen TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS newsletter_images (
-  newsletter_id TEXT, sha256 TEXT, position INTEGER, original_src TEXT,
+  newsletter_id TEXT REFERENCES newsletters(id) ON DELETE CASCADE, sha256 TEXT, position INTEGER, original_src TEXT,
   PRIMARY KEY (newsletter_id, position)
 );
 CREATE TABLE IF NOT EXISTS links (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, newsletter_id TEXT, idx INTEGER,
+  id INTEGER PRIMARY KEY AUTOINCREMENT, newsletter_id TEXT REFERENCES newsletters(id) ON DELETE CASCADE, idx INTEGER,
   txt TEXT, original_url TEXT, final_url TEXT, domain TEXT,
   is_tracking INTEGER, is_secure INTEGER, is_dev INTEGER,
   redirect_chain TEXT, audit_date TEXT
 );
 CREATE TABLE IF NOT EXISTS pixels (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, newsletter_id TEXT, url TEXT, domain TEXT, status TEXT
+  id INTEGER PRIMARY KEY AUTOINCREMENT, newsletter_id TEXT REFERENCES newsletters(id) ON DELETE CASCADE, url TEXT, domain TEXT, status TEXT
 );
 CREATE TABLE IF NOT EXISTS audits (
-  newsletter_id TEXT PRIMARY KEY, subject_check TEXT, unsubscribe_found INTEGER,
+  newsletter_id TEXT PRIMARY KEY REFERENCES newsletters(id) ON DELETE CASCADE, subject_check TEXT, unsubscribe_found INTEGER,
   link_count INTEGER, images_no_alt INTEGER
 );
 CREATE VIRTUAL TABLE IF NOT EXISTS newsletters_fts USING fts5(
@@ -61,6 +61,7 @@ def bootstrap_schema(conn: sqlite3.Connection) -> None:
 
 def upsert_brand(conn: sqlite3.Connection, b: Brand) -> int:
     conn.execute(
+        # NOTE: slug, category, first_seen are intentionally immutable after first insert
         """INSERT INTO brands (key, slug, display_name, category, homepage_url, first_seen, last_seen, email_count)
            VALUES (?,?,?,?,?,?,?,?)
            ON CONFLICT(key) DO UPDATE SET
