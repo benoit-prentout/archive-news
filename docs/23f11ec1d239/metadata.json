@@ -1,0 +1,18 @@
+{
+    "id": "23f11ec1d239",
+    "subject": "[TEST] Offre exclusive : jusqu’à -43% pour découvrir l’actualité autrement !",
+    "date_rec": "22/07/2026 à 15:15",
+    "date_iso": "2026-07-22T15:15:59+00:00",
+    "sender": "Le Petit Ballon",
+    "date_arch": "22/07/2026 à 15:37",
+    "preheader": "Votre abonnement à Courrier international un tarif spécial Le Petit Ballon. ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ...",
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": false,
+        "link_count": 13,
+        "images_no_alt": 5
+    },
+    "crm": null
+}
