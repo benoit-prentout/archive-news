@@ -1,0 +1,18 @@
+{
+    "id": "82c929967178",
+    "subject": "[TEST] 🍽️ Foodbag : 60 € offerts pour moins de courses et plus de câlins !",
+    "date_rec": "05/10/2026 à 09:11",
+    "date_iso": "2026-10-05T09:11:05+00:00",
+    "sender": "Test",
+    "date_arch": "05/10/2026 à 09:25",
+    "preheader": "Des recettes livrés chez vous, sans prise de tête. présente La box repas belge , par excellence ! Faites-vous livrer de savoureux repas à domicile Entre le trav...",
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Too Long",
+        "unsubscribe_found": true,
+        "link_count": 10,
+        "images_no_alt": 0
+    },
+    "crm": null
+}
