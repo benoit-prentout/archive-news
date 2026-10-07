@@ -1,0 +1,18 @@
+{
+    "id": "1e9c77c58fb0",
+    "subject": "[TEST] Moins de courses, plus de câlins",
+    "date_rec": "07/10/2026 à 10:13",
+    "date_iso": "2026-10-07T10:13:22+00:00",
+    "sender": "Test",
+    "date_arch": "07/10/2026 à 17:53",
+    "preheader": "Foodbag vous livre tous vos repas… et vous offre 60 € ! présente La box repas belge , par excellence ! Faites-vous livrer de savoureux repas à domicile Entre le...",
+    "reading_time": "2 min",
+    "audit": {
+        "subject_length": 0,
+        "subject_check": "Good",
+        "unsubscribe_found": true,
+        "link_count": 10,
+        "images_no_alt": 0
+    },
+    "crm": null
+}
