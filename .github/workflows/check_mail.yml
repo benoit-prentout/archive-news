@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   process-email:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # ponytail: setup-python n'a pas Python 3.9 sur Ubuntu 26.04 (ubuntu-latest); passer en 3.12 pour s'en affranchir
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
